@@ -19,6 +19,7 @@ func NewConcurrentUploader(bucketName, region string) (uploader *ConcurrentUploa
 	uploader.uploadStatus = make(map[string]int)
 	uploader.uploadContent = make(map[string][]byte)
 	uploader.bucketName = bucketName
+	uploader.region = region
 
 	uploader.uploadChan = make(chan map[string]error)
 	uploader.UploadComplete = make(chan bool)

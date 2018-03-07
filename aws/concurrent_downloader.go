@@ -17,6 +17,7 @@ func NewConcurrentDownloader(bucketName, region string) (downloader *ConcurrentD
 
 	downloader.DownloadContent = make(map[string][]byte)
 	downloader.bucketName = bucketName
+	downloader.region = region
 
 	downloader.downloadChan = make(chan map[string][]byte)
 	downloader.DownloadComplete = make(chan bool)
