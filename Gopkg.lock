@@ -23,11 +23,15 @@
     "internal/sdkrand",
     "internal/shareddefaults",
     "private/protocol",
+    "private/protocol/json/jsonutil",
+    "private/protocol/jsonrpc",
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
     "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
+    "service/cloudfront/sign",
+    "service/ecr",
     "service/s3",
     "service/s3/s3iface",
     "service/s3/s3manager",
@@ -83,6 +87,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8750a4ae582ccc47dc3b8e2ff36d031e10cc716fdc7798bb9d5dbc67416b31d7"
+  inputs-digest = "6890fb6d2cba3cc088d53cdd575492596fc56507d200ecaa1d7b3268edae1acc"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -1,12 +1,10 @@
 package aws
 
 import (
+	"crypto/rsa"
 	"errors"
 	url_ "net/url"
 	"time"
-
-	"tecgit01.tectusdreamlab.com/TDS/common-utils-backend/convertor"
-	"tecgit01.tectusdreamlab.com/TDS/common-utils-backend/encryption"
 
 	"github.com/aws/aws-sdk-go/service/cloudfront/sign"
 )
@@ -20,20 +18,12 @@ var (
 	signers = make(map[string]*Signer)
 )
 
-// GetURLSigner gets URL signer by given keyID and privKey
-func GetURLSigner(keyID, privKeyString string) *Signer {
+// GetURLSigner gets URL signer by given keyID and private key
+func GetURLSigner(keyID string, privateKey *rsa.PrivateKey) *Signer {
 	if signer, ok := signers[keyID]; ok {
 		return signer
 	}
-	privKeyBytes, err := convertor.Base64ToBytes(privKeyString)
-	if err != nil {
-		return &Signer{nil}
-	}
-	privKey, err := encryption.UnMarshalPrivateKey(privKeyBytes)
-	if err != nil {
-		return &Signer{nil}
-	}
-	urlSigner := sign.NewURLSigner(keyID, privKey)
+	urlSigner := sign.NewURLSigner(keyID, privateKey)
 	signer := &Signer{urlSigner}
 	signers[keyID] = signer
 	return signer
