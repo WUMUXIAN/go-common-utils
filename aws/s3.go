@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -443,4 +445,20 @@ func (o *S3Service) AbortMultipart(bucketName, path, uploadID string) error {
 		fmt.Println("Aborted Multi Part For Path:", path)
 	}
 	return err
+}
+
+// GetPreSignedURL gets pre-signed URL that are valid for specified duration.
+func (o *S3Service) GetPreSignedURL(bucketName, path string, validFor time.Duration) (string, error) {
+	req, _ := o.service.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(path),
+	})
+	urlStr, err := req.Presign(validFor)
+
+	if err != nil {
+		log.Println("Failed to sign request", err)
+		return "", err
+	}
+
+	return urlStr, nil
 }

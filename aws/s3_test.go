@@ -158,3 +158,10 @@ func TestS3Copy(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestS3PreSignedURL(t *testing.T) {
+	_, err := GetS3Service("ap-southeast-1").GetPreSignedURL(bucketName, "/test", 15*time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
