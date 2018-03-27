@@ -42,6 +42,15 @@
   version = "v1.13.7"
 
 [[projects]]
+  name = "github.com/garyburd/redigo"
+  packages = [
+    "internal",
+    "redis"
+  ]
+  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
+  version = "v1.6.0"
+
+[[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
   revision = "32e4c1e6bc4e7d0d8451aa6b75200d19e37a536a"
@@ -87,6 +96,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6890fb6d2cba3cc088d53cdd575492596fc56507d200ecaa1d7b3268edae1acc"
+  inputs-digest = "4bf43bef8e40d54c0d032bf302c7d55651f74eca78486917e02870972ef0d554"
   solver-name = "gps-cdcl"
   solver-version = 1
