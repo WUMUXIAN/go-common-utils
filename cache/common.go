@@ -12,6 +12,8 @@ type Cacher interface {
 	TTL(key string) (int, error)
 	SetGob(key string, value interface{}, expiration ...interface{})
 	GetGob(key string) (interface{}, error)
+	SetJSON(key string, value interface{}, expiration ...interface{})
+	GetJSON(key string) (jsonBytes []byte, err error)
 }
 
 // GobRegister registers models with gob.

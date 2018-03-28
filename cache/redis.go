@@ -3,6 +3,7 @@ package cache
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -111,6 +112,20 @@ func (o *RedisCacher) GetGob(key string) (interface{}, error) {
 		err = dec.Decode(&value)
 	}
 	return value["value"], err
+}
+
+// SetJSON sets a key value pair, the value is a json
+func (o *RedisCacher) SetJSON(key string, value interface{}, expiration ...interface{}) error {
+	str, err := json.Marshal(value)
+	if err == nil {
+		err = o.Set(key, str, expiration...)
+	}
+	return err
+}
+
+// GetJSON gets a json value from key
+func (o *RedisCacher) GetJSON(key string) (jsonBytes []byte, err error) {
+	return o.GetBytes(key)
 }
 
 // GetString gets a string value from key

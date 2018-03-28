@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"encoding/json"
 	"sort"
 	"testing"
 
@@ -43,6 +44,22 @@ func TestRedis(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
+	err = Redis.SetJSON("testKey5", &TestValues{"A", 1, int64(1)}, 300)
+	Convey("Set Composite Values By JSON Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	testValue5, err := Redis.GetJSON("testKey5")
+	Convey("Get Composite Values By JSON Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+		var testValues TestValues
+		err = json.Unmarshal(testValue5, &testValues)
+		So(err, ShouldBeNil)
+		So(testValues.A, ShouldEqual, "A")
+		So(testValues.B, ShouldEqual, 1)
+		So(testValues.C, ShouldEqual, int64(1))
+	})
+
 	testValue4, err := Redis.GetGob("testKey4")
 	Convey("Get Composite Values By Gob Should Be OK", t, func() {
 		So(err, ShouldBeNil)
@@ -76,13 +93,14 @@ func TestRedis(t *testing.T) {
 		So(nextCursor, ShouldEqual, 0)
 		So(err, ShouldBeNil)
 		sort.Strings(keys)
-		So(keys, ShouldResemble, []string{"testKey1", "testKey2", "testKey3", "testKey4"})
+		So(keys, ShouldResemble, []string{"testKey1", "testKey2", "testKey3", "testKey4", "testKey5"})
 	})
 
 	Redis.Del("testKey1")
 	Redis.Del("testKey2")
 	Redis.Del("testKey3")
 	Redis.Del("testKey4")
+	Redis.Del("testKey5")
 
 	nextCursor, keys, err = Redis.Scan(0, 100, "testKey*")
 	Convey("Scanning The Keys Should Be OK", t, func() {
