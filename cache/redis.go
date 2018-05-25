@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -12,26 +11,39 @@ import (
 
 // RedisCacher is an redis implementation of cacher.
 type RedisCacher struct {
-	p *redis.Pool
+	p       *redis.Pool
+	dbIndex int
+}
+
+func (o *RedisCacher) GetConn() redis.Conn {
+	conn := o.p.Get()
+	if o.dbIndex != 0 {
+		conn.Do("SELECT", o.dbIndex)
+	}
+	return conn
 }
 
 // Redis is the only one redis cacher, we don't support multiple intances of redis cacher for now.
 var Redis *RedisCacher
 
 // NewRedisCacher creates a new redis cacher
-func NewRedisCacher(server, password string) error {
+func NewRedisCacher(server, password string, dbIndex ...int) error {
 	// Has an existing pool, close it.
 	if Redis != nil {
 		Redis.ClosePool()
 	}
 
 	Redis = new(RedisCacher)
+	if len(dbIndex) > 0 {
+		Redis.dbIndex = dbIndex[0]
+	}
+
 	if Redis.p == nil {
 		Redis.p = &redis.Pool{
 			MaxIdle:     3,
 			IdleTimeout: 240 * time.Second,
 			Dial: func() (redis.Conn, error) {
-				c, err := redis.Dial("tcp", server)
+				c, err := redis.Dial("tcp", server, redis.DialConnectTimeout(time.Second*1))
 				if err != nil {
 					return nil, err
 				}
@@ -61,22 +73,19 @@ func (o *RedisCacher) ClosePool() {
 
 // Set a key value pair, the value can be string, int64 and etc.
 func (o *RedisCacher) Set(key string, value interface{}, expiration ...interface{}) error {
-	redisConnection := o.p.Get()
+	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	_, err := redisConnection.Do("SET", key, value)
 
 	if err == nil && expiration != nil {
 		_, err = redisConnection.Do("EXPIRE", key, expiration[0])
 	}
-	if err != nil {
-		fmt.Println("Set Cache Error", err)
-	}
 	return err
 }
 
 // Expire sets a expiration time for key
 func (o *RedisCacher) Expire(key string, expiration int) error {
-	redisConnection := o.p.Get()
+	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	_, err := redisConnection.Do("EXPIRE", key, expiration)
 	return err
@@ -84,7 +93,7 @@ func (o *RedisCacher) Expire(key string, expiration int) error {
 
 // TTL gets the remaining seconds for key
 func (o *RedisCacher) TTL(key string) (int, error) {
-	redisConnection := o.p.Get()
+	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	return redis.Int(redisConnection.Do("TTL", key))
 }
@@ -150,33 +159,28 @@ func (o *RedisCacher) GetFloat64(key string) (float64, error) {
 
 // Get a value from key
 func (o *RedisCacher) Get(key string) (interface{}, error) {
-	redisConnection := o.p.Get()
+	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	return redisConnection.Do("GET", key)
 }
 
 // Del a key
 func (o *RedisCacher) Del(key string) {
-	redisConnection := o.p.Get()
+	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	redisConnection.Do("DEL", key)
 }
 
 // Scan through the keys with given cursor, pattern and count
 func (o *RedisCacher) Scan(cursor int, count int, pattern string) (nextCursor int, keys []string, err error) {
-	redisConnection := o.p.Get()
+	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	result, err := redis.Values(redisConnection.Do("SCAN", cursor, "MATCH", pattern, "COUNT", count))
 	if err != nil {
 		return
 	}
-	nextCursor, err = redis.Int(result[0], nil)
-	if err != nil {
-		return
-	}
-	keys, err = redis.Strings(result[1], nil)
-	if err != nil {
-		return
-	}
+	nextCursor, _ = redis.Int(result[0], nil)
+	keys, _ = redis.Strings(result[1], nil)
+
 	return
 }

@@ -63,7 +63,7 @@ func (o *imageDetailSorter) Less(i, j int) bool {
 // ListImages returns all tagged images for a given repo
 func (o *ECRService) ListImages(repoName string) (tags [][]string) {
 	tags = make([][]string, 0)
-	// relations = make(map[string][]string)
+
 	result, err := o.service.DescribeImages(&ecr.DescribeImagesInput{
 		RepositoryName: aws.String(repoName),
 		Filter: &ecr.DescribeImagesFilter{
@@ -75,7 +75,6 @@ func (o *ECRService) ListImages(repoName string) (tags [][]string) {
 		return
 	}
 
-	// images := make(map[string][]string)
 	byPushedAtDesc := func(r1, r2 *ecr.ImageDetail) bool {
 		return aws.TimeValue(r1.ImagePushedAt).Unix() > aws.TimeValue(r2.ImagePushedAt).Unix()
 	}

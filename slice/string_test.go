@@ -11,6 +11,7 @@ func TestString(t *testing.T) {
 	var boolean bool
 	x := []string{"1", "2", "3", "4", "5"}
 	y := []string{"6", "7", "8", "9", "10"}
+	z := []string{"6", "7", "8", "9", "10", "11"}
 
 	Convey("Test The String Slice Functions\n", t, func() {
 		Convey("IndexOfString", func() {
@@ -32,6 +33,10 @@ func TestString(t *testing.T) {
 			So(boolean, ShouldBeTrue)
 			boolean = EqualsStrings(x, y)
 			So(boolean, ShouldBeFalse)
+			boolean = EqualsStrings(x, z)
+			So(boolean, ShouldBeFalse)
+			boolean = EqualsStrings(y, z)
+			So(boolean, ShouldBeFalse)
 		})
 
 		Convey("CopyStrings", func() {
@@ -48,11 +53,15 @@ func TestString(t *testing.T) {
 			x = []string{"1", "2", "3", "4", "5"}
 			_, err = CutStrings(x, -1, 6)
 			So(err, ShouldNotBeNil)
+			_, err = CutStrings(x, 6, 5)
+			So(err, ShouldNotBeNil)
 		})
 
 		Convey("RemoveString", func() {
 			x1 := RemoveString(x, "3")
 			So(x1, ShouldResemble, []string{"1", "2", "4", "5"})
+			x2 := RemoveString(x1, "10")
+			So(x2, ShouldResemble, []string{"1", "2", "4", "5"})
 			// Since it's a in-place operation, x will be changed, we need to re-init it.
 			x = []string{"1", "2", "3", "4", "5"}
 		})

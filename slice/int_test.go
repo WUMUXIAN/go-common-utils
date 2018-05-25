@@ -11,6 +11,7 @@ func TestInt(t *testing.T) {
 	var boolean bool
 	x := []int{1, 2, 3, 4, 5}
 	y := []int{6, 7, 8, 9, 10}
+	z := []int{11, 12, 13, 14, 15, 16}
 
 	Convey("Test The Int Slice Functions\n", t, func() {
 		Convey("IndexOfInt", func() {
@@ -32,6 +33,10 @@ func TestInt(t *testing.T) {
 			So(boolean, ShouldBeTrue)
 			boolean = EqualsInts(x, y)
 			So(boolean, ShouldBeFalse)
+			boolean = EqualsInts(x, z)
+			So(boolean, ShouldBeFalse)
+			boolean = EqualsInts(y, z)
+			So(boolean, ShouldBeFalse)
 		})
 
 		Convey("CopyInts", func() {
@@ -48,11 +53,15 @@ func TestInt(t *testing.T) {
 			x = []int{1, 2, 3, 4, 5}
 			_, err = CutInts(x, -1, 6)
 			So(err, ShouldNotBeNil)
+			_, err = CutInts(x, 5, 4)
+			So(err, ShouldNotBeNil)
 		})
 
 		Convey("RemoveInt", func() {
 			x1 := RemoveInt(x, 3)
 			So(x1, ShouldResemble, []int{1, 2, 4, 5})
+			x2 := RemoveInt(x1, 10)
+			So(x2, ShouldResemble, []int{1, 2, 4, 5})
 			// Since it's a in-place operation, x will be changed, we need to re-init it.
 			x = []int{1, 2, 3, 4, 5}
 		})

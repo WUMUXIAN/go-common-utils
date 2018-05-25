@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -56,20 +55,7 @@ func (o *S3Service) CreateBucket(bucketName, region string) error {
 	result, err := o.service.CreateBucket(input)
 
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			switch aerr.Code() {
-			case s3.ErrCodeBucketAlreadyExists:
-				fmt.Println(s3.ErrCodeBucketAlreadyExists, aerr.Error())
-			case s3.ErrCodeBucketAlreadyOwnedByYou:
-				fmt.Println(s3.ErrCodeBucketAlreadyOwnedByYou, aerr.Error())
-			default:
-				fmt.Println(aerr.Error())
-			}
-		} else {
-			// Print the error, cast err to awserr.Error to get the Code and
-			// Message from an error.
-			fmt.Println(err.Error())
-		}
+		fmt.Println(err.Error())
 	} else {
 		fmt.Println(result)
 	}
@@ -80,11 +66,8 @@ func (o *S3Service) CreateBucket(bucketName, region string) error {
 // DeleteBucket delete a bucket with given name and in given region
 func (o *S3Service) DeleteBucket(bucketName string) error {
 	// Before we can delete we need to remove everything.
-	err := o.RemoveAllFromS3(bucketName, "/")
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
+	o.RemoveAllFromS3(bucketName, "/")
+
 	result, err := o.service.DeleteBucket(&s3.DeleteBucketInput{
 		Bucket: aws.String(bucketName),
 	})
@@ -109,9 +92,6 @@ func (o *S3Service) UploadToS3(content []byte, bucketName string, path string, a
 				if arg.(bool) {
 					acl = s3.ObjectCannedACLPublicRead
 				}
-				break
-			default:
-				break
 			}
 		}
 	}
@@ -151,16 +131,17 @@ func (o *S3Service) ReadFromS3(bucketName string, path string) (content []byte, 
 	return
 }
 
-func (o *S3Service) listS3Objects(bucketName string, path string, marker string) (objectPaths []string, morePages bool, err error) {
+func (o *S3Service) listS3Objects(bucketName string, path string, marker *string) (objectPaths []string, morePages bool, err error) {
 	resp, err := o.service.ListObjects(&s3.ListObjectsInput{
 		Bucket: aws.String(bucketName),
 		Prefix: aws.String(path),
-		Marker: aws.String(marker),
+		Marker: marker,
 	})
 
 	fmt.Println("Listing All Objects Next Page: ", path)
 
 	objectPaths = make([]string, 0)
+	morePages = false
 
 	if err != nil {
 		fmt.Printf("bad response: %s", err)
@@ -178,33 +159,18 @@ func (o *S3Service) listS3Objects(bucketName string, path string, marker string)
 
 // ListAllS3 lists all objects with the path as prefix
 func (o *S3Service) ListAllS3(bucketName string, path string) (objectPaths []string, err error) {
-	resp, err := o.service.ListObjects(&s3.ListObjectsInput{
-		Bucket: aws.String(bucketName),
-		Prefix: aws.String(path),
-	})
-
-	fmt.Println("Listing All Objects in: ", path)
-
 	objectPaths = make([]string, 0)
 
+	pagedObjects, morePages, err := o.listS3Objects(bucketName, path, nil)
+
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
 		return
 	}
 
-	for _, content := range resp.Contents {
-		objectPaths = append(objectPaths, aws.StringValue(content.Key))
-	}
-
-	// If there're more pages, get all of them
-	morePages := aws.BoolValue(resp.IsTruncated)
+	objectPaths = append(objectPaths, pagedObjects...)
 	for {
 		if morePages {
-			pagedObjects := make([]string, 0)
-			pagedObjects, morePages, err = o.listS3Objects(bucketName, path, objectPaths[len(objectPaths)-1])
-			if err != nil {
-				return
-			}
+			pagedObjects, morePages, _ = o.listS3Objects(bucketName, path, aws.String(objectPaths[len(objectPaths)-1]))
 			objectPaths = append(objectPaths, pagedObjects...)
 		} else {
 			break
@@ -321,9 +287,6 @@ func (o *S3Service) UploadToS3Concurrently(content []byte, bucketName string, pa
 					fmt.Println("Make it Public")
 					acl = s3.ObjectCannedACLPublicRead
 				}
-				break
-			default:
-				break
 			}
 		}
 	}

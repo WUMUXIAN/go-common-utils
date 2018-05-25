@@ -11,6 +11,7 @@ func TestInt64(t *testing.T) {
 	var boolean bool
 	x := []int64{1, 2, 3, 4, 5}
 	y := []int64{6, 7, 8, 9, 10}
+	z := []int64{11, 12, 13, 14, 15, 16}
 
 	Convey("Test The Int64 Slice Functions\n", t, func() {
 		Convey("IndexOfInt64", func() {
@@ -32,6 +33,10 @@ func TestInt64(t *testing.T) {
 			So(boolean, ShouldBeTrue)
 			boolean = EqualsInt64s(x, y)
 			So(boolean, ShouldBeFalse)
+			boolean = EqualsInt64s(x, z)
+			So(boolean, ShouldBeFalse)
+			boolean = EqualsInt64s(y, z)
+			So(boolean, ShouldBeFalse)
 		})
 
 		Convey("CopyInt64s", func() {
@@ -48,11 +53,15 @@ func TestInt64(t *testing.T) {
 			x = []int64{1, 2, 3, 4, 5}
 			_, err = CutInt64s(x, -1, 6)
 			So(err, ShouldNotBeNil)
+			_, err = CutInt64s(x, 5, 4)
+			So(err, ShouldNotBeNil)
 		})
 
 		Convey("RemoveInt64", func() {
 			x1 := RemoveInt64(x, 3)
 			So(x1, ShouldResemble, []int64{1, 2, 4, 5})
+			x2 := RemoveInt64(x1, 10)
+			So(x2, ShouldResemble, []int64{1, 2, 4, 5})
 			// Since it's a in-place operation, x will be changed, we need to re-init it.
 			x = []int64{1, 2, 3, 4, 5}
 		})

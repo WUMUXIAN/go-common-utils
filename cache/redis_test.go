@@ -17,8 +17,31 @@ type TestValues struct {
 func TestRedis(t *testing.T) {
 	var err error
 
-	err = NewRedisCacher("127.0.0.1:6379", "")
+	// Point to wring server address or port
+	err = NewRedisCacher("127.0.0.1:6380", "")
+	Convey("New Redis Cacher Should Be Failed", t, func() {
+		So(err, ShouldNotBeNil)
+	})
+
+	err = NewRedisCacher("127.0.0.2:6379", "")
+	Convey("New Redis Cacher Should Be Failed", t, func() {
+		So(err, ShouldNotBeNil)
+	})
+
+	// Wrong password
+	err = NewRedisCacher("127.0.0.1:6379", "WrongPassword")
+	Convey("New Redis Cacher Should Be Failed", t, func() {
+		So(err, ShouldNotBeNil)
+	})
+
+	err = NewRedisCacher("127.0.0.1:6379", "", 1)
 	Convey("New Redis Cacher Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	// Let's new another cacher immediately, it should be ok.
+	err = NewRedisCacher("127.0.0.1:6379", "", 1)
+	Convey("Double New Redis Cacher Should Be OK", t, func() {
 		So(err, ShouldBeNil)
 	})
 
@@ -47,6 +70,17 @@ func TestRedis(t *testing.T) {
 	err = Redis.SetJSON("testKey5", &TestValues{"A", 1, int64(1)}, 300)
 	Convey("Set Composite Values By JSON Should Be OK", t, func() {
 		So(err, ShouldBeNil)
+	})
+
+	err = Redis.Expire("testKey5", 500)
+	Convey("Update Expire For Key Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	ttl, err := Redis.TTL("testKey5")
+	Convey("Get Expire For Key Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+		So(ttl, ShouldBeBetween, 498, 501)
 	})
 
 	testValue5, err := Redis.GetJSON("testKey5")
@@ -90,10 +124,17 @@ func TestRedis(t *testing.T) {
 
 	nextCursor, keys, err := Redis.Scan(0, 100, "testKey*")
 	Convey("Scanning The Keys Should Be OK", t, func() {
-		So(nextCursor, ShouldEqual, 0)
+		So(nextCursor, ShouldBeGreaterThanOrEqualTo, 0)
 		So(err, ShouldBeNil)
 		sort.Strings(keys)
 		So(keys, ShouldResemble, []string{"testKey1", "testKey2", "testKey3", "testKey4", "testKey5"})
+	})
+
+	// Error case.
+	nextCursor, keys, err = Redis.Scan(0, -100, "testKey*")
+	Convey("Scanning The Keys With Wrong Count Should Not Be OK", t, func() {
+		So(nextCursor, ShouldBeGreaterThanOrEqualTo, 0)
+		So(err, ShouldNotBeNil)
 	})
 
 	Redis.Del("testKey1")
@@ -104,7 +145,7 @@ func TestRedis(t *testing.T) {
 
 	nextCursor, keys, err = Redis.Scan(0, 100, "testKey*")
 	Convey("Scanning The Keys Should Be OK", t, func() {
-		So(nextCursor, ShouldEqual, 0)
+		So(nextCursor, ShouldBeGreaterThanOrEqualTo, 0)
 		So(err, ShouldBeNil)
 		So(keys, ShouldBeEmpty)
 	})

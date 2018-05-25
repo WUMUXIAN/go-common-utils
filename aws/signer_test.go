@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/WUMUXIAN/go-common-utils/codec"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestUrlSigner(t *testing.T) {
@@ -20,21 +21,28 @@ func TestUrlSigner(t *testing.T) {
 		"d2cjabszqfh4q8.cloudfront.net",
 		"/company-29e9035a-b47d-7e47-18c1-d7c50cf143e1/project-a1a8d8c6-6748-3031-bc77-dfeac13255ee/attachments/cd26c0dd-2fb7-b1d8-294a-e0fd8a792350",
 		60, "testVideo.mov")
-
-	if err == nil {
+	Convey("Get Cloudfront Signed URL", t, func() {
+		So(err, ShouldBeNil)
+		So(url, ShouldNotBeBlank)
 		fmt.Println("Url: ", url)
-	} else {
-		t.Fatal(err)
-	}
+	})
 
 	url, err = GetURLSigner(keyID, privateKey).SignURL(
 		"dk70nib18pl2w.cloudfront.net",
 		"/17000000/17-00000-0-V1_1_0_APP.lod",
 		60)
-
-	if err == nil {
+	Convey("Get Cloudfront Signed URL", t, func() {
+		So(err, ShouldBeNil)
+		So(url, ShouldNotBeBlank)
 		fmt.Println("Url: ", url)
-	} else {
-		t.Fatal(err)
-	}
+	})
+
+	signer := new(Signer)
+	_, err = signer.SignURL(
+		"dk70nib18pl2w.cloudfront.net",
+		"/17000000/17-00000-0-V1_1_0_APP.lod",
+		60)
+	Convey("Get Cloudfront Signed URL", t, func() {
+		So(err, ShouldNotBeNil)
+	})
 }

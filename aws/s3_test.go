@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 var (
@@ -16,15 +18,17 @@ func TestMain(m *testing.M) {
 	err := GetS3Service("ap-southeast-1").CreateBucket("wumuxian-test", "ap-southeast-1")
 	if err != nil {
 		fmt.Println("Failed to create the bucket.")
-		// os.Exit(1)
+		return
 	}
+
+	// Try to create again, this time it will fail.
+	err = GetS3Service("ap-southeast-1").CreateBucket("wumuxian-test", "ap-southeast-1")
+	if err == nil {
+		fmt.Println("You Should Not Be Allowed to Create Bucket With the Same Name.")
+		return
+	}
+
 	m.Run()
-	fmt.Println("Delete the bucket.")
-	err = GetS3Service("ap-southeast-1").DeleteBucket("wumuxian-test")
-	if err != nil {
-		fmt.Println("Failed to delete the bucket.")
-		// os.Exit(1)
-	}
 }
 
 func TestS3Upload(t *testing.T) {
@@ -35,133 +39,148 @@ func TestS3Upload(t *testing.T) {
 
 	tm := time.Now().UTC().Unix()
 	err := GetS3Service("ap-southeast-1").UploadToS3Concurrently(content, bucketName, "/test", true)
-	delta := time.Now().UTC().Unix() - tm
-	fmt.Printf("Upload %d MB of data Concurrently takes %d seconds\n", 50, delta)
+	Convey("Upload To S3 Concurrently", t, func() {
+		So(err, ShouldBeNil)
+		delta := time.Now().UTC().Unix() - tm
+		fmt.Printf("Upload %d MB of data Concurrently takes %d seconds\n", 50, delta)
+	})
 
 	tm = time.Now().UTC().Unix()
 	err = GetS3Service("ap-southeast-1").UploadToS3(content, bucketName, "/test", true)
-	delta = time.Now().UTC().Unix() - tm
-	fmt.Printf("Upload %d MB of data Normally takes %d seconds\n", 50, delta)
+	Convey("Upload To S3 Normally", t, func() {
+		So(err, ShouldBeNil)
+		delta := time.Now().UTC().Unix() - tm
+		fmt.Printf("Upload %d MB of data Normally takes %d seconds\n", 50, delta)
+	})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	err = GetS3Service("ap-southeast-1").UploadToS3(content, "badBucketName", "/test", true)
+	Convey("Upload To S3 Normally", t, func() {
+		So(err, ShouldNotBeNil)
+	})
 }
 
 func TestS3Read(t *testing.T) {
 	tm := time.Now().UTC().Unix()
 	_, err := GetS3Service("ap-southeast-1").ReadFromS3Concurrently(bucketName, "/test")
-	delta := time.Now().UTC().Unix() - tm
-	fmt.Printf("Download %d MB of data Concurrently takes %d seconds\n", 50, delta)
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	Convey("Download From S3 Concurrently", t, func() {
+		So(err, ShouldBeNil)
+		delta := time.Now().UTC().Unix() - tm
+		fmt.Printf("Download %d MB of data Concurrently takes %d seconds\n", 50, delta)
+	})
 
 	tm = time.Now().UTC().Unix()
 	_, err = GetS3Service("ap-southeast-1").ReadFromS3(bucketName, "/test")
-	delta = time.Now().UTC().Unix() - tm
-	fmt.Printf("Download %d MB of data Normally takes %d seconds\n", 50, delta)
+	Convey("Download From S3 Normally", t, func() {
+		So(err, ShouldBeNil)
+		delta := time.Now().UTC().Unix() - tm
+		fmt.Printf("Download %d MB of data Normally takes %d seconds\n", 50, delta)
+	})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	_, err = GetS3Service("ap-southeast-1").ReadFromS3("badBucketName", "/test")
+	Convey("Download To S3 Normally", t, func() {
+		So(err, ShouldNotBeNil)
+	})
 }
 
 func TestS3List(t *testing.T) {
-	content := make([]byte, 0)
-	for i := 0; i < 1*1024; i++ {
-		content = append(content, 'b')
-	}
-
-	tm := time.Now().UTC().Unix()
-	err := GetS3Service("ap-southeast-1").UploadToS3Concurrently(content, bucketName, "/test")
-	delta := time.Now().UTC().Unix() - tm
-	fmt.Printf("Upload %d MB of data Concurrently takes %d seconds\n", 1, delta)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	objects, err := GetS3Service("ap-southeast-1").ListAllS3(bucketName, "test")
-	if err != nil {
-		t.Fatal(err)
-	}
+	Convey("List All Objects With Prefix", t, func() {
+		So(err, ShouldBeNil)
+		So(objects, ShouldResemble, []string{"test"})
+	})
 
-	fmt.Println("Objects:", objects)
-}
-
-func TestS3Remove(t *testing.T) {
-	content := make([]byte, 0)
-	for i := 0; i < 1*1024; i++ {
-		content = append(content, 'b')
-	}
-
-	tm := time.Now().UTC().Unix()
-	err := GetS3Service("ap-southeast-1").UploadToS3Concurrently(content, bucketName, "/test")
-	delta := time.Now().UTC().Unix() - tm
-	fmt.Printf("Upload %d MB of data Concurrently takes %d seconds\n", 1, delta)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = GetS3Service("ap-southeast-1").RemoveFromS3(bucketName, "/test")
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestS3RemoveAll(t *testing.T) {
-	var err error
-	content := make([]byte, 0)
-	for i := 0; i < 1024; i++ {
-		content = append(content, 'b')
-	}
-	err = GetS3Service("ap-southeast-1").UploadToS3(content, bucketName, "/test", true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	err = GetS3Service("ap-southeast-1").RemoveAllFromS3(bucketName, "test")
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestS3Copy(t *testing.T) {
-	var err error
-	content := make([]byte, 0)
-	for i := 0; i < 1024; i++ {
-		content = append(content, 'b')
-	}
-	err = GetS3Service("ap-southeast-1").UploadToS3(content, bucketName, "/test", true)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = GetS3Service("ap-southeast-1").CopyWithInS3(bucketName, "test", bucketName, "/test1", false)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	GetS3Service("ap-southeast-1").ListAllS3(bucketName, "test")
-
-	err = GetS3Service("ap-southeast-1").CopyWithInS3(bucketName, "/test", bucketName, "test1", true)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	GetS3Service("ap-southeast-1").ListAllS3(bucketName, "/test")
-
-	err = GetS3Service("ap-southeast-1").RemoveFromS3(bucketName, "/test1")
-	if err != nil {
-		t.Fatal(err)
-	}
+	objects, err = GetS3Service("us-east-1").ListAllS3("tectus-dreamlab-dev", "")
+	Convey("List All Objects With Prefix", t, func() {
+		So(err, ShouldBeNil)
+		So(len(objects), ShouldBeGreaterThan, 1000)
+	})
 }
 
 func TestS3PreSignedURL(t *testing.T) {
 	_, err := GetS3Service("ap-southeast-1").GetPreSignedURL(bucketName, "/test", 15*time.Minute)
-	if err != nil {
-		t.Fatal(err)
-	}
+	Convey("S3 PreSigned URL", t, func() {
+		So(err, ShouldBeNil)
+	})
+}
+
+func TestS3Copy(t *testing.T) {
+	err := GetS3Service("ap-southeast-1").CopyWithInS3(bucketName, "test", bucketName, "/test1", false)
+	Convey("Copy Object Within S3 Bucket", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	objects, err := GetS3Service("ap-southeast-1").ListAllS3(bucketName, "test")
+	Convey("List All Objects With Prefix", t, func() {
+		So(err, ShouldBeNil)
+		So(objects, ShouldResemble, []string{"test", "test1"})
+	})
+
+	err = GetS3Service("ap-southeast-1").CopyWithInS3(bucketName, "/test1", bucketName, "test2", true)
+	Convey("Copy Object Within S3 Bucket", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	objects, err = GetS3Service("ap-southeast-1").ListAllS3(bucketName, "test")
+	Convey("List All Objects With Prefix", t, func() {
+		So(err, ShouldBeNil)
+		So(objects, ShouldResemble, []string{"test", "test2"})
+	})
+
+	err = GetS3Service("ap-southeast-1").CopyWithInS3(bucketName, "test", bucketName, "/test1", false)
+	Convey("Copy Object Within S3 Bucket", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	objects, err = GetS3Service("ap-southeast-1").ListAllS3(bucketName, "test")
+	Convey("List All Objects With Prefix", t, func() {
+		So(err, ShouldBeNil)
+		So(objects, ShouldResemble, []string{"test", "test1", "test2"})
+	})
+
+	err = GetS3Service("ap-southeast-1").CopyWithInS3(bucketName, "test3", bucketName, "/test1", false)
+	Convey("Copy Object Within S3 Bucket", t, func() {
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestS3Remove(t *testing.T) {
+	err := GetS3Service("ap-southeast-1").RemoveFromS3(bucketName, "/test")
+	Convey("Copy Object Within S3 Bucket", t, func() {
+		So(err, ShouldBeNil)
+	})
+	objects, err := GetS3Service("ap-southeast-1").ListAllS3(bucketName, "test")
+	Convey("List All Objects With Prefix", t, func() {
+		So(err, ShouldBeNil)
+		So(objects, ShouldResemble, []string{"test1", "test2"})
+	})
+	err = GetS3Service("ap-southeast-1").RemoveFromS3("non-exited-bucket", "/test3")
+	Convey("Copy Object Within S3 Bucket", t, func() {
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestS3RemoveAll(t *testing.T) {
+	err := GetS3Service("ap-southeast-1").RemoveAllFromS3(bucketName, "test")
+	Convey("Copy Object Within S3 Bucket", t, func() {
+		So(err, ShouldBeNil)
+	})
+	objects, err := GetS3Service("ap-southeast-1").ListAllS3(bucketName, "test")
+	Convey("List All Objects With Prefix", t, func() {
+		So(err, ShouldBeNil)
+		So(objects, ShouldBeEmpty)
+	})
+}
+
+func TestDeleteBucket(t *testing.T) {
+	fmt.Println("Delete the bucket.")
+	err := GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
+	Convey("Delete Bucket", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	// Delete again.
+	err = GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
+	Convey("Delete Bucket", t, func() {
+		So(err, ShouldNotBeNil)
+	})
 }
