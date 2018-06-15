@@ -15,6 +15,7 @@ type RedisCacher struct {
 	dbIndex int
 }
 
+// GetConn gets a connection
 func (o *RedisCacher) GetConn() redis.Conn {
 	conn := o.p.Get()
 	if o.dbIndex != 0 {
@@ -48,7 +49,7 @@ func NewRedisCacher(server, password string, dbIndex ...int) error {
 					return nil, err
 				}
 				if password != "" {
-					if _, err := c.Do("AUTH", password); err != nil {
+					if _, err = c.Do("AUTH", password); err != nil {
 						c.Close()
 						return nil, err
 					}
@@ -183,4 +184,31 @@ func (o *RedisCacher) Scan(cursor int, count int, pattern string) (nextCursor in
 	keys, _ = redis.Strings(result[1], nil)
 
 	return
+}
+
+// HSet sets a key:value in hash set.
+func (o *RedisCacher) HSet(hash, key string, value interface{}, expiration ...interface{}) error {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+	_, err := redisConnection.Do("HSET", hash, key, value)
+
+	if err == nil && expiration != nil {
+		_, err = redisConnection.Do("EXPIRE", key, expiration[0])
+	}
+	return err
+}
+
+// HGet gets a value from hash set
+func (o *RedisCacher) HGet(hash, key string) (interface{}, error) {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+	return redisConnection.Do("HGET", hash, key)
+}
+
+// HINCRBY increments a value fro hash set by key
+func (o *RedisCacher) HINCRBY(hash, key string, value interface{}) error {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+	_, err := redisConnection.Do("HINCRBY", hash, key, value)
+	return err
 }

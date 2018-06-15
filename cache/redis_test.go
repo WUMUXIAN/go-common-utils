@@ -5,6 +5,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/garyburd/redigo/redis"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -148,5 +149,32 @@ func TestRedis(t *testing.T) {
 		So(nextCursor, ShouldBeGreaterThanOrEqualTo, 0)
 		So(err, ShouldBeNil)
 		So(keys, ShouldBeEmpty)
+	})
+
+	err = Redis.HSet("hash1", "key1", 1)
+	Convey("Set Hash Set Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	err = Redis.HSet("hash2", "key2", 1, 10)
+	Convey("Set Hash Set With Expires Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	value, err := redis.Int64(Redis.HGet("hash1", "key1"))
+	Convey("Get Hash Set Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+		So(value, ShouldEqual, int64(1))
+	})
+
+	err = Redis.HINCRBY("hash1", "key1", 2)
+	Convey("Increment Hash Set Value By Key Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	value, err = redis.Int64(Redis.HGet("hash1", "key1"))
+	Convey("Get Hash Set Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+		So(value, ShouldEqual, int64(3))
 	})
 }
