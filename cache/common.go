@@ -14,6 +14,9 @@ type Cacher interface {
 	GetGob(key string) (interface{}, error)
 	SetJSON(key string, value interface{}, expiration ...interface{})
 	GetJSON(key string) (jsonBytes []byte, err error)
+	HSet(hash, key string, value interface{}, expiration ...interface{}) error
+	HGet(hash, key string) (interface{}, error)
+	HINCRBY(hash, key string, value interface{}) error
 }
 
 // GobRegister registers models with gob.

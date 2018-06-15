@@ -205,7 +205,7 @@ func (o *RedisCacher) HGet(hash, key string) (interface{}, error) {
 	return redisConnection.Do("HGET", hash, key)
 }
 
-// HINCRBY increments a value fro hash set by key
+// HINCRBY increments a value for hash set by key.
 func (o *RedisCacher) HINCRBY(hash, key string, value interface{}) error {
 	redisConnection := o.GetConn()
 	defer redisConnection.Close()
