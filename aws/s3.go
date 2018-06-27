@@ -106,10 +106,10 @@ func (o *S3Service) UploadToS3(content []byte, bucketName string, path string, a
 	fmt.Println("Uploading Object: ", path)
 	resp, err := o.service.PutObject(params)
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
+		fmt.Println("bad response: %s", err)
 		return err
 	}
-	fmt.Printf("response %s", awsutil.StringValue(resp))
+	fmt.Printf("response %s\n", awsutil.StringValue(resp))
 	return nil
 }
 
@@ -123,7 +123,7 @@ func (o *S3Service) ReadFromS3(bucketName string, path string) (content []byte, 
 	fmt.Println("Downloading Object: ", path)
 
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
+		fmt.Printf("bad response: %s\n", err)
 		return
 	}
 
@@ -144,7 +144,7 @@ func (o *S3Service) listS3Objects(bucketName string, path string, marker *string
 	morePages = false
 
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
+		fmt.Printf("bad response: %s\n", err)
 		return
 	}
 
@@ -198,7 +198,7 @@ func (o *S3Service) CopyWithInS3(sourceBucketName, sourcePath, destBucketName, d
 	fmt.Println("Copying Object From:", sourceBucketName+sourcePath, "to", destBucketName+destPath)
 
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
+		fmt.Printf("bad response: %s\n", err)
 		return
 	}
 
@@ -219,11 +219,11 @@ func (o *S3Service) RemoveFromS3(bucketName string, path string) (err error) {
 	fmt.Println("Removing Object: ", path)
 
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
+		fmt.Printf("bad response: %s\n", err)
 		return
 	}
 
-	fmt.Printf("response %s", awsutil.StringValue(resp))
+	fmt.Printf("response %s\n", awsutil.StringValue(resp))
 	return
 }
 
@@ -232,7 +232,7 @@ func (o *S3Service) RemoveAllFromS3(bucketName string, path string) (err error) 
 	objectPaths, err := o.ListAllS3(bucketName, path)
 
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
+		fmt.Printf("bad response: %s\n", err)
 		return
 	}
 
@@ -259,7 +259,7 @@ func (o *S3Service) RemoveAllFromS3(bucketName string, path string) (err error) 
 	})
 
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
+		fmt.Printf("bad response: %s\n", err)
 		return
 	}
 
@@ -332,7 +332,7 @@ func (o *S3Service) ReadFromS3Concurrently(bucketName string, path string) (cont
 	fmt.Println("Downloading Object: ", path)
 
 	if err != nil {
-		fmt.Printf("bad response: %s", err)
+		fmt.Printf("bad response: %s\n", err)
 	} else {
 		content = buffer.Bytes()
 	}

@@ -71,7 +71,7 @@ func (o *ECRService) ListImages(repoName string) (tags [][]string) {
 		},
 	})
 	if err != nil {
-		fmt.Printf("Error listing images")
+		fmt.Println("Error listing images")
 		return
 	}
 
