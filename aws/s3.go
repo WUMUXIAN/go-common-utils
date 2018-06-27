@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -57,7 +56,7 @@ func (o *S3Service) CreateBucket(bucketName, region string) error {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		fmt.Println(result)
+		fmt.Printf("bucket created at: %s\n", aws.StringValue(result.Location))
 	}
 
 	return err
@@ -68,14 +67,14 @@ func (o *S3Service) DeleteBucket(bucketName string) error {
 	// Before we can delete we need to remove everything.
 	o.RemoveAllFromS3(bucketName, "/")
 
-	result, err := o.service.DeleteBucket(&s3.DeleteBucketInput{
+	_, err := o.service.DeleteBucket(&s3.DeleteBucketInput{
 		Bucket: aws.String(bucketName),
 	})
 
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		fmt.Println(result)
+		fmt.Printf("bucket %s deleted\n", bucketName)
 	}
 	return err
 }
@@ -103,13 +102,13 @@ func (o *S3Service) UploadToS3(content []byte, bucketName string, path string, a
 		ContentType:   aws.String(http.DetectContentType(content)),
 		ACL:           aws.String(acl),
 	}
-	fmt.Println("Uploading Object: ", path)
+	fmt.Println("uploading object: ", path)
 	resp, err := o.service.PutObject(params)
 	if err != nil {
-		fmt.Println("bad response: %s", err)
+		fmt.Printf("bad response: %s\n", err)
 		return err
 	}
-	fmt.Printf("response %s\n", awsutil.StringValue(resp))
+	fmt.Printf("response: ETag: %s, ServerSideEncryption: %s\n", aws.StringValue(resp.ETag), aws.StringValue(resp.ServerSideEncryption))
 	return nil
 }
 
@@ -120,7 +119,7 @@ func (o *S3Service) ReadFromS3(bucketName string, path string) (content []byte, 
 		Key:    aws.String(path),
 	})
 
-	fmt.Println("Downloading Object: ", path)
+	fmt.Println("download object: ", path)
 
 	if err != nil {
 		fmt.Printf("bad response: %s\n", err)
@@ -128,6 +127,8 @@ func (o *S3Service) ReadFromS3(bucketName string, path string) (content []byte, 
 	}
 
 	content, err = ioutil.ReadAll(resp.Body)
+
+	fmt.Printf("response: ETag: %s, ServerSideEncryption: %s\n", aws.StringValue(resp.ETag), aws.StringValue(resp.ServerSideEncryption))
 	return
 }
 
@@ -138,7 +139,7 @@ func (o *S3Service) listS3Objects(bucketName string, path string, marker *string
 		Marker: marker,
 	})
 
-	fmt.Println("Listing All Objects Next Page: ", path)
+	fmt.Printf("listing all objects under path: %s with marker: %s\n", path, aws.StringValue(marker))
 
 	objectPaths = make([]string, 0)
 	morePages = false
@@ -195,7 +196,7 @@ func (o *S3Service) CopyWithInS3(sourceBucketName, sourcePath, destBucketName, d
 		Key:        aws.String(destPath),
 	})
 
-	fmt.Println("Copying Object From:", sourceBucketName+sourcePath, "to", destBucketName+destPath)
+	fmt.Println("copying object from:", sourceBucketName+sourcePath, "to", destBucketName+destPath)
 
 	if err != nil {
 		fmt.Printf("bad response: %s\n", err)
@@ -205,25 +206,22 @@ func (o *S3Service) CopyWithInS3(sourceBucketName, sourcePath, destBucketName, d
 	if deleteAfterCopy {
 		return o.RemoveFromS3(sourceBucketName, sourcePath)
 	}
-
 	return
 }
 
 // RemoveFromS3 removes a object using its bucketname and path
 func (o *S3Service) RemoveFromS3(bucketName string, path string) (err error) {
-	resp, err := o.service.DeleteObject(&s3.DeleteObjectInput{
+	_, err = o.service.DeleteObject(&s3.DeleteObjectInput{
 		Bucket: aws.String(bucketName),
 		Key:    aws.String(path),
 	})
 
-	fmt.Println("Removing Object: ", path)
+	fmt.Println("removing object: ", path)
 
 	if err != nil {
 		fmt.Printf("bad response: %s\n", err)
 		return
 	}
-
-	fmt.Printf("response %s\n", awsutil.StringValue(resp))
 	return
 }
 
@@ -248,8 +246,6 @@ func (o *S3Service) RemoveAllFromS3(bucketName string, path string) (err error) 
 		objects[i] = object
 	}
 
-	fmt.Println("Objects: ", objects)
-
 	d := &s3.Delete{
 		Objects: objects,
 	}
@@ -263,7 +259,7 @@ func (o *S3Service) RemoveAllFromS3(bucketName string, path string) (err error) 
 		return
 	}
 
-	fmt.Println("Deleting All Objects in: ", path)
+	fmt.Println("deleted all objects in:", path)
 
 	return
 }
@@ -284,30 +280,27 @@ func (o *S3Service) UploadToS3Concurrently(content []byte, bucketName string, pa
 			switch i {
 			case 0:
 				if arg.(bool) {
-					fmt.Println("Make it Public")
 					acl = s3.ObjectCannedACLPublicRead
 				}
 			}
 		}
 	}
-	output, err := uploader.Upload(&s3manager.UploadInput{
+	_, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket:      aws.String(bucketName),
 		Key:         aws.String(path),
 		Body:        bodyBytes,
 		ContentType: aws.String(http.DetectContentType(content)),
 		ACL:         aws.String(acl),
 	})
-	fmt.Println("Uploading Object: ", path)
+	fmt.Println("uploading object: ", path)
 	if err != nil {
 		if multierr, ok := err.(s3manager.MultiUploadFailure); ok {
 			// Process error and its associated uploadID
-			fmt.Println("Error:", multierr.Code(), multierr.Message(), multierr.UploadID())
+			fmt.Println("error:", multierr.Code(), multierr.Message(), multierr.UploadID())
 		} else {
 			// Process error generically
-			fmt.Println("Error:", err.Error())
+			fmt.Println("error:", err.Error())
 		}
-	} else {
-		fmt.Println("Upload Output: ", output)
 	}
 
 	return err
@@ -329,7 +322,7 @@ func (o *S3Service) ReadFromS3Concurrently(bucketName string, path string) (cont
 		Key:    aws.String(path),
 	})
 
-	fmt.Println("Downloading Object: ", path)
+	fmt.Println("downloading object: ", path)
 
 	if err != nil {
 		fmt.Printf("bad response: %s\n", err)
@@ -346,7 +339,7 @@ func (o *S3Service) InitMultiPartUpload(bucketName, path string) (string, error)
 		Key:    aws.String(path),
 	}
 	result, err := o.service.CreateMultipartUpload(input)
-	fmt.Println("Starting Multi Part Upload At Path: ", path)
+	fmt.Println("starting multi-part upload at path:", path)
 	if err != nil {
 		return "", err
 	}
@@ -364,7 +357,7 @@ func (o *S3Service) UploadMultipart(bucketName, path, uploadID string, partNumbe
 	}
 
 	result, err := o.service.UploadPart(input)
-	fmt.Println("Uploaded Multi Part: Path->", path, "PartNumber->", partNumber)
+	fmt.Println("uploaded multi-part: path->", path, "partnumber->", partNumber)
 	if err != nil {
 		return "", err
 	}
@@ -391,7 +384,7 @@ func (o *S3Service) CompleteMultipart(bucketName, path, uploadID string, parts m
 	}
 	_, err := o.service.CompleteMultipartUpload(input)
 	if err == nil {
-		fmt.Println("Completed Multi Part For Path:", path)
+		fmt.Println("completed multi-part for path:", path)
 	}
 	return err
 }
@@ -405,7 +398,7 @@ func (o *S3Service) AbortMultipart(bucketName, path, uploadID string) error {
 	}
 	_, err := o.service.AbortMultipartUpload(input)
 	if err == nil {
-		fmt.Println("Aborted Multi Part For Path:", path)
+		fmt.Println("aborted multi-part for path:", path)
 	}
 	return err
 }
@@ -419,7 +412,7 @@ func (o *S3Service) GetPreSignedURL(bucketName, path string, validFor time.Durat
 	urlStr, err := req.Presign(validFor)
 
 	if err != nil {
-		log.Println("Failed to sign request", err)
+		log.Println("failed to sign request", err)
 		return "", err
 	}
 
