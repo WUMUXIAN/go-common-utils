@@ -80,6 +80,18 @@ func TestS3Read(t *testing.T) {
 	Convey("Download To S3 Normally", t, func() {
 		So(err, ShouldNotBeNil)
 	})
+
+	existed, err := GetS3Service("ap-southeast-1").Exists(bucketName, "/test")
+	Convey("Check Object Existence For Existing Object", t, func() {
+		So(err, ShouldBeNil)
+		So(existed, ShouldBeTrue)
+	})
+
+	existed, err = GetS3Service("ap-southeast-1").Exists(bucketName, "/test_asdfdsa")
+	Convey("Check Object Existence For Non-Existing Object", t, func() {
+		So(err, ShouldNotBeNil)
+		So(existed, ShouldBeFalse)
+	})
 }
 
 func TestS3List(t *testing.T) {
