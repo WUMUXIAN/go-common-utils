@@ -90,6 +90,24 @@ func HexToBytes(input string) ([]byte, error) {
 	return hex.DecodeString(input)
 }
 
+// HexToBigInt converts hex string to big Int
+func HexToBigInt(input string) (*big.Int, error) {
+	b, err := HexToBytes(input)
+	if err != nil {
+		return nil, err
+	}
+	return ToByteArray(b).BigInt(), nil
+}
+
+// Base64ToBigInt converts base64 string to big Int
+func Base64ToBigInt(input string) (*big.Int, error) {
+	b, err := Base64ToBytes(input)
+	if err != nil {
+		return nil, err
+	}
+	return ToByteArray(b).BigInt(), nil
+}
+
 // Base64ToBytes converts base64 string to byte array
 func Base64ToBytes(input string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(input)
