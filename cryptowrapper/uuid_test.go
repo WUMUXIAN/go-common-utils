@@ -1,4 +1,4 @@
-package crypto_wrapper
+package cryptowrapper
 
 import (
 	"regexp"

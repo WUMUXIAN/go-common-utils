@@ -1,4 +1,4 @@
-package crypto_wrapper
+package cryptowrapper
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestAESCBC(t *testing.T) {
-	// Given a key and a plain message, encrpyt it using
+	// Given a key and a plain message, encrypt it using
 	key := []byte("Hello I am a 32 byte key........Hello I am a 32 byte mac key....")
 	plainMessage := []byte("我们")
 
