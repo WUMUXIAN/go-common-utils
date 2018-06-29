@@ -1,3 +1,4 @@
+// Package srp implements the Secure Remote Password following SRP-6a protocol design.
 package srp
 
 // This implementation follows the Secure Remote Password Design, latest SRP-6a.

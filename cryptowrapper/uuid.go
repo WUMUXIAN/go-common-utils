@@ -11,10 +11,7 @@ import (
 // RandBytes returns n bytes of cryptographically strong random bytes.
 func RandBytes(n int) []byte {
 	b := make([]byte, n)
-	_, err := io.ReadFull(rand.Reader, b)
-	if err != nil {
-		panic("Random source is broken!")
-	}
+	io.ReadFull(rand.Reader, b)
 	return b
 }
 

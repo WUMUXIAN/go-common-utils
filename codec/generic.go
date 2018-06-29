@@ -1,3 +1,4 @@
+// Package codec contains some type conversion functions, e.g. Bytes to Base64
 package codec
 
 import (

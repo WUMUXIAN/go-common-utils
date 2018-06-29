@@ -1,3 +1,4 @@
+// Package slice wraps up some common operations regarding to golang slice with different types.
 package slice
 
 import (

@@ -1,3 +1,4 @@
+// Package cryptowrapper contains several cryptographic algorithms like AES, RSA, ECDH, HMAC, HKDF and PBKDF2
 package cryptowrapper
 
 import (

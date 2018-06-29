@@ -1,3 +1,4 @@
+// Package cache offers common cache capbilities, current the only supported backend is redis
 package cache
 
 import "encoding/gob"
