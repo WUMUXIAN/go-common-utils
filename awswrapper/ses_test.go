@@ -1,4 +1,4 @@
-package aws
+package awswrapper
 
 import "testing"
 import . "github.com/smartystreets/goconvey/convey"

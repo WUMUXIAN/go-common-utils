@@ -1,4 +1,4 @@
-package aws
+package awswrapper
 
 // ConcurrentDownloader is used to download multiple files to S3 concurrently.
 type ConcurrentDownloader struct {

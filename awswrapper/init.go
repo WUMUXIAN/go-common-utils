@@ -1,5 +1,5 @@
-// Package aws wraps over the AWS official GO SDK to simplify the usage.
-package aws
+// Package awswrapper wraps over the AWS official GO SDK to simplify the usage.
+package awswrapper
 
 import (
 	"github.com/aws/aws-sdk-go/aws"

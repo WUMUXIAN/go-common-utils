@@ -1,4 +1,4 @@
-package aws
+package awswrapper
 
 // ConcurrentUploader is used to upload multiple files to S3 concurrently.
 type ConcurrentUploader struct {
