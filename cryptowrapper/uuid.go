@@ -44,7 +44,7 @@ func BytesToUUIDFormat(bytes []byte) string {
 		codec.ToByteArray(bytes[10:]).Hex()
 }
 
-// MD5UUID gets the MD5 hash of the input content and convert to UUID Format
+// MD5UUIDFormat gets the MD5 hash of the input content and convert to UUID Format
 func MD5UUIDFormat(input ...[]byte) string {
 	return BytesToUUIDFormat(codec.GetHash(codec.MD5, input...).Bytes())
 }
