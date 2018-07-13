@@ -2,6 +2,7 @@ package trees
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
 )
@@ -39,19 +40,17 @@ func (b *BinarySearchTree) inorderTraverse(node *BinaryTreeNode) []interface{} {
 	return ordered
 }
 
-func (b *BinarySearchTree) getRightMostLeaf(node *BinaryTreeNode) (leaf *BinaryTreeNode, parent *BinaryTreeNode) {
+func (b *BinarySearchTree) getRightMostLeaf(node *BinaryTreeNode, parent *BinaryTreeNode) (*BinaryTreeNode, *BinaryTreeNode) {
 	if node == nil {
-		return nil, nil
+		return nil, parent
 	}
 
 	for {
-		parent = node
-		leaf = node.Right
-		if leaf != nil {
-			parent = leaf
-			leaf = leaf.Right
+		if node.Right != nil {
+			parent = node
+			node = node.Right
 		}
-		return
+		return node, parent
 	}
 }
 
@@ -84,13 +83,14 @@ func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, 
 				parent.Right = node.Right
 			}
 		} else {
-			// If this node has both children, we find the right most node and replace it with node.
-			rightMostLeaf, parent := b.getRightMostLeaf(node)
+			// If this node has both children, we find the right most node in the left sub stree and replace it with node.
+			rightMostLeaf, leafParent := b.getRightMostLeaf(node.Left, node)
+			fmt.Println(rightMostLeaf, parent)
 			node.Data = rightMostLeaf.Data
-			if parent.Left == rightMostLeaf {
-				parent.Left = nil
+			if leafParent.Left == rightMostLeaf {
+				leafParent.Left = nil
 			} else {
-				parent.Right = nil
+				leafParent.Right = nil
 			}
 		}
 		return nil

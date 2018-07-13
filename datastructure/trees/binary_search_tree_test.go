@@ -40,6 +40,8 @@ func TestBinarySearchTree(t *testing.T) {
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{5, 9, 10, 13, 15, 20, 24, 25, 27, 30, 31, 35, 36})
 		tree.Delete(25)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{5, 9, 10, 13, 15, 20, 24, 27, 30, 31, 35, 36})
+		tree.Delete(20)
+		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{5, 9, 10, 13, 15, 24, 27, 30, 31, 35, 36})
 	})
 
 	Convey("Clear Tree Should Remove All Nodes From the Tree", t, func() {
