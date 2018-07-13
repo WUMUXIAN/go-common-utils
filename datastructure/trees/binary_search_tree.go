@@ -2,11 +2,11 @@ package trees
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
 )
 
+// BinarySearchTree defines a binary search tree
 type BinarySearchTree struct {
 	Root       *BinaryTreeNode
 	Comparator shared.Comparator
@@ -40,18 +40,16 @@ func (b *BinarySearchTree) inorderTraverse(node *BinaryTreeNode) []interface{} {
 	return ordered
 }
 
-func (b *BinarySearchTree) getRightMostLeaf(node *BinaryTreeNode, parent *BinaryTreeNode) (*BinaryTreeNode, *BinaryTreeNode) {
-	if node == nil {
-		return nil, parent
-	}
-
+func (b *BinarySearchTree) findMaxNodeWithParent(node *BinaryTreeNode, parent *BinaryTreeNode) (*BinaryTreeNode, *BinaryTreeNode) {
 	for {
 		if node.Right != nil {
 			parent = node
 			node = node.Right
+		} else {
+			break
 		}
-		return node, parent
 	}
+	return node, parent
 }
 
 func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, data interface{}) error {
@@ -84,13 +82,12 @@ func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, 
 			}
 		} else {
 			// If this node has both children, we find the right most node in the left sub stree and replace it with node.
-			rightMostLeaf, leafParent := b.getRightMostLeaf(node.Left, node)
-			fmt.Println(rightMostLeaf, parent)
-			node.Data = rightMostLeaf.Data
-			if leafParent.Left == rightMostLeaf {
-				leafParent.Left = nil
+			maxNode, maxNodeParent := b.findMaxNodeWithParent(node.Left, node)
+			node.Data = maxNode.Data
+			if maxNodeParent.Left == maxNode {
+				maxNodeParent.Left = maxNode.Left
 			} else {
-				leafParent.Right = nil
+				maxNodeParent.Right = maxNode.Left
 			}
 		}
 		return nil
@@ -98,9 +95,8 @@ func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, 
 
 	if compareRes > 0 {
 		return b.delete(node.Left, node, data)
-	} else {
-		return b.delete(node.Right, node, data)
 	}
+	return b.delete(node.Right, node, data)
 }
 
 // Insert inserts a data node into the binary search tree.
@@ -119,9 +115,6 @@ func (b *BinarySearchTree) Clear() {
 
 // Delete deletes a data node from binary search tree.
 func (b *BinarySearchTree) Delete(data interface{}) error {
-	if b.Root == nil {
-		return errors.New("could not find node")
-	}
 	return b.delete(b.Root, &BinaryTreeNode{Right: b.Root}, data)
 }
 
