@@ -2,6 +2,9 @@ package trees
 
 import (
 	"errors"
+	"fmt"
+	"math/rand"
+	"sort"
 	"testing"
 
 	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
@@ -127,6 +130,65 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		tree.Clear()
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{})
+	})
+
+	Convey("Test With Large Amount Of Numbers Should Work", t, func() {
+		tree := &BinarySearchTree{
+			Root:       nil,
+			Comparator: shared.IntComparator,
+		}
+		// Generate 10,000 unique numbers
+		numbers := make(map[int]bool)
+		for {
+			if len(numbers) == 10000 {
+				break
+			}
+			r := rand.Intn(500000)
+			numbers[r] = true
+		}
+		reference := make([]int, 0)
+		for value := range numbers {
+			tree.Insert(value)
+			reference = append(reference, value)
+		}
+		sorted := tree.ToSortedSlice()
+		sort.Ints(reference)
+		for i := range sorted {
+			if sorted[i].(int) != reference[i] {
+				So(false, ShouldBeTrue)
+			}
+		}
+
+		// Let's remove some fields.
+		tree.Delete(reference[10000/2])
+		sorted = tree.ToSortedSlice()
+		reference = append(reference[:10000/2], reference[10000/2+1:]...)
+		for i := range sorted {
+			if sorted[i].(int) != reference[i] {
+				fmt.Println(i, sorted[i], reference[i])
+				So(false, ShouldBeTrue)
+			}
+		}
+
+		tree.Delete(reference[10000/4])
+		sorted = tree.ToSortedSlice()
+		reference = append(reference[:10000/4], reference[10000/4+1:]...)
+		for i := range sorted {
+			if sorted[i].(int) != reference[i] {
+				fmt.Println(sorted[i], reference[i])
+				So(false, ShouldBeTrue)
+			}
+		}
+
+		tree.Delete(reference[10000/8])
+		sorted = tree.ToSortedSlice()
+		reference = append(reference[:10000/8], reference[10000/8+1:]...)
+		for i := range sorted {
+			if sorted[i].(int) != reference[i] {
+				fmt.Println(sorted[i], reference[i])
+				So(false, ShouldBeTrue)
+			}
+		}
 	})
 
 }
