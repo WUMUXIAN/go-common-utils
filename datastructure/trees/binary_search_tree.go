@@ -122,3 +122,31 @@ func (b *BinarySearchTree) Delete(data interface{}) error {
 func (b *BinarySearchTree) ToSortedSlice() []interface{} {
 	return b.inorderTraverse(b.Root)
 }
+
+// ConvertToDoubleLinkedList converts the BST to A Double Linked List.
+func (b *BinarySearchTree) ConvertToDoubleLinkedList() (head *BinaryTreeNode, tail *BinaryTreeNode) {
+	if b.Root == nil {
+		return nil, nil
+	}
+	b.convertToDoubleLinkedList(b.Root, &head, &tail)
+	return
+}
+
+func (b *BinarySearchTree) convertToDoubleLinkedList(node *BinaryTreeNode, head **BinaryTreeNode, tail **BinaryTreeNode) {
+	if node.Left != nil {
+		b.convertToDoubleLinkedList(node.Left, head, tail)
+	}
+
+	if (*tail) == nil {
+		(*tail) = node
+		(*head) = node
+	} else {
+		(*tail).Right = node
+		node.Left = (*tail)
+		(*tail) = node
+	}
+
+	if node.Right != nil {
+		b.convertToDoubleLinkedList(node.Right, head, tail)
+	}
+}

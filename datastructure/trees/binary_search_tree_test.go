@@ -191,4 +191,41 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 	})
 
+	Convey("Convert BST To Double Linked List Should Be OK", t, func() {
+		tree := &BinarySearchTree{
+			Root:       nil,
+			Comparator: shared.IntComparator,
+		}
+		h, t := tree.ConvertToDoubleLinkedList()
+		So(h, ShouldBeNil)
+		So(t, ShouldBeNil)
+		unsorted := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
+		for _, data := range unsorted {
+			tree.Insert(data)
+		}
+		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
+
+		head, tail := tree.ConvertToDoubleLinkedList()
+
+		headToTail := make([]interface{}, 0)
+		tailToHead := []interface{}{}
+		for {
+			if head == nil {
+				break
+			}
+			headToTail = append(headToTail, head.Data)
+			head = head.Right
+		}
+
+		for {
+			if tail == nil {
+				break
+			}
+			tailToHead = append(tailToHead, tail.Data)
+			tail = tail.Left
+		}
+		So(headToTail, ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
+		So(tailToHead, ShouldResemble, []interface{}{36, 35, 31, 30, 27, 25, 24, 20, 16, 15, 13, 10, 9, 5, 4})
+	})
+
 }
