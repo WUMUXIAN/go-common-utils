@@ -14,20 +14,28 @@ import (
 func TestBinarySearchTree(t *testing.T) {
 	Convey("Inorder Traverse Should Generate Sorted Values", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		unsorted := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
 		for _, data := range unsorted {
 			tree.Insert(data)
 		}
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
+		So(tree.GetSize(), ShouldEqual, 15)
+
+		So(tree.BreadthFirstTraverse(), ShouldResemble, []interface{}{20, 10, 30, 5, 15, 25, 35, 4, 9, 13, 16, 24, 27, 31, 36})
+		So(tree.DepthFirstTraverse(), ShouldResemble, []interface{}{20, 10, 5, 4, 9, 15, 13, 16, 30, 25, 24, 27, 35, 31, 36})
 	})
 
 	Convey("Delete Leaf Node Should Work", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		unsorted := []interface{}{2, 1, 3}
 		for _, data := range unsorted {
@@ -41,8 +49,10 @@ func TestBinarySearchTree(t *testing.T) {
 
 	Convey("Delete Node Without Right Child Should Work", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		unsorted := []interface{}{5, 3, 8, 2}
 		for _, data := range unsorted {
@@ -57,8 +67,10 @@ func TestBinarySearchTree(t *testing.T) {
 
 	Convey("Delete Node Without Left Child Should Work", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		unsorted := []interface{}{5, 2, 3, 8}
 		for _, data := range unsorted {
@@ -73,8 +85,10 @@ func TestBinarySearchTree(t *testing.T) {
 
 	Convey("Delete Node With Both Children Should Work", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		unsorted := []interface{}{5, 3, 2, 4, 8, 6, 9}
 		for _, data := range unsorted {
@@ -89,8 +103,10 @@ func TestBinarySearchTree(t *testing.T) {
 
 	Convey("Inserting and Removing In A Row Should Work", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		unsorted := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
 		for _, data := range unsorted {
@@ -121,8 +137,10 @@ func TestBinarySearchTree(t *testing.T) {
 
 	Convey("Clear Tree Should Remove All Nodes From the Tree", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		unsorted := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
 		for _, data := range unsorted {
@@ -134,8 +152,10 @@ func TestBinarySearchTree(t *testing.T) {
 
 	Convey("Test With Large Amount Of Numbers Should Work", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		// Generate 10,000 unique numbers
 		numbers := make(map[int]bool)
@@ -191,10 +211,12 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 	})
 
-	Convey("Convert BST To Double Linked List Should Be OK", t, func() {
+	Convey("Convert BST To Double Linked List And Convert Back Should Be OK", t, func() {
 		tree := &BinarySearchTree{
-			Root:       nil,
-			Comparator: shared.IntComparator,
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
 		}
 		h, t := tree.ConvertToDoubleLinkedList()
 		So(h, ShouldBeNil)
@@ -209,23 +231,28 @@ func TestBinarySearchTree(t *testing.T) {
 
 		headToTail := make([]interface{}, 0)
 		tailToHead := []interface{}{}
+		p := head
 		for {
-			if head == nil {
+			if p == nil {
 				break
 			}
-			headToTail = append(headToTail, head.Data)
-			head = head.Right
+			headToTail = append(headToTail, p.Data)
+			p = p.Right
 		}
 
+		p = tail
 		for {
-			if tail == nil {
+			if p == nil {
 				break
 			}
-			tailToHead = append(tailToHead, tail.Data)
-			tail = tail.Left
+			tailToHead = append(tailToHead, p.Data)
+			p = p.Left
 		}
 		So(headToTail, ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
 		So(tailToHead, ShouldResemble, []interface{}{36, 35, 31, 30, 27, 25, 24, 20, 16, 15, 13, 10, 9, 5, 4})
+
+		tree.ConvertFromDoubleLinkedList(head, tree.GetSize())
+		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
 	})
 
 }

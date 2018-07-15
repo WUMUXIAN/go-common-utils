@@ -2,14 +2,12 @@ package trees
 
 import (
 	"errors"
-
-	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
 )
 
 // BinarySearchTree defines a binary search tree
 type BinarySearchTree struct {
-	Root       *BinaryTreeNode
-	Comparator shared.Comparator
+	BinaryTree
+	size int
 }
 
 func (b *BinarySearchTree) insert(node *BinaryTreeNode, data interface{}) {
@@ -99,6 +97,11 @@ func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, 
 	return b.delete(node.Right, node, data)
 }
 
+// GetSize gets the size of the tree.
+func (b *BinarySearchTree) GetSize() int {
+	return b.size
+}
+
 // Insert inserts a data node into the binary search tree.
 func (b *BinarySearchTree) Insert(data interface{}) {
 	if b.Root == nil {
@@ -106,16 +109,22 @@ func (b *BinarySearchTree) Insert(data interface{}) {
 	} else {
 		b.insert(b.Root, data)
 	}
+	b.size++
 }
 
 // Clear clears the binary search tree.
 func (b *BinarySearchTree) Clear() {
 	b.Root = nil
+	b.size = 0
 }
 
 // Delete deletes a data node from binary search tree.
 func (b *BinarySearchTree) Delete(data interface{}) error {
-	return b.delete(b.Root, &BinaryTreeNode{Right: b.Root}, data)
+	err := b.delete(b.Root, &BinaryTreeNode{Right: b.Root}, data)
+	if err == nil {
+		b.size--
+	}
+	return err
 }
 
 // ToSortedSlice traverse the tree and store the data into a sorted slice
@@ -149,4 +158,26 @@ func (b *BinarySearchTree) convertToDoubleLinkedList(node *BinaryTreeNode, head 
 	if node.Right != nil {
 		b.convertToDoubleLinkedList(node.Right, head, tail)
 	}
+}
+
+// ConvertFromDoubleLinkedList converts double linked list back to
+func (b *BinarySearchTree) ConvertFromDoubleLinkedList(head *BinaryTreeNode, length int) {
+	b.Root = b.convertFromDoubleLinkedList(&head, length)
+}
+
+func (b *BinarySearchTree) convertFromDoubleLinkedList(head **BinaryTreeNode, length int) *BinaryTreeNode {
+	// This means we reach the most left
+	if length == 0 {
+		return nil
+	}
+
+	// Otherwise, we get the root for the left subtree.
+	left := b.convertFromDoubleLinkedList(head, length/2)
+	root := *head
+	root.Left = left
+	*head = (*head).Right
+
+	root.Right = b.convertFromDoubleLinkedList(head, length-length/2-1)
+
+	return root
 }
