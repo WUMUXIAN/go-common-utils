@@ -127,3 +127,8 @@ func (a *ArrayList) Clear() {
 func (a *ArrayList) ToSlice() []interface{} {
 	return a.elements[:a.size]
 }
+
+// Iterator gets the iterator
+func (a *ArrayList) Iterator() *Iterator {
+	return &Iterator{a, -1}
+}

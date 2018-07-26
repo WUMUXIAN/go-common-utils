@@ -189,6 +189,40 @@ func TestArrayList(t *testing.T) {
 		So(arrayList.Contains(1432), ShouldBeFalse)
 	})
 
+	it := arrayList.Iterator()
+	Convey("Test The Array List Iterator", t, func() {
+		Convey("Get The First Element By Moving Next Once And Call Value", func() {
+			So(it.Next(), ShouldBeTrue)
+			So(it.Value(), ShouldEqual, 3)
+		})
+		Convey("Move Next 5 Times Should Work As Expected", func() {
+			for i := 0; i < 5; i++ {
+				So(it.Next(), ShouldBeTrue)
+			}
+			So(it.Value(), ShouldEqual, 3)
+		})
+		Convey("Move To The End Should Work As Expected", func() {
+			it.End()
+			So(it.Next(), ShouldBeFalse)
+			So(it.Value(), ShouldBeNil)
+		})
+		Convey("Get The Last Element By Moving Prev Once And Call Value", func() {
+			So(it.Prev(), ShouldBeTrue)
+			So(it.Value(), ShouldEqual, 98)
+		})
+		Convey("Move Prev 5 Times Should Work As Expected", func() {
+			for i := 0; i < 5; i++ {
+				So(it.Prev(), ShouldBeTrue)
+			}
+			So(it.Value(), ShouldEqual, 93)
+		})
+		Convey("Move To The Begin Should Work As Expected", func() {
+			it.Begin()
+			So(it.Prev(), ShouldBeFalse)
+			So(it.Value(), ShouldBeNil)
+		})
+	})
+
 	arrayList.Clear()
 	Convey("Clear The Array List", t, func() {
 		Convey("Size Of Array List Should Be 0", func() {
