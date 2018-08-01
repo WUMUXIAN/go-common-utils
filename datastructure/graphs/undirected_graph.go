@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// UnDirectedGraph defines a undirected graph
 type UnDirectedGraph struct {
 	vertexCount      int
 	edgeCount        int
@@ -51,7 +52,7 @@ func (u *UnDirectedGraph) GetAdjacentVertices(vertex int) ([]int, error) {
 	return nil, errors.New("vertex not found")
 }
 
-// Get the degree of a given vertex
+// GetVertexDegree gets the degree of a given vertex
 func (u *UnDirectedGraph) GetVertexDegree(vertex int) (int, error) {
 	if u.isVertexValid(vertex) {
 		return len(u.adjacentVertices[vertex]), nil
@@ -59,6 +60,7 @@ func (u *UnDirectedGraph) GetVertexDegree(vertex int) (int, error) {
 	return 0, errors.New("vertex not found")
 }
 
+// Print prints the graph.
 func (u *UnDirectedGraph) Print() string {
 	res := ""
 	res += fmt.Sprintf("Vertex Count: %d, Edge Count: %d\n", u.vertexCount, u.edgeCount)
@@ -66,4 +68,77 @@ func (u *UnDirectedGraph) Print() string {
 		res += fmt.Sprintf("Vertex %d: %v\n", vertex, adjacentVertices)
 	}
 	return res
+}
+
+func (u *UnDirectedGraph) dfsRecursively(startingVertex int, visited *[]bool) (vertices []int) {
+	if !(*visited)[startingVertex] {
+		vertices = append(vertices, startingVertex)
+		(*visited)[startingVertex] = true
+	}
+
+	adjs, _ := u.GetAdjacentVertices(startingVertex)
+	for _, v := range adjs {
+		if !(*visited)[v] {
+			vertices = append(vertices, u.dfsRecursively(v, visited)...)
+		}
+	}
+	return
+}
+
+// DFSRecursively does a dfs search using rescursive method
+func (u *UnDirectedGraph) DFSRecursively(startingVertex int) (vertices []int, err error) {
+	if !u.isVertexValid(startingVertex) {
+		return nil, errors.New("vertex not found")
+	}
+	visited := make([]bool, u.vertexCount)
+	return u.dfsRecursively(startingVertex, &visited), nil
+}
+
+// DFS does a depth first search
+func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
+	if !u.isVertexValid(startingVertex) {
+		return nil, errors.New("vertex not found")
+	}
+	visited := make([]bool, u.vertexCount)
+	stack := []int{startingVertex}
+
+	for {
+		if len(stack) == 0 {
+			break
+		}
+		// pop stack
+		vertex := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		if !visited[vertex] {
+			vertices = append(vertices, vertex)
+			visited[vertex] = true
+		}
+
+		// get all its adjacent vertices.
+		adjs, _ := u.GetAdjacentVertices(vertex)
+		for i := len(adjs) - 1; i >= 0; i-- {
+			if !visited[adjs[i]] {
+				stack = append(stack, adjs[i])
+			}
+		}
+	}
+
+	return
+}
+
+// GetPath gets the path from startingVertex to endingVertex
+func (u *UnDirectedGraph) GetPath(startingVertex int, endingVertex int) (path []int, err error) {
+	if !u.isVertexValid(startingVertex) || !u.isVertexValid(endingVertex) {
+		return nil, errors.New("vertex not found")
+	}
+	vertices, _ := u.DFS(startingVertex)
+
+	for i := range vertices {
+		if vertices[i] == endingVertex {
+			path = vertices[:i+1]
+			return
+		}
+	}
+	return nil, errors.New("path not found")
 }
