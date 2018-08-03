@@ -71,10 +71,8 @@ func (u *UnDirectedGraph) Print() string {
 }
 
 func (u *UnDirectedGraph) dfsRecursively(startingVertex int, visited *[]bool) (vertices []int) {
-	if !(*visited)[startingVertex] {
-		vertices = append(vertices, startingVertex)
-		(*visited)[startingVertex] = true
-	}
+	vertices = append(vertices, startingVertex)
+	(*visited)[startingVertex] = true
 
 	adjs, _ := u.GetAdjacentVertices(startingVertex)
 	for _, v := range adjs {
@@ -110,6 +108,7 @@ func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
 		vertex := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 
+		// only if this vertex has not been visited, we mark it as visited and add into result.
 		if !visited[vertex] {
 			vertices = append(vertices, vertex)
 			visited[vertex] = true
@@ -118,6 +117,7 @@ func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
 		// get all its adjacent vertices.
 		adjs, _ := u.GetAdjacentVertices(vertex)
 		for i := len(adjs) - 1; i >= 0; i-- {
+			// only add to stack if it's not visited yet.
 			if !visited[adjs[i]] {
 				stack = append(stack, adjs[i])
 			}
@@ -127,12 +127,94 @@ func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
 	return
 }
 
-// GetPath gets the path from startingVertex to endingVertex
-func (u *UnDirectedGraph) GetPath(startingVertex int, endingVertex int) (path []int, err error) {
+// BFS does a breadth first search starting from startingVertex in graph
+func (u *UnDirectedGraph) BFS(startingVertex int) (vertices []int, err error) {
+	if !u.isVertexValid(startingVertex) {
+		return nil, errors.New("vertex not found")
+	}
+	visited := make([]bool, u.vertexCount)
+	queue := []int{startingVertex}
+
+	for {
+		if len(queue) == 0 {
+			break
+		}
+		// dequeue
+		vertex := queue[0]
+		queue = queue[1:]
+		if !visited[vertex] {
+			vertices = append(vertices, vertex)
+			visited[vertex] = true
+
+			// get all its adjacent vertices.
+			adjs, _ := u.GetAdjacentVertices(vertex)
+			for i := 0; i < len(adjs); i++ {
+				if !visited[adjs[i]] {
+					queue = append(queue, adjs[i])
+				}
+			}
+		}
+	}
+	return
+}
+
+// GetDFSPath gets the path from startingVertex to endingVertex using DFS
+func (u *UnDirectedGraph) GetDFSPath(startingVertex int, endingVertex int) (path []int, err error) {
 	if !u.isVertexValid(startingVertex) || !u.isVertexValid(endingVertex) {
 		return nil, errors.New("vertex not found")
 	}
-	vertices, _ := u.DFS(startingVertex)
+
+	pathFrom := make([]int, u.vertexCount)
+	visited := make([]bool, u.vertexCount)
+	stack := []int{startingVertex}
+
+	for {
+		if len(stack) == 0 {
+			break
+		}
+		// pop stack
+		vertex := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		// only if this vertex has not been visited, we mark it as visited and add into result.
+		if !visited[vertex] {
+			visited[vertex] = true
+		}
+
+		// get all its adjacent vertices.
+		adjs, _ := u.GetAdjacentVertices(vertex)
+		for i := len(adjs) - 1; i >= 0; i-- {
+			// only add to stack if it's not visited yet.
+			if !visited[adjs[i]] {
+				stack = append(stack, adjs[i])
+				pathFrom[adjs[i]] = vertex
+			}
+		}
+	}
+
+	if !visited[endingVertex] {
+		return nil, errors.New("path not found")
+	}
+
+	vertex := endingVertex
+	for {
+		path = append([]int{vertex}, path...)
+		vertex = pathFrom[vertex]
+		if vertex == startingVertex {
+			break
+		}
+	}
+	path = append([]int{vertex}, path...)
+
+	return
+}
+
+// GetMinimumPath gets the mimum path from startingVertex to endingVertex
+func (u *UnDirectedGraph) GetMinimumPath(startingVertex int, endingVertex int) (path []int, err error) {
+	if !u.isVertexValid(startingVertex) || !u.isVertexValid(endingVertex) {
+		return nil, errors.New("vertex not found")
+	}
+	vertices, _ := u.BFS(startingVertex)
 
 	for i := range vertices {
 		if vertices[i] == endingVertex {

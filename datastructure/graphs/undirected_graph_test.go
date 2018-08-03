@@ -125,27 +125,65 @@ Vertex 5: [2 1 3 4]
 
 	Convey("Get The Path Between Two Vertices In The Graph", t, func() {
 		Convey("Use Non-Existed Vertices Should Return Error", func() {
-			_, err := undirectedGraph.GetPath(-1, 2)
+			_, err := undirectedGraph.GetDFSPath(-1, 2)
 			So(err, ShouldBeError, errors.New("vertex not found"))
-			_, err = undirectedGraph.GetPath(0, 10)
+			_, err = undirectedGraph.GetDFSPath(0, 10)
 			So(err, ShouldBeError, errors.New("vertex not found"))
 		})
 		Convey("Starting From Vertex 0 And End At 5 Should Return 0 1 4 5", func() {
-			vertices, err := undirectedGraph.GetPath(0, 5)
+			vertices, err := undirectedGraph.GetDFSPath(0, 5)
 			So(err, ShouldBeNil)
 			So(vertices, ShouldResemble, []int{0, 1, 4, 5})
 		})
 		Convey("Starting From Vertex 2 And End At 3 Should Return 2 5 1 3", func() {
-			vertices, err := undirectedGraph.GetPath(2, 3)
+			vertices, err := undirectedGraph.GetDFSPath(2, 3)
 			So(err, ShouldBeNil)
 			So(vertices, ShouldResemble, []int{2, 5, 1, 0, 3})
 		})
 		Convey("Some Graphs There's No Path Between Two Vertex", func() {
 			udGraph := NewUnDirectedGraph(3)
 			udGraph.AddEdge(0, 1)
-			_, err := udGraph.GetPath(0, 2)
+			_, err := udGraph.GetDFSPath(0, 2)
 			So(err, ShouldBeError, errors.New("path not found"))
 		})
 	})
 
+	Convey("Breadth First Searcch The Graph", t, func() {
+		Convey("Starting From A Non-Existed Vertex Should Return Error", func() {
+			_, err := undirectedGraph.BFS(10)
+			So(err, ShouldBeError, errors.New("vertex not found"))
+			_, err = undirectedGraph.BFS(-1)
+			So(err, ShouldBeError, errors.New("vertex not found"))
+		})
+		Convey("Starting From Vertex 1 Should Return 1, 0, 4, 5, 2, 3", func() {
+			vertices, err := undirectedGraph.BFS(1)
+			So(err, ShouldBeNil)
+			So(vertices, ShouldResemble, []int{1, 0, 4, 5, 2, 3})
+		})
+	})
+
+	Convey("Get The Minimum Path Between Two Vertices In The Graph", t, func() {
+		Convey("Use Non-Existed Vertices Should Return Error", func() {
+			_, err := undirectedGraph.GetMinimumPath(-1, 2)
+			So(err, ShouldBeError, errors.New("vertex not found"))
+			_, err = undirectedGraph.GetMinimumPath(0, 10)
+			So(err, ShouldBeError, errors.New("vertex not found"))
+		})
+		Convey("Starting From Vertex 0 And End At 5 Should Return 0, 1, 5", func() {
+			vertices, err := undirectedGraph.GetMinimumPath(0, 5)
+			So(err, ShouldBeNil)
+			So(vertices, ShouldResemble, []int{0, 1, 5})
+		})
+		Convey("Starting From Vertex 2 And End At 3 Should Return 2, 5, 3", func() {
+			vertices, err := undirectedGraph.GetMinimumPath(2, 3)
+			So(err, ShouldBeNil)
+			So(vertices, ShouldResemble, []int{2, 5, 3})
+		})
+		Convey("Some Graphs There's No Path Between Two Vertex", func() {
+			udGraph := NewUnDirectedGraph(3)
+			udGraph.AddEdge(0, 1)
+			_, err := udGraph.GetMinimumPath(0, 2)
+			So(err, ShouldBeError, errors.New("path not found"))
+		})
+	})
 }
