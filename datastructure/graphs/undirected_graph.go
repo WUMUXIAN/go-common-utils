@@ -7,15 +7,19 @@ import (
 
 // UnDirectedGraph defines a undirected graph
 type UnDirectedGraph struct {
-	vertexCount      int
-	edgeCount        int
-	adjacentVertices [][]int
+	vertexCount        int
+	edgeCount          int
+	adjacentVertices   [][]int
+	visited            []bool
+	pathTo             []int
+	distanceTo         []int
+	connectedComponent [][]int
 }
 
 // NewUnDirectedGraph initalises a new undirected graph with vertexCount vertices.
 func NewUnDirectedGraph(vertexCount int) *UnDirectedGraph {
 	return &UnDirectedGraph{
-		vertexCount, 0, make([][]int, vertexCount),
+		vertexCount, 0, make([][]int, vertexCount), nil, nil, nil, nil,
 	}
 }
 
@@ -78,6 +82,7 @@ func (u *UnDirectedGraph) dfsRecursively(startingVertex int, visited *[]bool) (v
 	for _, v := range adjs {
 		if !(*visited)[v] {
 			vertices = append(vertices, u.dfsRecursively(v, visited)...)
+			u.pathTo[v] = startingVertex
 		}
 	}
 	return
@@ -88,8 +93,9 @@ func (u *UnDirectedGraph) DFSRecursively(startingVertex int) (vertices []int, er
 	if !u.isVertexValid(startingVertex) {
 		return nil, errors.New("vertex not found")
 	}
-	visited := make([]bool, u.vertexCount)
-	return u.dfsRecursively(startingVertex, &visited), nil
+	u.visited = make([]bool, u.vertexCount)
+	u.pathTo = make([]int, u.vertexCount)
+	return u.dfsRecursively(startingVertex, &u.visited), nil
 }
 
 // DFS does a depth first search
@@ -97,7 +103,8 @@ func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
 	if !u.isVertexValid(startingVertex) {
 		return nil, errors.New("vertex not found")
 	}
-	visited := make([]bool, u.vertexCount)
+	u.visited = make([]bool, u.vertexCount)
+	u.pathTo = make([]int, u.vertexCount)
 	stack := []int{startingVertex}
 
 	for {
@@ -109,17 +116,18 @@ func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
 		stack = stack[:len(stack)-1]
 
 		// only if this vertex has not been visited, we mark it as visited and add into result.
-		if !visited[vertex] {
+		if !u.visited[vertex] {
 			vertices = append(vertices, vertex)
-			visited[vertex] = true
+			u.visited[vertex] = true
 		}
 
 		// get all its adjacent vertices.
 		adjs, _ := u.GetAdjacentVertices(vertex)
 		for i := len(adjs) - 1; i >= 0; i-- {
 			// only add to stack if it's not visited yet.
-			if !visited[adjs[i]] {
+			if !u.visited[adjs[i]] {
 				stack = append(stack, adjs[i])
+				u.pathTo[adjs[i]] = vertex
 			}
 		}
 	}
@@ -132,8 +140,11 @@ func (u *UnDirectedGraph) BFS(startingVertex int) (vertices []int, err error) {
 	if !u.isVertexValid(startingVertex) {
 		return nil, errors.New("vertex not found")
 	}
-	visited := make([]bool, u.vertexCount)
+	u.visited = make([]bool, u.vertexCount)
+	u.pathTo = make([]int, u.vertexCount)
+	u.distanceTo = make([]int, u.vertexCount)
 	queue := []int{startingVertex}
+	u.visited[startingVertex] = true
 
 	for {
 		if len(queue) == 0 {
@@ -142,16 +153,16 @@ func (u *UnDirectedGraph) BFS(startingVertex int) (vertices []int, err error) {
 		// dequeue
 		vertex := queue[0]
 		queue = queue[1:]
-		if !visited[vertex] {
-			vertices = append(vertices, vertex)
-			visited[vertex] = true
+		vertices = append(vertices, vertex)
 
-			// get all its adjacent vertices.
-			adjs, _ := u.GetAdjacentVertices(vertex)
-			for i := 0; i < len(adjs); i++ {
-				if !visited[adjs[i]] {
-					queue = append(queue, adjs[i])
-				}
+		// get all its adjacent vertices.
+		adjs, _ := u.GetAdjacentVertices(vertex)
+		for i := 0; i < len(adjs); i++ {
+			if !u.visited[adjs[i]] {
+				queue = append(queue, adjs[i])
+				u.visited[adjs[i]] = true
+				u.pathTo[adjs[i]] = vertex
+				u.distanceTo[adjs[i]] = u.distanceTo[vertex] + 1
 			}
 		}
 	}
@@ -164,47 +175,18 @@ func (u *UnDirectedGraph) GetDFSPath(startingVertex int, endingVertex int) (path
 		return nil, errors.New("vertex not found")
 	}
 
-	pathTo := make([]int, u.vertexCount)
-	visited := make([]bool, u.vertexCount)
-	stack := []int{startingVertex}
+	u.pathTo = make([]int, u.vertexCount)
+	u.visited = make([]bool, u.vertexCount)
+	u.DFS(startingVertex)
 
-	for {
-		if len(stack) == 0 {
-			break
-		}
-		// pop stack
-		vertex := stack[len(stack)-1]
-		stack = stack[:len(stack)-1]
-
-		// only if this vertex has not been visited, we mark it as visited and add into result.
-		if !visited[vertex] {
-			visited[vertex] = true
-		}
-
-		// If this vertex is what we are looking for, stop the process.
-		if endingVertex == vertex {
-			break
-		}
-
-		// get all its adjacent vertices.
-		adjs, _ := u.GetAdjacentVertices(vertex)
-		for i := len(adjs) - 1; i >= 0; i-- {
-			// only add to stack if it's not visited yet.
-			if !visited[adjs[i]] {
-				stack = append(stack, adjs[i])
-				pathTo[adjs[i]] = vertex
-			}
-		}
-	}
-
-	if !visited[endingVertex] {
+	if !u.visited[endingVertex] {
 		return nil, errors.New("path not found")
 	}
 
 	vertex := endingVertex
 	for {
 		path = append([]int{vertex}, path...)
-		vertex = pathTo[vertex]
+		vertex = u.pathTo[vertex]
 		if vertex == startingVertex {
 			break
 		}
@@ -221,50 +203,128 @@ func (u *UnDirectedGraph) GetBFSPath(startingVertex int, endingVertex int) (path
 		return nil, errors.New("vertex not found")
 	}
 
-	pathTo := make([]int, u.vertexCount)
-	distanceTo := make([]int, u.vertexCount)
-	visited := make([]bool, u.vertexCount)
-	queue := []int{startingVertex}
-	visited[startingVertex] = true
-	// Start BFS search
-	for {
-		if len(queue) == 0 {
-			break
-		}
+	u.pathTo = make([]int, u.vertexCount)
+	u.distanceTo = make([]int, u.vertexCount)
+	u.visited = make([]bool, u.vertexCount)
 
-		// dequeue
-		vertex := queue[0]
-		queue = queue[1:]
+	u.BFS(startingVertex)
 
-		// We found it.
-		if vertex == endingVertex {
-			break
-		}
-
-		// Add all its adjacentVertices to queue.
-		adjs, _ := u.GetAdjacentVertices(vertex)
-		for _, v := range adjs {
-			if !visited[v] {
-				queue = append(queue, v)
-				visited[v] = true
-				pathTo[v] = vertex
-				distanceTo[v] = distanceTo[vertex] + 1
-			}
-		}
-	}
-
-	if !visited[endingVertex] {
+	if !u.visited[endingVertex] {
 		return nil, errors.New("path not found")
 	}
 
 	vertex := endingVertex
 	for {
-		if distanceTo[vertex] != 0 {
+		if u.distanceTo[vertex] != 0 {
 			path = append([]int{vertex}, path...)
-			vertex = pathTo[vertex]
+			vertex = u.pathTo[vertex]
 		} else {
 			path = append([]int{vertex}, path...)
 			break
+		}
+	}
+	return
+}
+
+// GetConnectedComponents gets all the connected component of a graph
+func (u *UnDirectedGraph) GetConnectedComponents() (connectedCompoent [][]int) {
+	u.visited = make([]bool, u.vertexCount)
+	u.connectedComponent = make([][]int, 0)
+
+	for i := 0; i < u.vertexCount; i++ {
+		if !u.visited[i] {
+			vertices, _ := u.DFS(i)
+			u.connectedComponent = append(u.connectedComponent, vertices)
+		}
+	}
+	return u.connectedComponent
+}
+
+func (u *UnDirectedGraph) selfLoop(vertex int) bool {
+	adjs, _ := u.GetAdjacentVertices(vertex)
+	for _, adj := range adjs {
+		if adj == vertex {
+			return true
+		}
+	}
+	return false
+}
+
+func (u *UnDirectedGraph) parallel(vertex1, vertex2 int) bool {
+	adjs, _ := u.GetAdjacentVertices(vertex1)
+	count := 0
+	for _, adj := range adjs {
+		if adj == vertex2 {
+			count++
+		}
+		if count == 2 {
+			return true
+		}
+	}
+	return false
+}
+
+// GetCyclicPath gets a cyclic path in the graph, if not found, return nil.
+func (u *UnDirectedGraph) GetCyclicPath() (path []int) {
+	// Self loop, can return directly.
+	for i := 0; i < u.vertexCount; i++ {
+		if u.selfLoop(i) {
+			return []int{i, i}
+		}
+	}
+
+	// Parallel edges, can return directly.
+	for i := 0; i < u.vertexCount-1; i++ {
+		for j := i + 1; j < u.vertexCount; j++ {
+			if u.parallel(i, j) {
+				return []int{i, j, i}
+			}
+		}
+	}
+
+	// Otherwise we run a DFS, to find loop.
+	u.visited = make([]bool, u.vertexCount)
+
+	// loop through all vertices
+	for i := 0; i < u.vertexCount; i++ {
+		// only if it's not visited yet.
+		if !u.visited[i] {
+			stack := []int{i}
+			u.pathTo = make([]int, u.vertexCount)
+			u.pathTo[i] = -1
+
+			// dfs
+		DFS:
+			for {
+				if len(stack) == 0 {
+					break
+				}
+
+				// pop
+				vertex := stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+
+				if !u.visited[vertex] {
+					u.visited[vertex] = true
+				}
+
+				// get all of its adjs.
+				adjs, _ := u.GetAdjacentVertices(vertex)
+				for _, adj := range adjs {
+					if !u.visited[adj] {
+						stack = append(stack, adj)
+						u.pathTo[adj] = vertex
+					} else if adj == i && u.pathTo[vertex] != i {
+						// if we have looped back to i, means we've found a loop, save the path and break
+						for v := vertex; v != i; v = u.pathTo[v] {
+							path = append([]int{v}, path...)
+						}
+						path = append([]int{i}, path...)
+						path = append(path, i)
+						break DFS
+					}
+				}
+			}
 		}
 	}
 	return

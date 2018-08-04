@@ -186,4 +186,55 @@ Vertex 5: [2 1 3 4]
 			So(err, ShouldBeError, errors.New("path not found"))
 		})
 	})
+
+	Convey("Get The Connected Component Of A Graph", t, func() {
+		Convey("Use A Fully Connected Graph", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 1)
+			uGraph.AddEdge(1, 2)
+			uGraph.AddEdge(2, 0)
+			uGraph.AddEdge(0, 3)
+			So(uGraph.GetConnectedComponents(), ShouldResemble, [][]int{{0, 1, 2, 3}})
+		})
+		Convey("Use A Graph That Has Two Sub-Graphes", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 1)
+			uGraph.AddEdge(2, 3)
+			So(uGraph.GetConnectedComponents(), ShouldResemble, [][]int{[]int{0, 1}, []int{2, 3}})
+		})
+		Convey("Use A Graph That Has Three Sub-Graphes", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 1)
+			So(uGraph.GetConnectedComponents(), ShouldResemble, [][]int{[]int{0, 1}, []int{2}, []int{3}})
+		})
+	})
+
+	Convey("Get Cyclic Path In A Graph", t, func() {
+		Convey("Use A Graph With Self Loop", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 0)
+			So(uGraph.GetCyclicPath(), ShouldResemble, []int{0, 0})
+		})
+		Convey("Use A Graph With Parallel Edge", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 1)
+			uGraph.AddEdge(1, 0)
+			So(uGraph.GetCyclicPath(), ShouldResemble, []int{0, 1, 0})
+		})
+		Convey("Use A Graph That Has Normal Cyclic Path", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 1)
+			uGraph.AddEdge(1, 2)
+			uGraph.AddEdge(2, 3)
+			uGraph.AddEdge(3, 0)
+			So(uGraph.GetCyclicPath(), ShouldResemble, []int{0, 3, 2, 1, 0})
+		})
+		Convey("Use A Graph That Does Not Have Normal Cyclic Path", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 1)
+			uGraph.AddEdge(1, 2)
+			uGraph.AddEdge(2, 3)
+			So(uGraph.GetCyclicPath(), ShouldResemble, []int(nil))
+		})
+	})
 }
