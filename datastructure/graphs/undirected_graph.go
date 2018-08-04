@@ -164,7 +164,7 @@ func (u *UnDirectedGraph) GetDFSPath(startingVertex int, endingVertex int) (path
 		return nil, errors.New("vertex not found")
 	}
 
-	pathFrom := make([]int, u.vertexCount)
+	pathTo := make([]int, u.vertexCount)
 	visited := make([]bool, u.vertexCount)
 	stack := []int{startingVertex}
 
@@ -181,13 +181,18 @@ func (u *UnDirectedGraph) GetDFSPath(startingVertex int, endingVertex int) (path
 			visited[vertex] = true
 		}
 
+		// If this vertex is what we are looking for, stop the process.
+		if endingVertex == vertex {
+			break
+		}
+
 		// get all its adjacent vertices.
 		adjs, _ := u.GetAdjacentVertices(vertex)
 		for i := len(adjs) - 1; i >= 0; i-- {
 			// only add to stack if it's not visited yet.
 			if !visited[adjs[i]] {
 				stack = append(stack, adjs[i])
-				pathFrom[adjs[i]] = vertex
+				pathTo[adjs[i]] = vertex
 			}
 		}
 	}
@@ -199,7 +204,7 @@ func (u *UnDirectedGraph) GetDFSPath(startingVertex int, endingVertex int) (path
 	vertex := endingVertex
 	for {
 		path = append([]int{vertex}, path...)
-		vertex = pathFrom[vertex]
+		vertex = pathTo[vertex]
 		if vertex == startingVertex {
 			break
 		}
@@ -209,18 +214,58 @@ func (u *UnDirectedGraph) GetDFSPath(startingVertex int, endingVertex int) (path
 	return
 }
 
-// GetMinimumPath gets the mimum path from startingVertex to endingVertex
-func (u *UnDirectedGraph) GetMinimumPath(startingVertex int, endingVertex int) (path []int, err error) {
+// GetBFSPath gets the BFS path from startingVertex to endingVertex.
+// Using BFS, the path is also the mimimum path (mimimum number of edges).
+func (u *UnDirectedGraph) GetBFSPath(startingVertex int, endingVertex int) (path []int, err error) {
 	if !u.isVertexValid(startingVertex) || !u.isVertexValid(endingVertex) {
 		return nil, errors.New("vertex not found")
 	}
-	vertices, _ := u.BFS(startingVertex)
 
-	for i := range vertices {
-		if vertices[i] == endingVertex {
-			path = vertices[:i+1]
-			return
+	pathTo := make([]int, u.vertexCount)
+	distanceTo := make([]int, u.vertexCount)
+	visited := make([]bool, u.vertexCount)
+	queue := []int{startingVertex}
+	visited[startingVertex] = true
+	// Start BFS search
+	for {
+		if len(queue) == 0 {
+			break
+		}
+
+		// dequeue
+		vertex := queue[0]
+		queue = queue[1:]
+
+		// We found it.
+		if vertex == endingVertex {
+			break
+		}
+
+		// Add all its adjacentVertices to queue.
+		adjs, _ := u.GetAdjacentVertices(vertex)
+		for _, v := range adjs {
+			if !visited[v] {
+				queue = append(queue, v)
+				visited[v] = true
+				pathTo[v] = vertex
+				distanceTo[v] = distanceTo[vertex] + 1
+			}
 		}
 	}
-	return nil, errors.New("path not found")
+
+	if !visited[endingVertex] {
+		return nil, errors.New("path not found")
+	}
+
+	vertex := endingVertex
+	for {
+		if distanceTo[vertex] != 0 {
+			path = append([]int{vertex}, path...)
+			vertex = pathTo[vertex]
+		} else {
+			path = append([]int{vertex}, path...)
+			break
+		}
+	}
+	return
 }
