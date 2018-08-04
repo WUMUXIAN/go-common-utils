@@ -329,3 +329,47 @@ func (u *UnDirectedGraph) GetCyclicPath() (path []int) {
 	}
 	return
 }
+
+// GetBipartiteParts gets the two parties if the graph is a bi-partite graph
+func (u *UnDirectedGraph) GetBipartiteParts() (parts [][]int) {
+	u.visited = make([]bool, u.vertexCount)
+	color := make([]bool, u.vertexCount)
+	for i := 0; i < u.vertexCount; i++ {
+		if !u.visited[i] {
+			stack := []int{i}
+
+			// run a dfs.
+			for {
+				if len(stack) == 0 {
+					break
+				}
+
+				vertex := stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+
+				if !u.visited[vertex] {
+					u.visited[vertex] = true
+				}
+
+				adjs, _ := u.GetAdjacentVertices(vertex)
+				for _, adj := range adjs {
+					if !u.visited[adj] {
+						color[adj] = !color[vertex]
+					} else if color[adj] == color[vertex] {
+						return nil
+					}
+				}
+			}
+
+		}
+	}
+	parts = make([][]int, 2)
+	for i, c := range color {
+		if c {
+			parts[0] = append(parts[0], i)
+		} else {
+			parts[1] = append(parts[1], i)
+		}
+	}
+	return
+}

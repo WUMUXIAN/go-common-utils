@@ -237,4 +237,23 @@ Vertex 5: [2 1 3 4]
 			So(uGraph.GetCyclicPath(), ShouldResemble, []int(nil))
 		})
 	})
+
+	Convey("Get Bipartite Parts Of A Graph", t, func() {
+		Convey("Use A Bipartite Graph", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 1)
+			uGraph.AddEdge(1, 2)
+			uGraph.AddEdge(0, 3)
+			uGraph.AddEdge(3, 2)
+			So(uGraph.GetBipartiteParts(), ShouldResemble, [][]int{[]int{1, 3}, []int{0, 2}})
+		})
+		Convey("Use A Non-Bipartite Graph", func() {
+			uGraph := NewUnDirectedGraph(4)
+			uGraph.AddEdge(0, 1)
+			uGraph.AddEdge(1, 2)
+			uGraph.AddEdge(1, 3)
+			uGraph.AddEdge(2, 3)
+			So(uGraph.GetBipartiteParts(), ShouldBeEmpty)
+		})
+	})
 }
