@@ -46,3 +46,15 @@ func (w *WeightedEdge) Compare(w1 WeightedEdge) int {
 func (w *WeightedEdge) Print() string {
 	return fmt.Sprintf("Edge (%d, %d), weight: %0.2f", w.vertex1, w.vertex2, w.weight)
 }
+
+// CompareEdges compares edges
+func CompareEdges(e1, e2 interface{}) int {
+	edge1, _ := e1.(WeightedEdge)
+	edge2, _ := e2.(WeightedEdge)
+	if edge1.GetWeight() > edge2.GetWeight() {
+		return 1
+	} else if edge1.GetWeight() < edge2.GetWeight() {
+		return -1
+	}
+	return 0
+}

@@ -3,6 +3,8 @@ package graphs
 import (
 	"errors"
 	"fmt"
+
+	"github.com/WUMUXIAN/go-common-utils/datastructure/trees"
 )
 
 // UnDirectedWeightGraph defines a undirected graph
@@ -14,12 +16,13 @@ type UnDirectedWeightGraph struct {
 	pathTo             []int
 	distanceTo         []int
 	connectedComponent [][]int
+	mimimumWeight      float64
 }
 
 // NewUnDirectedWeightedGraph initalises a new undirected weighted graph with vertexCount vertices.
 func NewUnDirectedWeightedGraph(vertexCount int) *UnDirectedWeightGraph {
 	return &UnDirectedWeightGraph{
-		vertexCount, 0, make([][]WeightedEdge, vertexCount), nil, nil, nil, nil,
+		vertexCount, 0, make([][]WeightedEdge, vertexCount), nil, nil, nil, nil, 0,
 	}
 }
 
@@ -387,4 +390,72 @@ func (u *UnDirectedWeightGraph) GetBipartiteParts() (parts [][]int) {
 		}
 	}
 	return
+}
+
+// LazyPrimMinimumSpanningTree gets the mimimum spanning tree of the give directed weighted graph.
+func (u *UnDirectedWeightGraph) LazyPrimMinimumSpanningTree() ([]WeightedEdge, float64) {
+	connectedC := u.GetConnectedComponents()
+	if len(connectedC) != 1 {
+		return nil, 0
+	}
+
+	priorityQueue := &trees.Heap{
+		HeapType:   trees.HeapTypeMin,
+		Comparator: CompareEdges,
+	}
+	u.mimimumWeight = 0
+	u.visited = make([]bool, u.vertexCount)
+	res := make([]WeightedEdge, 0)
+
+	for i := 0; i < u.vertexCount; i++ {
+		if !u.visited[i] {
+			u.prim(i, priorityQueue, &res)
+		}
+	}
+	return res, u.mimimumWeight
+}
+
+func (u *UnDirectedWeightGraph) scanAdjsAndEnqueue(vertex int, priorityQueue *trees.Heap) {
+	u.visited[vertex] = true
+	edges := u.adjacentVertices[vertex]
+	for _, edge := range edges {
+		// if the other vertex is already visited, this edge is already handled, skip.
+		w, _ := edge.GetOther(vertex)
+		if !u.visited[w] {
+			priorityQueue.Insert(edge)
+		}
+	}
+	return
+}
+
+func (u *UnDirectedWeightGraph) prim(vertex int, priorityQueue *trees.Heap, res *[]WeightedEdge) {
+	u.scanAdjsAndEnqueue(vertex, priorityQueue)
+	for {
+		if priorityQueue.Peek() == nil {
+			break
+		}
+
+		// get the top edge.
+		edge := priorityQueue.Pop().(WeightedEdge)
+		fmt.Println("Pop:", edge, "Current Queue:", priorityQueue.GetValues())
+		v := edge.GetVertex1()
+		w, _ := edge.GetOther(v)
+		// if two nodes are in the tree already, skip.
+		if u.visited[v] && u.visited[w] {
+			continue
+		}
+
+		// add this edge to the result
+		(*res) = append((*res), edge)
+		u.mimimumWeight += edge.GetWeight()
+
+		// for it two vertices, if they are not in the tree, add their adj-edges into the queue.
+		if !u.visited[v] {
+			u.scanAdjsAndEnqueue(v, priorityQueue)
+		}
+
+		if !u.visited[w] {
+			u.scanAdjsAndEnqueue(w, priorityQueue)
+		}
+	}
 }

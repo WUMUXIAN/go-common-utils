@@ -76,16 +76,16 @@ func (h *Heap) bubbleDown() {
 		nodeToReplace := left
 		// If we have a right child and it's better than left.
 		if right <= h.size {
-			if (h.HeapType == HeapTypeMax && h.Comparator(h.values[left], h.values[right]) < 0) ||
-				(h.HeapType == HeapTypeMax && h.Comparator(h.values[left], h.values[right]) < 0) {
+			if (h.HeapType == HeapTypeMax && h.Comparator(h.values[left], h.values[right]) <= 0) ||
+				(h.HeapType == HeapTypeMin && h.Comparator(h.values[left], h.values[right]) >= 0) {
 				nodeToReplace = right
 			}
 
 		}
 
 		// Replace.
-		if (h.HeapType == HeapTypeMax && h.Comparator(h.values[node], h.values[nodeToReplace]) < 0) ||
-			(h.HeapType == HeapTypeMin && h.Comparator(h.values[node], h.values[nodeToReplace]) > 0) {
+		if (h.HeapType == HeapTypeMax && h.Comparator(h.values[node], h.values[nodeToReplace]) <= 0) ||
+			(h.HeapType == HeapTypeMin && h.Comparator(h.values[node], h.values[nodeToReplace]) >= 0) {
 			h.values[0] = h.values[node]
 			h.values[node] = h.values[nodeToReplace]
 			h.values[nodeToReplace] = h.values[0]
@@ -150,14 +150,14 @@ func (h *Heap) InitHeap(values []interface{}) {
 			// if has left child and right child and right child is larger
 			// get the right child.
 			if node < h.size {
-				if (h.HeapType == HeapTypeMax && h.Comparator(h.values[node], h.values[node+1]) < 0) ||
-					(h.HeapType == HeapTypeMin && h.Comparator(h.values[node], h.values[node+1]) > 0) {
+				if (h.HeapType == HeapTypeMax && h.Comparator(h.values[node], h.values[node+1]) <= 0) ||
+					(h.HeapType == HeapTypeMin && h.Comparator(h.values[node], h.values[node+1]) >= 0) {
 					node++
 				}
 			}
 			// if current value is larger than the current biggest value in its children.
-			if (h.HeapType == HeapTypeMax && h.Comparator(h.values[0], h.values[node]) > 0) ||
-				(h.HeapType == HeapTypeMin && h.Comparator(h.values[0], h.values[node]) < 0) {
+			if (h.HeapType == HeapTypeMax && h.Comparator(h.values[0], h.values[node]) >= 0) ||
+				(h.HeapType == HeapTypeMin && h.Comparator(h.values[0], h.values[node]) <= 0) {
 				break
 			}
 			// Otherwise, we switch the value of the parent of current child.

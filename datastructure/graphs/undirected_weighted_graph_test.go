@@ -312,4 +312,44 @@ Vertex 5: [{5 2 3} {5 1 4} {5 3 5} {5 4 6}]
 			So(uGraph.GetBipartiteParts(), ShouldBeEmpty)
 		})
 	})
+
+	Convey("LazyPrimMinimumSpanningTree Algorithm", t, func() {
+		Convey("A Fully Connected Graph Should Have Minimum Spanning Tree(s)", func() {
+			uGraph := NewUnDirectedWeightedGraph(8)
+			uGraph.AddEdge(0, 7, 0.16)
+			uGraph.AddEdge(0, 2, 0.26)
+			uGraph.AddEdge(0, 4, 0.38)
+			uGraph.AddEdge(0, 6, 0.58)
+			uGraph.AddEdge(1, 2, 0.36)
+			uGraph.AddEdge(1, 3, 0.29)
+			uGraph.AddEdge(1, 5, 0.32)
+			uGraph.AddEdge(1, 7, 0.19)
+			uGraph.AddEdge(2, 3, 0.17)
+			uGraph.AddEdge(2, 7, 0.34)
+			uGraph.AddEdge(2, 6, 0.40)
+			uGraph.AddEdge(3, 6, 0.52)
+			uGraph.AddEdge(4, 5, 0.35)
+			uGraph.AddEdge(4, 6, 0.93)
+			uGraph.AddEdge(4, 7, 0.37)
+			uGraph.AddEdge(5, 7, 0.28)
+			edges, weight := uGraph.LazyPrimMinimumSpanningTree()
+			So(edges, ShouldResemble, []WeightedEdge{
+				WeightedEdge{vertex1: 0, vertex2: 7, weight: 0.16},
+				WeightedEdge{vertex1: 7, vertex2: 1, weight: 0.19},
+				WeightedEdge{vertex1: 0, vertex2: 2, weight: 0.26},
+				WeightedEdge{vertex1: 2, vertex2: 3, weight: 0.17},
+				WeightedEdge{vertex1: 7, vertex2: 5, weight: 0.28},
+				WeightedEdge{vertex1: 5, vertex2: 4, weight: 0.35},
+				WeightedEdge{vertex1: 2, vertex2: 6, weight: 0.4}})
+			So(weight, ShouldEqual, 1.81)
+		})
+		Convey("A Non-Connected Graph Should Have Minimum Spanning Tree(s)", func() {
+			uGraph := NewUnDirectedWeightedGraph(4)
+			uGraph.AddEdge(0, 1, 0.16)
+			uGraph.AddEdge(0, 2, 0.26)
+			edges, weight := uGraph.LazyPrimMinimumSpanningTree()
+			So(edges, ShouldHaveLength, 0)
+			So(weight, ShouldEqual, 0)
+		})
+	})
 }
