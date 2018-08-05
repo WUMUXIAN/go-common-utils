@@ -6,5 +6,4 @@ type Graph interface {
 	GetEdgeCount() int
 	AddEdge(vertex1, vertex2 int) error
 	GetAdjacentVertices(vertex int) ([]int, error)
-	GetVertexDegree(vertex int) (int, error)
 }

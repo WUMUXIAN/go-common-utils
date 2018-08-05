@@ -212,6 +212,27 @@ Vertex 5: [1 2 3 4]
 		})
 	})
 
+	Convey("Get The Connected Component Of A Graph", t, func() {
+		Convey("Use A Fully Connected Graph", func() {
+			graph := NewDirectedGraph(4)
+			graph.AddEdge(0, 1)
+			graph.AddEdge(1, 2)
+			graph.AddEdge(2, 3)
+			So(graph.GetConnectedComponents(), ShouldResemble, [][]int{{0, 1, 2, 3}})
+		})
+		Convey("Use A Graph That Has Two Sub-Graphes", func() {
+			graph := NewUnDirectedGraph(4)
+			graph.AddEdge(0, 1)
+			graph.AddEdge(2, 3)
+			So(graph.GetConnectedComponents(), ShouldResemble, [][]int{[]int{0, 1}, []int{2, 3}})
+		})
+		Convey("Use A Graph That Has Three Sub-Graphes", func() {
+			graph := NewUnDirectedGraph(4)
+			graph.AddEdge(0, 1)
+			So(graph.GetConnectedComponents(), ShouldResemble, [][]int{[]int{0, 1}, []int{2}, []int{3}})
+		})
+	})
+
 	Convey("Get Cyclic Path In A Graph", t, func() {
 		Convey("Use A Graph That Has Normal Cyclic Path", func() {
 			graph := NewDirectedGraph(4)
@@ -222,11 +243,13 @@ Vertex 5: [1 2 3 4]
 			So(graph.GetCyclicPath(), ShouldResemble, []int{0, 1, 2, 3, 0})
 		})
 		Convey("Use A Graph That Also Has Normal Cyclic Path", func() {
-			graph := NewDirectedGraph(5)
+			graph := NewDirectedGraph(6)
 			graph.AddEdge(0, 1)
 			graph.AddEdge(1, 2)
 			graph.AddEdge(2, 3)
 			graph.AddEdge(3, 4)
+			graph.AddEdge(3, 5)
+			graph.AddEdge(4, 5)
 			graph.AddEdge(4, 2)
 			So(graph.GetCyclicPath(), ShouldResemble, []int{2, 3, 4, 2})
 		})
@@ -255,6 +278,55 @@ Vertex 5: [1 2 3 4]
 			graph.AddEdge(1, 3)
 			graph.AddEdge(2, 3)
 			So(graph.GetBipartiteParts(), ShouldBeEmpty)
+		})
+	})
+
+	Convey("Get Order Of The Graph", t, func() {
+		graph := NewDirectedGraph(5)
+		graph.AddEdge(0, 1)
+		graph.AddEdge(1, 4)
+		graph.AddEdge(0, 2)
+		graph.AddEdge(2, 4)
+		graph.AddEdge(0, 3)
+		graph.AddEdge(3, 4)
+		pre, post, topology := graph.GetOrder()
+		Convey("Preorder Should Be 0, 1, 4, 2, 3", func() {
+			So(pre, ShouldResemble, []int{0, 1, 4, 2, 3})
+		})
+		Convey("PostOrder Should Be 4, 1, 2, 3, 0", func() {
+			So(post, ShouldResemble, []int{4, 1, 2, 3, 0})
+		})
+		Convey("TopologyOrder (ReversePostOrder) Should Be 0, 3, 2, 1, 4", func() {
+			So(topology, ShouldResemble, []int{0, 3, 2, 1, 4})
+		})
+
+		// Test again the topology order is correct.
+		graph = NewDirectedGraph(8)
+		graph.AddEdge(0, 1)
+		graph.AddEdge(1, 2)
+		graph.AddEdge(2, 5)
+		graph.AddEdge(5, 7)
+		graph.AddEdge(1, 3)
+		graph.AddEdge(3, 5)
+		graph.AddEdge(0, 4)
+		graph.AddEdge(4, 6)
+		graph.AddEdge(6, 7)
+		_, _, topology = graph.GetOrder()
+		Convey("TopologyOrder (ReversePostOrder) Should Be 0, 4, 6, 1, 3, 2, 5, 7", func() {
+			So(topology, ShouldResemble, []int{0, 4, 6, 1, 3, 2, 5, 7})
+		})
+
+		// Test when there's a cyclic path in the graph.
+		graph = NewDirectedGraph(4)
+		graph.AddEdge(0, 1)
+		graph.AddEdge(1, 2)
+		graph.AddEdge(2, 3)
+		graph.AddEdge(3, 1)
+		pre, post, topology = graph.GetOrder()
+		Convey("When Graph Has Cyclic Path, Topology Order Should Return Nil", func() {
+			So(pre, ShouldResemble, []int{0, 1, 2, 3})
+			So(post, ShouldResemble, []int{3, 2, 1, 0})
+			So(topology, ShouldBeNil)
 		})
 	})
 }

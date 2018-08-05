@@ -227,7 +227,7 @@ Vertex 5: [2 1 3 4]
 			uGraph.AddEdge(1, 2)
 			uGraph.AddEdge(2, 3)
 			uGraph.AddEdge(3, 1)
-			So(uGraph.GetCyclicPath(), ShouldResemble, []int{1, 3, 2, 1})
+			So(uGraph.GetCyclicPath(), ShouldResemble, []int{1, 2, 3, 1})
 		})
 		Convey("Use A Graph That Does Not Have Normal Cyclic Path", func() {
 			uGraph := NewUnDirectedGraph(4)

@@ -282,52 +282,36 @@ func (u *UnDirectedGraph) GetCyclicPath() (path []int) {
 		}
 	}
 
-	// Otherwise we run a DFS, to find loop.
 	u.visited = make([]bool, u.vertexCount)
-
-	// loop through all vertices
+	u.pathTo = make([]int, u.vertexCount)
 	for i := 0; i < u.vertexCount; i++ {
-		// only if it's not visited yet.
-		if !u.visited[i] {
-			stack := []int{i}
-			u.pathTo = make([]int, u.vertexCount)
-			u.pathTo[i] = -1
-
-			// dfs
-		DFS:
-			for {
-				if len(stack) == 0 {
-					break
-				}
-
-				// pop
-				vertex := stack[len(stack)-1]
-				stack = stack[:len(stack)-1]
-
-				if !u.visited[vertex] {
-					u.visited[vertex] = true
-				}
-
-				// get all of its adjs.
-				adjs, _ := u.GetAdjacentVertices(vertex)
-				for _, adj := range adjs {
-					if !u.visited[adj] {
-						stack = append(stack, adj)
-						u.pathTo[adj] = vertex
-					} else if u.pathTo[vertex] != adj {
-						// if we have looped back to i, means we've found a loop, save the path and break
-						for v := vertex; v != adj; v = u.pathTo[v] {
-							path = append([]int{v}, path...)
-						}
-						path = append([]int{adj}, path...)
-						path = append(path, adj)
-						break DFS
-					}
-				}
-			}
+		if !u.visited[i] && len(path) == 0 {
+			u.dfs(i, -1, &path)
 		}
 	}
 	return
+}
+
+func (u *UnDirectedGraph) dfs(vertex int, pathToVertex int, path *[]int) {
+	u.visited[vertex] = true
+	adjs, _ := u.GetAdjacentVertices(vertex)
+	for _, adj := range adjs {
+		// If we already found the cyclic path, don't do anything but quit the recursive loop
+		if len(*path) != 0 {
+			return
+		}
+		if !u.visited[adj] {
+			u.pathTo[adj] = vertex
+			u.dfs(adj, vertex, path)
+		} else if pathToVertex != adj {
+			// found it
+			for v := vertex; v != adj; v = u.pathTo[v] {
+				(*path) = append([]int{v}, (*path)...)
+			}
+			(*path) = append([]int{adj}, (*path)...)
+			(*path) = append((*path), adj)
+		}
+	}
 }
 
 // GetBipartiteParts gets the two parties if the graph is a bi-partite graph
@@ -355,6 +339,7 @@ func (u *UnDirectedGraph) GetBipartiteParts() (parts [][]int) {
 				for _, adj := range adjs {
 					if !u.visited[adj] {
 						color[adj] = !color[vertex]
+						stack = append(stack, adj)
 					} else if color[adj] == color[vertex] {
 						return nil
 					}
