@@ -437,7 +437,6 @@ func (u *UnDirectedWeightGraph) prim(vertex int, priorityQueue *trees.Heap, res 
 
 		// get the top edge.
 		edge := priorityQueue.Pop().(WeightedEdge)
-		fmt.Println("Pop:", edge, "Current Queue:", priorityQueue.GetValues())
 		v := edge.GetVertex1()
 		w, _ := edge.GetOther(v)
 		// if two nodes are in the tree already, skip.
@@ -449,11 +448,7 @@ func (u *UnDirectedWeightGraph) prim(vertex int, priorityQueue *trees.Heap, res 
 		(*res) = append((*res), edge)
 		u.mimimumWeight += edge.GetWeight()
 
-		// for it two vertices, if they are not in the tree, add their adj-edges into the queue.
-		if !u.visited[v] {
-			u.scanAdjsAndEnqueue(v, priorityQueue)
-		}
-
+		// for the other vertex, if it's not visited yet, add its adjs into the queue.
 		if !u.visited[w] {
 			u.scanAdjsAndEnqueue(w, priorityQueue)
 		}

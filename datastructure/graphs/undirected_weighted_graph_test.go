@@ -351,5 +351,18 @@ Vertex 5: [{5 2 3} {5 1 4} {5 3 5} {5 4 6}]
 			So(edges, ShouldHaveLength, 0)
 			So(weight, ShouldEqual, 0)
 		})
+		Convey("A Connected Graph With Same Weights Should Have Minimum Spanning Tree(s)", func() {
+			uGraph := NewUnDirectedWeightedGraph(4)
+			uGraph.AddEdge(0, 1, 0.1)
+			uGraph.AddEdge(0, 2, 0.1)
+			uGraph.AddEdge(0, 3, 0.1)
+			edges, weight := uGraph.LazyPrimMinimumSpanningTree()
+			So(edges, ShouldResemble, []WeightedEdge{
+				WeightedEdge{vertex1: 0, vertex2: 1, weight: 0.1},
+				WeightedEdge{vertex1: 0, vertex2: 2, weight: 0.1},
+				WeightedEdge{vertex1: 0, vertex2: 3, weight: 0.1},
+			})
+			So(fmt.Sprintf("%0.2f", weight), ShouldEqual, "0.30")
+		})
 	})
 }
