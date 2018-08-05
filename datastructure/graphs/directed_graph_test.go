@@ -289,7 +289,7 @@ Vertex 5: [1 2 3 4]
 		graph.AddEdge(2, 4)
 		graph.AddEdge(0, 3)
 		graph.AddEdge(3, 4)
-		pre, post, topology := graph.GetOrder()
+		pre, post, reversePost := graph.GetOrder()
 		Convey("Preorder Should Be 0, 1, 4, 2, 3", func() {
 			So(pre, ShouldResemble, []int{0, 1, 4, 2, 3})
 		})
@@ -297,7 +297,7 @@ Vertex 5: [1 2 3 4]
 			So(post, ShouldResemble, []int{4, 1, 2, 3, 0})
 		})
 		Convey("TopologyOrder (ReversePostOrder) Should Be 0, 3, 2, 1, 4", func() {
-			So(topology, ShouldResemble, []int{0, 3, 2, 1, 4})
+			So(reversePost, ShouldResemble, []int{0, 3, 2, 1, 4})
 		})
 
 		// Test again the topology order is correct.
@@ -311,7 +311,7 @@ Vertex 5: [1 2 3 4]
 		graph.AddEdge(0, 4)
 		graph.AddEdge(4, 6)
 		graph.AddEdge(6, 7)
-		_, _, topology = graph.GetOrder()
+		topology := graph.GetTopologyOrder()
 		Convey("TopologyOrder (ReversePostOrder) Should Be 0, 4, 6, 1, 3, 2, 5, 7", func() {
 			So(topology, ShouldResemble, []int{0, 4, 6, 1, 3, 2, 5, 7})
 		})
@@ -322,11 +322,67 @@ Vertex 5: [1 2 3 4]
 		graph.AddEdge(1, 2)
 		graph.AddEdge(2, 3)
 		graph.AddEdge(3, 1)
-		pre, post, topology = graph.GetOrder()
+		topology = graph.GetTopologyOrder()
 		Convey("When Graph Has Cyclic Path, Topology Order Should Return Nil", func() {
-			So(pre, ShouldResemble, []int{0, 1, 2, 3})
-			So(post, ShouldResemble, []int{3, 2, 1, 0})
 			So(topology, ShouldBeNil)
+		})
+	})
+
+	Convey("Get Strongly Connected Components Of A Graph", t, func() {
+		graph := NewDirectedGraph(5)
+		graph.AddEdge(0, 1)
+		graph.AddEdge(1, 4)
+		graph.AddEdge(0, 2)
+		graph.AddEdge(2, 4)
+		graph.AddEdge(0, 3)
+		graph.AddEdge(3, 4)
+		Convey("Strongly Connected Components Should [[4] [3] [2] [1] [0]]", func() {
+			So(graph.GetStronglyConnectedComponent(), ShouldResemble, [][]int{[]int{4}, []int{3}, []int{2}, []int{1}, []int{0}})
+		})
+
+		graph = NewDirectedGraph(2)
+		graph.AddEdge(0, 1)
+		graph.AddEdge(1, 0)
+		Convey("Strongly Connected Components Should [[0, 1]]", func() {
+			So(graph.GetStronglyConnectedComponent(), ShouldResemble, [][]int{[]int{0, 1}})
+		})
+
+		graph = NewDirectedGraph(4)
+		graph.AddEdge(0, 1)
+		graph.AddEdge(1, 2)
+		graph.AddEdge(2, 3)
+		graph.AddEdge(2, 0)
+		graph.AddEdge(3, 0)
+		Convey("Strongly Connected Components Should [[0, 1, 2, 3]]", func() {
+			So(graph.GetStronglyConnectedComponent(), ShouldResemble, [][]int{[]int{0, 1, 2, 3}})
+		})
+
+		graph = NewDirectedGraph(4)
+		graph.AddEdge(0, 1)
+		graph.AddEdge(1, 2)
+		graph.AddEdge(2, 0)
+		Convey("Strongly Connected Components Should [[3] [0, 1, 2]]", func() {
+			So(graph.GetStronglyConnectedComponent(), ShouldResemble, [][]int{[]int{3}, []int{0, 1, 2}})
+		})
+	})
+
+	Convey("Get Transtive Clousure From A Graph", t, func() {
+		graph := NewDirectedGraph(4)
+		graph.AddEdge(0, 1)
+		graph.AddEdge(1, 2)
+		graph.AddEdge(2, 0)
+		compoents := graph.GetStronglyConnectedComponent()
+		tc := NewTransitiveClousure(graph)
+		Convey("Transtive Clousure Should Be Correct", func() {
+			So(tc.graph, ShouldResemble, [][]bool{[]bool{true, true, true, false}, []bool{true, true, true, false}, []bool{true, true, true, false}, []bool{false, false, false, true}})
+		})
+		Convey("Check Against Connected Compoents Should Be Correct", func() {
+			So(compoents, ShouldResemble, [][]int{[]int{3}, []int{0, 1, 2}})
+			So(tc.graph[compoents[1][0]][compoents[1][2]], ShouldBeTrue)
+			So(tc.graph[compoents[1][2]][compoents[1][0]], ShouldBeTrue)
+			So(tc.graph[compoents[1][2]][compoents[0][0]], ShouldBeFalse)
+			So(tc.graph[compoents[1][1]][compoents[0][0]], ShouldBeFalse)
+			So(tc.graph[compoents[1][0]][compoents[0][0]], ShouldBeFalse)
 		})
 	})
 }

@@ -229,11 +229,12 @@ func (u *UnDirectedGraph) GetBFSPath(startingVertex int, endingVertex int) (path
 // GetConnectedComponents gets all the connected component of a graph
 func (u *UnDirectedGraph) GetConnectedComponents() (connectedCompoent [][]int) {
 	u.visited = make([]bool, u.vertexCount)
+	u.pathTo = make([]int, u.vertexCount)
 	u.connectedComponent = make([][]int, 0)
 
 	for i := 0; i < u.vertexCount; i++ {
 		if !u.visited[i] {
-			vertices, _ := u.DFS(i)
+			vertices := u.dfsRecursively(i, &u.visited)
 			u.connectedComponent = append(u.connectedComponent, vertices)
 		}
 	}

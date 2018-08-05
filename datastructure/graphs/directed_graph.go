@@ -7,10 +7,32 @@ import (
 // DirectedGraph defines a undirected graph
 type DirectedGraph struct {
 	UnDirectedGraph
-	indegree      []int
-	preorder      []int
-	postorder     []int
-	topologyOrder []int
+	indegree    []int
+	preorder    []int
+	postorder   []int
+	reversePost []int
+}
+
+// TransitiveClousure presents a transitive clousure.
+type TransitiveClousure struct {
+	graph [][]bool
+}
+
+// NewTransitiveClousure creates a transitive clousure from a given directed graph.
+func NewTransitiveClousure(dGraph *DirectedGraph) *TransitiveClousure {
+	tc := &TransitiveClousure{make([][]bool, dGraph.GetVertexCount())}
+	for i := 0; i < dGraph.GetVertexCount(); i++ {
+		tc.graph[i] = make([]bool, dGraph.GetVertexCount())
+		for j := 0; j < dGraph.GetVertexCount(); j++ {
+			if i == j {
+				tc.graph[i][j] = true
+			} else {
+				_, err := dGraph.GetBFSPath(j, i)
+				tc.graph[i][j] = (err == nil)
+			}
+		}
+	}
+	return tc
 }
 
 // NewDirectedGraph initalises a new directed graph with vertexCount vertices.
@@ -73,11 +95,21 @@ func (u *DirectedGraph) GetCyclicPath() (path []int) {
 	return
 }
 
+// GetTopologyOrder get topology order.
+func (u *DirectedGraph) GetTopologyOrder() (topology []int) {
+	// if we have cyclic path, the topology order doesn't make sense.
+	if len(u.GetCyclicPath()) != 0 {
+		return
+	}
+	_, _, topology = u.GetOrder()
+	return
+}
+
 // GetOrder get vertex orders (pre, post and reverse-post[topology])
-func (u *DirectedGraph) GetOrder() (pre, post, topology []int) {
+func (u *DirectedGraph) GetOrder() (pre, post, reversePost []int) {
 	u.preorder = make([]int, 0)
 	u.postorder = make([]int, 0)
-	u.topologyOrder = make([]int, 0)
+	u.reversePost = make([]int, 0)
 	u.visited = make([]bool, u.vertexCount)
 
 	for i := 0; i < u.vertexCount; i++ {
@@ -86,11 +118,7 @@ func (u *DirectedGraph) GetOrder() (pre, post, topology []int) {
 		}
 	}
 
-	// if we have cyclic path, the topology order doesn't make sense.
-	if len(u.GetCyclicPath()) != 0 {
-		u.topologyOrder = nil
-	}
-	return u.preorder, u.postorder, u.topologyOrder
+	return u.preorder, u.postorder, u.reversePost
 }
 
 func (u *DirectedGraph) dfsForOrder(vertex int) {
@@ -104,7 +132,7 @@ func (u *DirectedGraph) dfsForOrder(vertex int) {
 		}
 	}
 
-	u.topologyOrder = append([]int{vertex}, u.topologyOrder...)
+	u.reversePost = append([]int{vertex}, u.reversePost...)
 	u.postorder = append(u.postorder, vertex)
 }
 
@@ -135,4 +163,28 @@ func (u *DirectedGraph) dfsForCyclicPath(vertex int, inStack *[]bool, path *[]in
 
 	// When we reach here, the current path has reach an end, pop it from the stack
 	(*inStack)[vertex] = false
+}
+
+// GetStronglyConnectedComponent gets all strongly connected component, each component contains a set of vertices
+// It uses Kosaraju’s algorithm. (Reverse Graph -> Reverse Post Order -> DFS)
+func (u *DirectedGraph) GetStronglyConnectedComponent() (stronglyConnectedComponent [][]int) {
+	stronglyConnectedComponent = make([][]int, 0)
+
+	// Get the reversed graph.
+	graph := u.Reverse()
+
+	// Get the post-reverse order of the reversed graph.
+	_, _, postReversed := graph.GetOrder()
+
+	u.visited = make([]bool, u.vertexCount)
+	u.pathTo = make([]int, u.vertexCount)
+	// Do a DFS using the postReversed order
+	for _, v := range postReversed {
+		if !u.visited[v] {
+			vertices := u.dfsRecursively(v, &u.visited)
+			stronglyConnectedComponent = append(stronglyConnectedComponent, vertices)
+		}
+	}
+
+	return
 }
