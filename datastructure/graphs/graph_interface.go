@@ -4,6 +4,6 @@ package graphs
 type Graph interface {
 	GetVertexCount() int
 	GetEdgeCount() int
-	AddEdge(vertex1, vertex2 int) error
 	GetAdjacentVertices(vertex int) ([]int, error)
+	GetBFSPath(verext1, vertex2 int) ([]int, error)
 }

@@ -8,7 +8,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestUnDirectedWeightGraph(t *testing.T) {
+func TestUnDirectedWeightedGraph(t *testing.T) {
 	unDirectedWeightedGraph := NewUnDirectedWeightedGraph(6)
 	Convey("Create A New UnDirected Weighted Graph With 6 Verteices", t, func() {
 		Convey("The Created Graph Should Have 6 Vertices And 0 Edges", func() {

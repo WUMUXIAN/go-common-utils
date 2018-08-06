@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-// DirectedGraph defines a undirected graph
+// DirectedGraph defines a directed graph
 type DirectedGraph struct {
 	UnDirectedGraph
 	indegree    []int
@@ -19,7 +19,7 @@ type TransitiveClousure struct {
 }
 
 // NewTransitiveClousure creates a transitive clousure from a given directed graph.
-func NewTransitiveClousure(dGraph *DirectedGraph) *TransitiveClousure {
+func NewTransitiveClousure(dGraph Graph) *TransitiveClousure {
 	tc := &TransitiveClousure{make([][]bool, dGraph.GetVertexCount())}
 	for i := 0; i < dGraph.GetVertexCount(); i++ {
 		tc.graph[i] = make([]bool, dGraph.GetVertexCount())
@@ -44,37 +44,37 @@ func NewDirectedGraph(vertexCount int) *DirectedGraph {
 }
 
 // AddEdge adds an edge to the graph
-func (u *DirectedGraph) AddEdge(vertex1, vertex2 int) error {
-	if u.isVertexValid(vertex1) && u.isVertexValid(vertex2) {
-		u.adjacentVertices[vertex1] = append(u.adjacentVertices[vertex1], vertex2)
-		u.edgeCount++
-		u.indegree[vertex2]++
+func (d *DirectedGraph) AddEdge(vertex1, vertex2 int) error {
+	if d.isVertexValid(vertex1) && d.isVertexValid(vertex2) {
+		d.adjacentVertices[vertex1] = append(d.adjacentVertices[vertex1], vertex2)
+		d.edgeCount++
+		d.indegree[vertex2]++
 		return nil
 	}
 	return errors.New("vertex not found")
 }
 
 // GetVertexInDegree gets in degree for a given vertex
-func (u *DirectedGraph) GetVertexInDegree(vertex int) (int, error) {
-	if u.isVertexValid(vertex) {
-		return u.indegree[vertex], nil
+func (d *DirectedGraph) GetVertexInDegree(vertex int) (int, error) {
+	if d.isVertexValid(vertex) {
+		return d.indegree[vertex], nil
 	}
 	return 0, errors.New("vertex not found")
 }
 
 // GetVertexOutDegree gets the out degree of a given vertex
-func (u *DirectedGraph) GetVertexOutDegree(vertex int) (int, error) {
-	if u.isVertexValid(vertex) {
-		return len(u.adjacentVertices[vertex]), nil
+func (d *DirectedGraph) GetVertexOutDegree(vertex int) (int, error) {
+	if d.isVertexValid(vertex) {
+		return len(d.adjacentVertices[vertex]), nil
 	}
 	return 0, errors.New("vertex not found")
 }
 
 // Reverse reversees a directed graph, a.k.a revere all edges.
-func (u *DirectedGraph) Reverse() (uv *DirectedGraph) {
-	uv = NewDirectedGraph(u.vertexCount)
-	for i := 0; i < u.vertexCount; i++ {
-		for _, adj := range u.adjacentVertices[i] {
+func (d *DirectedGraph) Reverse() (uv *DirectedGraph) {
+	uv = NewDirectedGraph(d.vertexCount)
+	for i := 0; i < d.vertexCount; i++ {
+		for _, adj := range d.adjacentVertices[i] {
 			uv.AddEdge(adj, i)
 		}
 	}
@@ -82,78 +82,78 @@ func (u *DirectedGraph) Reverse() (uv *DirectedGraph) {
 }
 
 // GetCyclicPath gets a cyclic path in the graph, if not found, return nil.
-func (u *DirectedGraph) GetCyclicPath() (path []int) {
+func (d *DirectedGraph) GetCyclicPath() (path []int) {
 	// loop through all vertices
-	u.visited = make([]bool, u.vertexCount)
-	u.pathTo = make([]int, u.vertexCount)
-	marked := make([]bool, u.vertexCount)
-	for i := 0; i < u.vertexCount; i++ {
-		if !u.visited[i] && len(path) == 0 {
-			u.dfsForCyclicPath(i, &marked, &path)
+	d.visited = make([]bool, d.vertexCount)
+	d.pathTo = make([]int, d.vertexCount)
+	marked := make([]bool, d.vertexCount)
+	for i := 0; i < d.vertexCount; i++ {
+		if !d.visited[i] && len(path) == 0 {
+			d.dfsForCyclicPath(i, &marked, &path)
 		}
 	}
 	return
 }
 
 // GetTopologyOrder get topology order.
-func (u *DirectedGraph) GetTopologyOrder() (topology []int) {
+func (d *DirectedGraph) GetTopologyOrder() (topology []int) {
 	// if we have cyclic path, the topology order doesn't make sense.
-	if len(u.GetCyclicPath()) != 0 {
+	if len(d.GetCyclicPath()) != 0 {
 		return
 	}
-	_, _, topology = u.GetOrder()
+	_, _, topology = d.GetOrder()
 	return
 }
 
 // GetOrder get vertex orders (pre, post and reverse-post[topology])
-func (u *DirectedGraph) GetOrder() (pre, post, reversePost []int) {
-	u.preorder = make([]int, 0)
-	u.postorder = make([]int, 0)
-	u.reversePost = make([]int, 0)
-	u.visited = make([]bool, u.vertexCount)
+func (d *DirectedGraph) GetOrder() (pre, post, reversePost []int) {
+	d.preorder = make([]int, 0)
+	d.postorder = make([]int, 0)
+	d.reversePost = make([]int, 0)
+	d.visited = make([]bool, d.vertexCount)
 
-	for i := 0; i < u.vertexCount; i++ {
-		if !u.visited[i] {
-			u.dfsForOrder(i)
+	for i := 0; i < d.vertexCount; i++ {
+		if !d.visited[i] {
+			d.dfsForOrder(i)
 		}
 	}
 
-	return u.preorder, u.postorder, u.reversePost
+	return d.preorder, d.postorder, d.reversePost
 }
 
-func (u *DirectedGraph) dfsForOrder(vertex int) {
-	u.visited[vertex] = true
+func (d *DirectedGraph) dfsForOrder(vertex int) {
+	d.visited[vertex] = true
 
-	u.preorder = append(u.preorder, vertex)
-	adjs, _ := u.GetAdjacentVertices(vertex)
+	d.preorder = append(d.preorder, vertex)
+	adjs, _ := d.GetAdjacentVertices(vertex)
 	for _, adj := range adjs {
-		if !u.visited[adj] {
-			u.dfsForOrder(adj)
+		if !d.visited[adj] {
+			d.dfsForOrder(adj)
 		}
 	}
 
-	u.reversePost = append([]int{vertex}, u.reversePost...)
-	u.postorder = append(u.postorder, vertex)
+	d.reversePost = append([]int{vertex}, d.reversePost...)
+	d.postorder = append(d.postorder, vertex)
 }
 
-func (u *DirectedGraph) dfsForCyclicPath(vertex int, inStack *[]bool, path *[]int) {
-	u.visited[vertex] = true
+func (d *DirectedGraph) dfsForCyclicPath(vertex int, inStack *[]bool, path *[]int) {
+	d.visited[vertex] = true
 
 	// put this vertex in stack.
 	(*inStack)[vertex] = true
-	adjs, _ := u.GetAdjacentVertices(vertex)
+	adjs, _ := d.GetAdjacentVertices(vertex)
 	for _, adj := range adjs {
 		// We have the path found, so we should return only.
 		if len(*path) != 0 {
 			return
 		}
-		if !u.visited[adj] {
-			u.pathTo[adj] = vertex
-			u.dfsForCyclicPath(adj, inStack, path)
+		if !d.visited[adj] {
+			d.pathTo[adj] = vertex
+			d.dfsForCyclicPath(adj, inStack, path)
 		} else if (*inStack)[adj] {
 			// We've got a loop.
-			for v := vertex; v != adj; v = u.pathTo[v] {
-				// fmt.Println("endless loop happending", v, u.pathTo[v])
+			for v := vertex; v != adj; v = d.pathTo[v] {
+				// fmt.Println("endless loop happending", v, d.pathTo[v])
 				(*path) = append([]int{v}, (*path)...)
 			}
 			(*path) = append([]int{adj}, (*path)...)
@@ -167,21 +167,21 @@ func (u *DirectedGraph) dfsForCyclicPath(vertex int, inStack *[]bool, path *[]in
 
 // GetStronglyConnectedComponent gets all strongly connected component, each component contains a set of vertices
 // It uses Kosaraju’s algorithm. (Reverse Graph -> Reverse Post Order -> DFS)
-func (u *DirectedGraph) GetStronglyConnectedComponent() (stronglyConnectedComponent [][]int) {
+func (d *DirectedGraph) GetStronglyConnectedComponent() (stronglyConnectedComponent [][]int) {
 	stronglyConnectedComponent = make([][]int, 0)
 
 	// Get the reversed graph.
-	graph := u.Reverse()
+	graph := d.Reverse()
 
 	// Get the post-reverse order of the reversed graph.
 	_, _, postReversed := graph.GetOrder()
 
-	u.visited = make([]bool, u.vertexCount)
-	u.pathTo = make([]int, u.vertexCount)
+	d.visited = make([]bool, d.vertexCount)
+	d.pathTo = make([]int, d.vertexCount)
 	// Do a DFS using the postReversed order
 	for _, v := range postReversed {
-		if !u.visited[v] {
-			vertices := u.dfsRecursively(v, &u.visited)
+		if !d.visited[v] {
+			vertices := d.dfsRecursively(v, &d.visited)
 			stronglyConnectedComponent = append(stronglyConnectedComponent, vertices)
 		}
 	}

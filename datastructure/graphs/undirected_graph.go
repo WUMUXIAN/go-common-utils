@@ -287,13 +287,13 @@ func (u *UnDirectedGraph) GetCyclicPath() (path []int) {
 	u.pathTo = make([]int, u.vertexCount)
 	for i := 0; i < u.vertexCount; i++ {
 		if !u.visited[i] && len(path) == 0 {
-			u.dfs(i, -1, &path)
+			u.dfsForCyclicPath(i, -1, &path)
 		}
 	}
 	return
 }
 
-func (u *UnDirectedGraph) dfs(vertex int, pathToVertex int, path *[]int) {
+func (u *UnDirectedGraph) dfsForCyclicPath(vertex int, pathToVertex int, path *[]int) {
 	u.visited[vertex] = true
 	adjs, _ := u.GetAdjacentVertices(vertex)
 	for _, adj := range adjs {
@@ -303,7 +303,7 @@ func (u *UnDirectedGraph) dfs(vertex int, pathToVertex int, path *[]int) {
 		}
 		if !u.visited[adj] {
 			u.pathTo[adj] = vertex
-			u.dfs(adj, vertex, path)
+			u.dfsForCyclicPath(adj, vertex, path)
 		} else if pathToVertex != adj {
 			// found it
 			for v := vertex; v != adj; v = u.pathTo[v] {
