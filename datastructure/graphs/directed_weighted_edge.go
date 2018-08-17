@@ -16,12 +16,12 @@ func (d *DirectedWeightedEdge) GetWeight() float64 {
 	return d.weight
 }
 
-// GetVertex1 gets of the vertex of the edge.
+// GetFrom gets the starting vertex
 func (d *DirectedWeightedEdge) GetFrom() int {
 	return d.from
 }
 
-// GetOther gets the other vertex based on the given vertex of the edge.
+// GetTo gets the ending vertex
 func (d *DirectedWeightedEdge) GetTo() int {
 	return d.to
 }

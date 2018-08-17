@@ -39,13 +39,9 @@ func (b *BinarySearchTree) inorderTraverse(node *BinaryTreeNode) []interface{} {
 }
 
 func (b *BinarySearchTree) findMaxNodeWithParent(node *BinaryTreeNode, parent *BinaryTreeNode) (*BinaryTreeNode, *BinaryTreeNode) {
-	for {
-		if node.Right != nil {
-			parent = node
-			node = node.Right
-		} else {
-			break
-		}
+	for node.Right != nil {
+		parent = node
+		node = node.Right
 	}
 	return node, parent
 }

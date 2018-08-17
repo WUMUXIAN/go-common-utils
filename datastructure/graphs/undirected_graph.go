@@ -146,10 +146,7 @@ func (u *UnDirectedGraph) BFS(startingVertex int) (vertices []int, err error) {
 	queue := []int{startingVertex}
 	u.visited[startingVertex] = true
 
-	for {
-		if len(queue) == 0 {
-			break
-		}
+	for len(queue) != 0 {
 		// dequeue
 		vertex := queue[0]
 		queue = queue[1:]

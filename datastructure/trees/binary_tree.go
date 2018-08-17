@@ -23,10 +23,7 @@ func (b *BinaryTree) BreadthFirstTraverse() []interface{} {
 	}
 	queue := []*BinaryTreeNode{b.Root}
 	result := make([]interface{}, 0)
-	for {
-		if len(queue) == 0 {
-			break
-		}
+	for len(queue) != 0 {
 		// dequeue
 		node := queue[0]
 		queue = queue[1:]
@@ -53,10 +50,7 @@ func (b *BinaryTree) DepthFirstTraverse() []interface{} {
 	}
 	stack := []*BinaryTreeNode{b.Root}
 	result := make([]interface{}, 0)
-	for {
-		if len(stack) == 0 {
-			break
-		}
+	for len(stack) != 0 {
 		// pop stack
 		node := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]

@@ -61,10 +61,10 @@ func (d *DirectedWeightedGraph) Reverse() (uv *DirectedWeightedGraph) {
 }
 
 // Print prints the graph.
-func (u *DirectedWeightedGraph) Print() string {
+func (d *DirectedWeightedGraph) Print() string {
 	res := ""
-	res += fmt.Sprintf("Vertex Count: %d, Edge Count: %d\n", u.vertexCount, u.edgeCount)
-	for vertex, adjacentEdges := range u.adjacentEdges {
+	res += fmt.Sprintf("Vertex Count: %d, Edge Count: %d\n", d.vertexCount, d.edgeCount)
+	for vertex, adjacentEdges := range d.adjacentEdges {
 		res += fmt.Sprintf("Vertex %d: %v\n", vertex, adjacentEdges)
 	}
 	return res
