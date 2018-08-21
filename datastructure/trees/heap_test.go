@@ -105,5 +105,9 @@ func TestHeap(t *testing.T) {
 		heap.Insert(1)
 		top = heap.Peek()
 		So(top, ShouldEqual, 1)
+		top = heap.Pop()
+		top = heap.Pop()
+		top = heap.Pop()
+		So(top, ShouldEqual, 3)
 	})
 }

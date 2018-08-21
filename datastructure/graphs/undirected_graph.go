@@ -107,10 +107,7 @@ func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
 	u.pathTo = make([]int, u.vertexCount)
 	stack := []int{startingVertex}
 
-	for {
-		if len(stack) == 0 {
-			break
-		}
+	for len(stack) != 0 {
 		// pop stack
 		vertex := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
@@ -181,12 +178,9 @@ func (u *UnDirectedGraph) GetDFSPath(startingVertex int, endingVertex int) (path
 	}
 
 	vertex := endingVertex
-	for {
+	for vertex != startingVertex {
 		path = append([]int{vertex}, path...)
 		vertex = u.pathTo[vertex]
-		if vertex == startingVertex {
-			break
-		}
 	}
 	path = append([]int{vertex}, path...)
 
@@ -211,15 +205,11 @@ func (u *UnDirectedGraph) GetBFSPath(startingVertex int, endingVertex int) (path
 	}
 
 	vertex := endingVertex
-	for {
-		if u.distanceTo[vertex] != 0 {
-			path = append([]int{vertex}, path...)
-			vertex = u.pathTo[vertex]
-		} else {
-			path = append([]int{vertex}, path...)
-			break
-		}
+	for u.distanceTo[vertex] != 0 {
+		path = append([]int{vertex}, path...)
+		vertex = u.pathTo[vertex]
 	}
+	path = append([]int{vertex}, path...)
 	return
 }
 
@@ -321,11 +311,7 @@ func (u *UnDirectedGraph) GetBipartiteParts() (parts [][]int) {
 			stack := []int{i}
 
 			// run a dfs.
-			for {
-				if len(stack) == 0 {
-					break
-				}
-
+			for len(stack) != 0 {
 				vertex := stack[len(stack)-1]
 				stack = stack[:len(stack)-1]
 

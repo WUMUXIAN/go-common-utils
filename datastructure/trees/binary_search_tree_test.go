@@ -159,10 +159,7 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		// Generate 10,000 unique numbers
 		numbers := make(map[int]bool)
-		for {
-			if len(numbers) == 10000 {
-				break
-			}
+		for len(numbers) < 10000 {
 			r := rand.Intn(500000)
 			numbers[r] = true
 		}
@@ -232,19 +229,13 @@ func TestBinarySearchTree(t *testing.T) {
 		headToTail := make([]interface{}, 0)
 		tailToHead := []interface{}{}
 		p := head
-		for {
-			if p == nil {
-				break
-			}
+		for p != nil {
 			headToTail = append(headToTail, p.Data)
 			p = p.Right
 		}
 
 		p = tail
-		for {
-			if p == nil {
-				break
-			}
+		for p != nil {
 			tailToHead = append(tailToHead, p.Data)
 			p = p.Left
 		}

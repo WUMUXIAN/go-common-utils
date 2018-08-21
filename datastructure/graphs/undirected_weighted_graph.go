@@ -106,11 +106,7 @@ func (u *UnDirectedWeightGraph) scanAdjsAndEnqueue(vertex int, priorityQueue *tr
 
 func (u *UnDirectedWeightGraph) prim(vertex int, priorityQueue *trees.Heap, res *[]WeightedEdge) {
 	u.scanAdjsAndEnqueue(vertex, priorityQueue)
-	for {
-		if priorityQueue.Peek() == nil {
-			break
-		}
-
+	for priorityQueue.Peek() != nil {
 		// get the top edge.
 		edge := priorityQueue.Pop().(WeightedEdge)
 		v := edge.GetVertex1()

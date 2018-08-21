@@ -44,11 +44,7 @@ func (h *Heap) bubbleUp() {
 	current := h.size
 	parent := h.size / 2
 
-	for {
-		if current == 1 {
-			break
-		}
-
+	for current != 1 {
 		if (h.HeapType == HeapTypeMax && h.Comparator(h.values[current], h.values[parent]) <= 0) ||
 			(h.HeapType == HeapTypeMin && h.Comparator(h.values[current], h.values[parent]) >= 0) {
 			break
@@ -66,13 +62,11 @@ func (h *Heap) bubbleUp() {
 
 func (h *Heap) bubbleDown() {
 	node := 1
-	for {
+	// Until We've reached a node that doesn't have children.
+	for node*2 <= h.size {
 		left := node * 2
 		right := node*2 + 1
-		// We've reached a node that doesn't have children.
-		if left > h.size {
-			break
-		}
+
 		nodeToReplace := left
 		// If we have a right child and it's better than left.
 		if right <= h.size {
@@ -80,7 +74,6 @@ func (h *Heap) bubbleDown() {
 				(h.HeapType == HeapTypeMin && h.Comparator(h.values[left], h.values[right]) >= 0) {
 				nodeToReplace = right
 			}
-
 		}
 
 		// Replace.
@@ -89,9 +82,11 @@ func (h *Heap) bubbleDown() {
 			h.values[0] = h.values[node]
 			h.values[node] = h.values[nodeToReplace]
 			h.values[nodeToReplace] = h.values[0]
+			// update the node and continue
+			node = nodeToReplace
+		} else {
+			break
 		}
-		// update the node and continue
-		node = nodeToReplace
 	}
 }
 
@@ -140,13 +135,11 @@ func (h *Heap) InitHeap(values []interface{}) {
 		h.values[0] = h.values[i]
 		// Loop through the subtrees to maintain.
 		node := i
-		for {
+		// keep iterating as long as the node still has left child.
+		for node*2 <= h.size {
 			// get left child
 			node = node * 2
-			// if no left child, break
-			if node > h.size {
-				break
-			}
+
 			// if has left child and right child and right child is larger
 			// get the right child.
 			if node < h.size {
