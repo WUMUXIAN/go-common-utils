@@ -434,4 +434,21 @@ Vertex 5: [{5 1 7} {5 2 2} {5 3 8} {5 4 9}]
 			So(tc.graph[compoents[1][0]][compoents[0][0]], ShouldBeFalse)
 		})
 	})
+
+	Convey("Get Shortest Path Using Dijkstra Algorithm", t, func() {
+		directedWeightedGraph.AddEdge(1, 2, 5)
+		directedWeightedGraph.AddEdge(2, 3, 1)
+		directedWeightedGraph.AddEdge(4, 3, 8)
+		var dist float64
+		var err error
+		var path []DirectedWeightedEdge
+		path, dist, err = directedWeightedGraph.DijkstraShortestPath(1, 3)
+		So(err, ShouldBeNil)
+		So(dist, ShouldEqual, 6.0)
+		So(path, ShouldResemble, []DirectedWeightedEdge{DirectedWeightedEdge{1, 2, 5}, DirectedWeightedEdge{2, 3, 1}})
+
+		path, dist, err = directedWeightedGraph.DijkstraShortestPath(2, 4)
+		So(err, ShouldBeError, errors.New("path not found"))
+		So(path, ShouldBeEmpty)
+	})
 }
