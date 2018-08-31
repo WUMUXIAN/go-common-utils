@@ -212,3 +212,18 @@ func (o *RedisCacher) HINCRBY(hash, key string, value interface{}) error {
 	_, err := redisConnection.Do("HINCRBY", hash, key, value)
 	return err
 }
+
+// Flush flushes all keys.
+func (o *RedisCacher) Flush() error {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+	_, err := redisConnection.Do("FLUSHALL")
+	return err
+}
+
+// GetDBSize get the number of keys in the currently-selected database.
+func (o *RedisCacher) GetDBSize() (interface{}, error) {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+	return redisConnection.Do("DBSIZE")
+}
