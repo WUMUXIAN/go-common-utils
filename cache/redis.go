@@ -213,11 +213,19 @@ func (o *RedisCacher) HINCRBY(hash, key string, value interface{}) error {
 	return err
 }
 
-// Flush flushes all keys.
-func (o *RedisCacher) Flush() error {
+// FlushAll flushes all keys in all db.
+func (o *RedisCacher) FlushAll() error {
 	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	_, err := redisConnection.Do("FLUSHALL")
+	return err
+}
+
+// Flush flushes all keys in selected db.
+func (o *RedisCacher) Flush() error {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+	_, err := redisConnection.Do("FLUSHDB")
 	return err
 }
 

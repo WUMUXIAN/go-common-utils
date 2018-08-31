@@ -179,6 +179,28 @@ func TestRedis(t *testing.T) {
 	})
 
 	err = Redis.Flush()
+	Convey("Flush All Keys In Current DB Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	value, err = redis.Int64(Redis.GetDBSize())
+	Convey("Get Size After Flush Should Return 0", t, func() {
+		So(err, ShouldBeNil)
+		So(value, ShouldEqual, int64(0))
+	})
+
+	err = Redis.Set("testKey1", "testValue", 300)
+	Convey("Set String Value Should Be OK", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	value, err = redis.Int64(Redis.GetDBSize())
+	Convey("Get Size After Set A Key Should Return 1", t, func() {
+		So(err, ShouldBeNil)
+		So(value, ShouldEqual, int64(1))
+	})
+
+	err = Redis.FlushAll()
 	Convey("Flush All Keys Should Be OK", t, func() {
 		So(err, ShouldBeNil)
 	})
