@@ -49,3 +49,38 @@ func ParseDataTimeISO8601(dataTimeStr string) (t time.Time, err error) {
 	// parse rfc-3339 datetime
 	return time.Parse(time.RFC3339, rfc3339t)
 }
+
+// GetStartOfNatureWeek get the start time of the nature week the given time stamp belongs to
+func GetStartOfNatureWeek(timeStamp int64) (t time.Time) {
+	date := time.Unix(timeStamp, 0)
+	start := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
+	for start.Weekday() != time.Monday { // iterate back to Monday
+		start = start.AddDate(0, 0, -1)
+	}
+	return start
+}
+
+// GetEndOfNatureWeek get the end time of the nature week the given time stamp belongs to
+func GetEndOfNatureWeek(timeStamp int64) (t time.Time) {
+	date := time.Unix(timeStamp, 0)
+	end := time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 999999999, time.UTC)
+	for end.Weekday() != time.Sunday { // iterate to Sundy
+		end = end.AddDate(0, 0, 1)
+	}
+	return end
+}
+
+// GetStartOfNatureMonth get the start time of the nature month the given time stamp belongs to
+func GetStartOfNatureMonth(timeStamp int64) (t time.Time) {
+	date := time.Unix(timeStamp, 0)
+	start := time.Date(date.Year(), date.Month(), 1, 0, 0, 0, 0, time.UTC)
+	return start
+}
+
+// GetEndOfNatureMonth get the end time of the nature month the given time stamp belongs to
+func GetEndOfNatureMonth(timeStamp int64) (t time.Time) {
+	date := time.Unix(timeStamp, 0)
+	end := time.Date(date.Year(), date.Month()+1, 1, 0, 0, 0, 0, time.UTC)
+	end = end.Add(-time.Nanosecond)
+	return end
+}

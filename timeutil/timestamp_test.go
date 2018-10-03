@@ -52,5 +52,29 @@ func TestTimeUtil(t *testing.T) {
 			_, err = ParseDataTimeISO8601("12345")
 			So(err, ShouldNotBeNil)
 		})
+
+		Convey("Get Start And End Of Nature Week Should Work", func() {
+			t := GetStartOfNatureWeek(1538546431)
+			So(t.String(), ShouldEqual, "2018-10-01 00:00:00 +0000 UTC")
+			t = GetEndOfNatureWeek(1538546431)
+			So(t.String(), ShouldEqual, "2018-10-07 23:59:59.999999999 +0000 UTC")
+
+			t = GetStartOfNatureWeek(1489816819)
+			So(t.String(), ShouldEqual, "2017-03-13 00:00:00 +0000 UTC")
+			t = GetEndOfNatureWeek(1489816819)
+			So(t.String(), ShouldEqual, "2017-03-19 23:59:59.999999999 +0000 UTC")
+		})
+
+		Convey("Get Start And End Of Nature Month Should Work", func() {
+			t := GetStartOfNatureMonth(1538546431)
+			So(t.String(), ShouldEqual, "2018-10-01 00:00:00 +0000 UTC")
+			t = GetEndOfNatureMonth(1538546431)
+			So(t.String(), ShouldEqual, "2018-10-31 23:59:59.999999999 +0000 UTC")
+
+			t = GetStartOfNatureMonth(1489816819)
+			So(t.String(), ShouldEqual, "2017-03-01 00:00:00 +0000 UTC")
+			t = GetEndOfNatureMonth(1489816819)
+			So(t.String(), ShouldEqual, "2017-03-31 23:59:59.999999999 +0000 UTC")
+		})
 	})
 }
