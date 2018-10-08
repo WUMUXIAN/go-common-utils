@@ -21,19 +21,19 @@ func TestBinaryTree(t *testing.T) {
 	})
 
 	tree.Root = &BinaryTreeNode{
-		Data: 5,
+		Key: 5,
 	}
 	tree.Root.Left = &BinaryTreeNode{
-		Data: 4,
+		Key: 4,
 	}
 	tree.Root.Right = &BinaryTreeNode{
-		Data: 3,
+		Key: 3,
 	}
 	tree.Root.Left.Left = &BinaryTreeNode{
-		Data: 2,
+		Key: 2,
 	}
 	tree.Root.Right.Right = &BinaryTreeNode{
-		Data: 1,
+		Key: 1,
 	}
 	Convey("Traverse Breadth First (Level by Level) Should Give Corrent Result", t, func() {
 		So(tree.BreadthFirstTraverse(), ShouldResemble, []interface{}{5, 4, 3, 2, 1})

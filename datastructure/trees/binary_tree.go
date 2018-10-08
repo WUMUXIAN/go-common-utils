@@ -4,7 +4,8 @@ import "github.com/WUMUXIAN/go-common-utils/datastructure/shared"
 
 // BinaryTreeNode defines a tree node of a binary search tree
 type BinaryTreeNode struct {
-	Data  interface{}
+	Key   interface{}
+	Value interface{}
 	Left  *BinaryTreeNode
 	Right *BinaryTreeNode
 }
@@ -37,7 +38,7 @@ func (b *BinaryTree) BreadthFirstTraverse() []interface{} {
 		}
 
 		// get value of the node
-		result = append(result, node.Data)
+		result = append(result, node.Key)
 	}
 	return result
 }
@@ -64,7 +65,7 @@ func (b *BinaryTree) DepthFirstTraverse() []interface{} {
 		}
 
 		// get value of the node
-		result = append(result, node.Data)
+		result = append(result, node.Key)
 	}
 	return result
 }

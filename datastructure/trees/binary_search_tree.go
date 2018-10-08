@@ -10,20 +10,35 @@ type BinarySearchTree struct {
 	size int
 }
 
-func (b *BinarySearchTree) insert(node *BinaryTreeNode, data interface{}) {
-	if b.Comparator(node.Data, data) > 0 {
+func (b *BinarySearchTree) insert(node *BinaryTreeNode, key, value interface{}) {
+	if b.Comparator(node.Key, key) > 0 {
 		if node.Left == nil {
-			node.Left = &BinaryTreeNode{Data: data}
+			node.Left = &BinaryTreeNode{Key: key, Value: value}
 		} else {
-			b.insert(node.Left, data)
+			b.insert(node.Left, key, value)
 		}
 	} else {
 		if node.Right == nil {
-			node.Right = &BinaryTreeNode{Data: data}
+			node.Right = &BinaryTreeNode{Key: key, Value: value}
 		} else {
-			b.insert(node.Right, data)
+			b.insert(node.Right, key, value)
 		}
 	}
+}
+
+func (b *BinarySearchTree) search(node *BinaryTreeNode, key interface{}) (value interface{}) {
+	for node != nil {
+		if b.Comparator(node.Key, key) == 0 {
+			value = node.Value
+			return
+		}
+		if b.Comparator(node.Key, key) > 0 {
+			node = node.Left
+		} else {
+			node = node.Right
+		}
+	}
+	return
 }
 
 func (b *BinarySearchTree) inorderTraverse(node *BinaryTreeNode) []interface{} {
@@ -32,7 +47,7 @@ func (b *BinarySearchTree) inorderTraverse(node *BinaryTreeNode) []interface{} {
 	}
 
 	ordered := b.inorderTraverse(node.Left)
-	ordered = append(ordered, node.Data)
+	ordered = append(ordered, node.Key)
 	ordered = append(ordered, b.inorderTraverse(node.Right)...)
 
 	return ordered
@@ -46,11 +61,11 @@ func (b *BinarySearchTree) findMaxNodeWithParent(node *BinaryTreeNode, parent *B
 	return node, parent
 }
 
-func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, data interface{}) error {
+func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, key interface{}) error {
 	if node == nil {
 		return errors.New("could not find node")
 	}
-	compareRes := b.Comparator(node.Data, data)
+	compareRes := b.Comparator(node.Key, key)
 	// Found the node, let's check how to remove it.
 	if compareRes == 0 {
 		// If this node is a leaf, we simply remove it.
@@ -77,7 +92,8 @@ func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, 
 		} else {
 			// If this node has both children, we find the right most node in the left sub stree and replace it with node.
 			maxNode, maxNodeParent := b.findMaxNodeWithParent(node.Left, node)
-			node.Data = maxNode.Data
+			node.Key = maxNode.Key
+			node.Value = maxNode.Value
 			if maxNodeParent.Left == maxNode {
 				maxNodeParent.Left = maxNode.Left
 			} else {
@@ -88,9 +104,9 @@ func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, 
 	}
 
 	if compareRes > 0 {
-		return b.delete(node.Left, node, data)
+		return b.delete(node.Left, node, key)
 	}
-	return b.delete(node.Right, node, data)
+	return b.delete(node.Right, node, key)
 }
 
 // GetSize gets the size of the tree.
@@ -98,12 +114,17 @@ func (b *BinarySearchTree) GetSize() int {
 	return b.size
 }
 
+// Search searchs value by key.
+func (b *BinarySearchTree) Search(key interface{}) (value interface{}) {
+	return b.search(b.Root, key)
+}
+
 // Insert inserts a data node into the binary search tree.
-func (b *BinarySearchTree) Insert(data interface{}) {
+func (b *BinarySearchTree) Insert(key, value interface{}) {
 	if b.Root == nil {
-		b.Root = &BinaryTreeNode{Data: data}
+		b.Root = &BinaryTreeNode{Key: key, Value: value}
 	} else {
-		b.insert(b.Root, data)
+		b.insert(b.Root, key, value)
 	}
 	b.size++
 }

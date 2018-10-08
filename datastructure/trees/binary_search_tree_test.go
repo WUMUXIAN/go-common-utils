@@ -19,15 +19,20 @@ func TestBinarySearchTree(t *testing.T) {
 				Comparator: shared.IntComparator,
 			},
 		}
-		unsorted := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
-		for _, data := range unsorted {
-			tree.Insert(data)
+		unsortedKeys := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
+		unsortedValues := []interface{}{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"}
+		for i, data := range unsortedKeys {
+			tree.Insert(data, unsortedValues[i])
 		}
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
 		So(tree.GetSize(), ShouldEqual, 15)
 
 		So(tree.BreadthFirstTraverse(), ShouldResemble, []interface{}{20, 10, 30, 5, 15, 25, 35, 4, 9, 13, 16, 24, 27, 31, 36})
 		So(tree.DepthFirstTraverse(), ShouldResemble, []interface{}{20, 10, 5, 4, 9, 15, 13, 16, 30, 25, 24, 27, 35, 31, 36})
+
+		So(tree.Search(35), ShouldEqual, "k")
+		So(tree.Search(9), ShouldEqual, "g")
+		So(tree.Search(37), ShouldBeNil)
 	})
 
 	Convey("Delete Leaf Node Should Work", t, func() {
@@ -37,9 +42,9 @@ func TestBinarySearchTree(t *testing.T) {
 				Comparator: shared.IntComparator,
 			},
 		}
-		unsorted := []interface{}{2, 1, 3}
-		for _, data := range unsorted {
-			tree.Insert(data)
+		unsortedKeys := []interface{}{2, 1, 3}
+		for _, data := range unsortedKeys {
+			tree.Insert(data, nil)
 		}
 		tree.Delete(1)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 3})
@@ -54,13 +59,13 @@ func TestBinarySearchTree(t *testing.T) {
 				Comparator: shared.IntComparator,
 			},
 		}
-		unsorted := []interface{}{5, 3, 8, 2}
-		for _, data := range unsorted {
-			tree.Insert(data)
+		unsortedKeys := []interface{}{5, 3, 8, 2}
+		for _, data := range unsortedKeys {
+			tree.Insert(data, nil)
 		}
 		tree.Delete(3)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 5, 8})
-		tree.Insert(6)
+		tree.Insert(6, nil)
 		tree.Delete(8)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 5, 6})
 	})
@@ -72,13 +77,13 @@ func TestBinarySearchTree(t *testing.T) {
 				Comparator: shared.IntComparator,
 			},
 		}
-		unsorted := []interface{}{5, 2, 3, 8}
-		for _, data := range unsorted {
-			tree.Insert(data)
+		unsortedKeys := []interface{}{5, 2, 3, 8}
+		for _, data := range unsortedKeys {
+			tree.Insert(data, nil)
 		}
 		tree.Delete(2)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{3, 5, 8})
-		tree.Insert(9)
+		tree.Insert(9, nil)
 		tree.Delete(8)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{3, 5, 9})
 	})
@@ -90,13 +95,13 @@ func TestBinarySearchTree(t *testing.T) {
 				Comparator: shared.IntComparator,
 			},
 		}
-		unsorted := []interface{}{5, 3, 2, 4, 8, 6, 9}
-		for _, data := range unsorted {
-			tree.Insert(data)
+		unsortedKeys := []interface{}{5, 3, 2, 4, 8, 6, 9}
+		for _, data := range unsortedKeys {
+			tree.Insert(data, nil)
 		}
 		tree.Delete(3)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 4, 5, 6, 8, 9})
-		tree.Insert(7)
+		tree.Insert(7, nil)
 		tree.Delete(8)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 4, 5, 6, 7, 9})
 	})
@@ -108,15 +113,15 @@ func TestBinarySearchTree(t *testing.T) {
 				Comparator: shared.IntComparator,
 			},
 		}
-		unsorted := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
-		for _, data := range unsorted {
-			tree.Insert(data)
+		unsortedKeys := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
+		for _, data := range unsortedKeys {
+			tree.Insert(data, nil)
 		}
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
 
 		tree.Delete(20)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 24, 25, 27, 30, 31, 35, 36})
-		tree.Insert(20)
+		tree.Insert(20, nil)
 
 		tree.Delete(4)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
@@ -142,9 +147,9 @@ func TestBinarySearchTree(t *testing.T) {
 				Comparator: shared.IntComparator,
 			},
 		}
-		unsorted := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
-		for _, data := range unsorted {
-			tree.Insert(data)
+		unsortedKeys := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
+		for _, data := range unsortedKeys {
+			tree.Insert(data, nil)
 		}
 		tree.Clear()
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{})
@@ -165,7 +170,7 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		reference := make([]int, 0)
 		for value := range numbers {
-			tree.Insert(value)
+			tree.Insert(value, nil)
 			reference = append(reference, value)
 		}
 		sorted := tree.ToSortedSlice()
@@ -218,9 +223,9 @@ func TestBinarySearchTree(t *testing.T) {
 		h, t := tree.ConvertToDoubleLinkedList()
 		So(h, ShouldBeNil)
 		So(t, ShouldBeNil)
-		unsorted := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
-		for _, data := range unsorted {
-			tree.Insert(data)
+		unsortedKeys := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
+		for _, data := range unsortedKeys {
+			tree.Insert(data, nil)
 		}
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
 
@@ -230,13 +235,13 @@ func TestBinarySearchTree(t *testing.T) {
 		tailToHead := []interface{}{}
 		p := head
 		for p != nil {
-			headToTail = append(headToTail, p.Data)
+			headToTail = append(headToTail, p.Key)
 			p = p.Right
 		}
 
 		p = tail
 		for p != nil {
-			tailToHead = append(tailToHead, p.Data)
+			tailToHead = append(tailToHead, p.Key)
 			p = p.Left
 		}
 		So(headToTail, ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})

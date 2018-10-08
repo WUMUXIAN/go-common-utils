@@ -118,6 +118,7 @@ func TestIndexedPriorityQueue(t *testing.T) {
 			So(indexedPriorityQueue.pq[7], ShouldEqual, 2)
 
 			err = indexedPriorityQueue.ChangeValue(0, "yeild")
+			So(err, ShouldBeNil)
 			So(indexedPriorityQueue.pq[2], ShouldEqual, 4)
 			So(indexedPriorityQueue.pq[5], ShouldEqual, 0)
 		})
