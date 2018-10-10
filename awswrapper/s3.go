@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -23,10 +24,13 @@ type S3Service struct {
 
 var (
 	s3Services = make(map[string]*S3Service)
+	lock       = sync.Mutex{}
 )
 
 // GetS3Service gets a s3 service for a specific region
 func GetS3Service(region string) *S3Service {
+	lock.Lock()
+	defer lock.Unlock()
 	if s3Service, ok := s3Services[region]; ok {
 		return s3Service
 	}
