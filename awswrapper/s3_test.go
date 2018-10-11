@@ -196,3 +196,20 @@ func TestDeleteBucket(t *testing.T) {
 		So(err, ShouldNotBeNil)
 	})
 }
+
+func TestConcurrentAccessService(t *testing.T) {
+	for i := 0; i < 1000; i++ {
+		go func() {
+			s3svc := GetS3Service("ap-southeast-1")
+			if s3svc == nil {
+				panic("")
+			}
+		}()
+		go func() {
+			s3svc := GetS3Service("us-east-1")
+			if s3svc == nil {
+				panic("")
+			}
+		}()
+	}
+}
