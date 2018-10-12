@@ -50,6 +50,10 @@ func TestBinarySearchTree(t *testing.T) {
 		So(tree.Search(1), ShouldEqual, "b")
 		tree.Put(1, "d")
 		So(tree.Search(1), ShouldEqual, "d")
+		So(tree.GetSize(), ShouldEqual, 3)
+		tree.Put(4, "e")
+		tree.Put(2, "f")
+		So(tree.GetSize(), ShouldEqual, 4)
 	})
 
 	Convey("Delete Leaf Node Should Work", t, func() {
