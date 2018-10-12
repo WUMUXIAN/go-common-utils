@@ -22,7 +22,7 @@ func TestBinarySearchTree(t *testing.T) {
 		unsortedKeys := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
 		unsortedValues := []interface{}{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"}
 		for i, data := range unsortedKeys {
-			tree.Insert(data, unsortedValues[i])
+			tree.Put(data, unsortedValues[i])
 		}
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
 		So(tree.GetSize(), ShouldEqual, 15)
@@ -35,6 +35,23 @@ func TestBinarySearchTree(t *testing.T) {
 		So(tree.Search(37), ShouldBeNil)
 	})
 
+	Convey("Put Value For Existing Key", t, func() {
+		tree := &BinarySearchTree{
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
+		}
+		unsortedKeys := []interface{}{2, 1, 3}
+		unsortedValues := []interface{}{"a", "b", "c"}
+		for i, data := range unsortedKeys {
+			tree.Put(data, unsortedValues[i])
+		}
+		So(tree.Search(1), ShouldEqual, "b")
+		tree.Put(1, "d")
+		So(tree.Search(1), ShouldEqual, "d")
+	})
+
 	Convey("Delete Leaf Node Should Work", t, func() {
 		tree := &BinarySearchTree{
 			BinaryTree: BinaryTree{
@@ -44,7 +61,7 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		unsortedKeys := []interface{}{2, 1, 3}
 		for _, data := range unsortedKeys {
-			tree.Insert(data, nil)
+			tree.Put(data, nil)
 		}
 		tree.Delete(1)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 3})
@@ -61,11 +78,11 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		unsortedKeys := []interface{}{5, 3, 8, 2}
 		for _, data := range unsortedKeys {
-			tree.Insert(data, nil)
+			tree.Put(data, nil)
 		}
 		tree.Delete(3)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 5, 8})
-		tree.Insert(6, nil)
+		tree.Put(6, nil)
 		tree.Delete(8)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 5, 6})
 	})
@@ -79,11 +96,11 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		unsortedKeys := []interface{}{5, 2, 3, 8}
 		for _, data := range unsortedKeys {
-			tree.Insert(data, nil)
+			tree.Put(data, nil)
 		}
 		tree.Delete(2)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{3, 5, 8})
-		tree.Insert(9, nil)
+		tree.Put(9, nil)
 		tree.Delete(8)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{3, 5, 9})
 	})
@@ -97,11 +114,11 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		unsortedKeys := []interface{}{5, 3, 2, 4, 8, 6, 9}
 		for _, data := range unsortedKeys {
-			tree.Insert(data, nil)
+			tree.Put(data, nil)
 		}
 		tree.Delete(3)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 4, 5, 6, 8, 9})
-		tree.Insert(7, nil)
+		tree.Put(7, nil)
 		tree.Delete(8)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 4, 5, 6, 7, 9})
 	})
@@ -115,13 +132,13 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		unsortedKeys := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
 		for _, data := range unsortedKeys {
-			tree.Insert(data, nil)
+			tree.Put(data, nil)
 		}
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
 
 		tree.Delete(20)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 24, 25, 27, 30, 31, 35, 36})
-		tree.Insert(20, nil)
+		tree.Put(20, nil)
 
 		tree.Delete(4)
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
@@ -149,7 +166,7 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		unsortedKeys := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
 		for _, data := range unsortedKeys {
-			tree.Insert(data, nil)
+			tree.Put(data, nil)
 		}
 		tree.Clear()
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{})
@@ -170,7 +187,7 @@ func TestBinarySearchTree(t *testing.T) {
 		}
 		reference := make([]int, 0)
 		for value := range numbers {
-			tree.Insert(value, nil)
+			tree.Put(value, nil)
 			reference = append(reference, value)
 		}
 		sorted := tree.ToSortedSlice()
@@ -225,7 +242,7 @@ func TestBinarySearchTree(t *testing.T) {
 		So(t, ShouldBeNil)
 		unsortedKeys := []interface{}{20, 10, 30, 5, 15, 4, 9, 13, 16, 25, 35, 24, 27, 31, 36}
 		for _, data := range unsortedKeys {
-			tree.Insert(data, nil)
+			tree.Put(data, nil)
 		}
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{4, 5, 9, 10, 13, 15, 16, 20, 24, 25, 27, 30, 31, 35, 36})
 

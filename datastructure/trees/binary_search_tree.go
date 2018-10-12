@@ -10,20 +10,22 @@ type BinarySearchTree struct {
 	size int
 }
 
-func (b *BinarySearchTree) insert(node *BinaryTreeNode, key, value interface{}) {
+func (b *BinarySearchTree) insert(node *BinaryTreeNode, key, value interface{}) bool {
 	if b.Comparator(node.Key, key) > 0 {
 		if node.Left == nil {
 			node.Left = &BinaryTreeNode{Key: key, Value: value}
-		} else {
-			b.insert(node.Left, key, value)
+			return true
 		}
-	} else {
+		return b.insert(node.Left, key, value)
+	} else if b.Comparator(node.Key, key) < 0 {
 		if node.Right == nil {
 			node.Right = &BinaryTreeNode{Key: key, Value: value}
-		} else {
-			b.insert(node.Right, key, value)
+			return true
 		}
+		return b.insert(node.Right, key, value)
 	}
+	node.Value = value
+	return false
 }
 
 func (b *BinarySearchTree) search(node *BinaryTreeNode, key interface{}) (value interface{}) {
@@ -119,14 +121,18 @@ func (b *BinarySearchTree) Search(key interface{}) (value interface{}) {
 	return b.search(b.Root, key)
 }
 
-// Insert inserts a data node into the binary search tree.
-func (b *BinarySearchTree) Insert(key, value interface{}) {
+// Put puts a data node into the binary search tree, if the key exists already, update its value.
+func (b *BinarySearchTree) Put(key, value interface{}) {
 	if b.Root == nil {
 		b.Root = &BinaryTreeNode{Key: key, Value: value}
-	} else {
-		b.insert(b.Root, key, value)
+		b.size++
+		return
 	}
-	b.size++
+	if b.insert(b.Root, key, value) {
+		b.size++
+	}
+	return
+
 }
 
 // Clear clears the binary search tree.
