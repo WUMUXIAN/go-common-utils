@@ -235,3 +235,23 @@ func (o *RedisCacher) GetDBSize() (interface{}, error) {
 	defer redisConnection.Close()
 	return redisConnection.Do("DBSIZE")
 }
+
+// MultipleGet gets the values for keys in bulk.
+func (o *RedisCacher) MultipleGet(keys ...string) (values []interface{}, err error) {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+
+	args := make([]interface{}, len(keys))
+	for i := range keys {
+		args[i] = keys[i]
+	}
+
+	values, err = redis.Values(redisConnection.Do("MGET", args...))
+
+	return
+}
+
+// MultipleGetJSON gets the values for keys in bulk and return json bytes
+func (o *RedisCacher) MultipleGetJSON(keys ...string) (values [][]byte, err error) {
+	return redis.ByteSlices(o.MultipleGet(keys...))
+}
