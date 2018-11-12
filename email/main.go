@@ -46,6 +46,7 @@ func ValidateReachability(email string, timeout time.Duration) error {
 			c <- err
 			return
 		}
+		fmt.Println("host", mx[0].Host, "dial done")
 		defer client.Close()
 		err = client.Hello("checkmail.me")
 		if err != nil {
