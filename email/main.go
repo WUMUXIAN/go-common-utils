@@ -39,24 +39,36 @@ func ValidateReachability(email string, timeout time.Duration) error {
 			c <- errors.New("unresolvable host")
 			return
 		}
+		fmt.Println("host", mx[0].Host, "reachable")
 		client, err := smtp.Dial(fmt.Sprintf("%s:%d", mx[0].Host, 25))
-		c <- err
 		if err != nil {
+			fmt.Println("host", mx[0].Host, "dial failed")
+			c <- err
 			return
 		}
 		defer client.Close()
 		err = client.Hello("checkmail.me")
-		c <- err
 		if err != nil {
+			c <- err
+			fmt.Println("host", mx[0].Host, "hello not sent")
 			return
 		}
+		fmt.Println("host", mx[0].Host, "hello sent")
 		err = client.Mail("wumuxian1988@gmail.com")
-		c <- err
 		if err != nil {
+			c <- err
+			fmt.Println("host", mx[0].Host, "mail command not successful")
 			return
 		}
+		fmt.Println("host", mx[0].Host, "mail command successful")
 		err = client.Rcpt(email)
-		c <- err
+		if err != nil {
+			c <- err
+			fmt.Println("host", mx[0].Host, "recpt not done")
+			return
+		}
+		fmt.Println("host", mx[0].Host, "recpt done")
+		c <- nil
 	}()
 
 	select {
