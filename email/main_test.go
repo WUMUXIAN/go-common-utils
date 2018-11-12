@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -32,10 +33,10 @@ func TestEmail(t *testing.T) {
 
 	Convey("Valid Reachability Function\n", t, func() {
 		Convey("Test Reachability For Valid Email", func() {
-			So(ValidateReachability(os.Getenv("GMAIL_USERNAME")), ShouldBeNil)
+			So(ValidateReachability(os.Getenv("GMAIL_USERNAME"), time.Second), ShouldBeNil)
 		})
 		Convey("fakeemail@somewebsite.com Should Not Be Reachable", func() {
-			So(ValidateReachability("fakeemail@somewebsite.com"), ShouldBeError, errors.New("unresolvable host"))
+			So(ValidateReachability("fakeemail@somewebsite.com", time.Second*5), ShouldBeError, errors.New("unresolvable host"))
 		})
 	})
 

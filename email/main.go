@@ -9,6 +9,7 @@ import (
 	"net/smtp"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var (
@@ -24,33 +25,46 @@ func ValidateFormat(email string) error {
 }
 
 // ValidateReachability checks whether the email address is reachable
-func ValidateReachability(email string) error {
+func ValidateReachability(email string, timeout time.Duration) error {
 	i := strings.LastIndexByte(email, '@')
 	host := email[i+1:]
 
-	mx, err := net.LookupMX(host)
-	if err != nil {
-		return errors.New("unresolvable host")
-	}
+	// The following operation will have a timeout.
+	deadline := time.After(timeout)
 
-	client, err := smtp.Dial(fmt.Sprintf("%s:%d", mx[0].Host, 25))
-	if err != nil {
+	c := make(chan (error))
+	go func() {
+		mx, err := net.LookupMX(host)
+		if err != nil {
+			c <- errors.New("unresolvable host")
+			return
+		}
+		client, err := smtp.Dial(fmt.Sprintf("%s:%d", mx[0].Host, 25))
+		c <- err
+		if err != nil {
+			return
+		}
+		defer client.Close()
+		err = client.Hello("checkmail.me")
+		c <- err
+		if err != nil {
+			return
+		}
+		err = client.Mail("wumuxian1988@gmail.com")
+		c <- err
+		if err != nil {
+			return
+		}
+		err = client.Rcpt(email)
+		c <- err
+	}()
+
+	select {
+	case <-deadline:
+		return errors.New("check reachiability timeout")
+	case err := <-c:
 		return err
 	}
-	defer client.Close()
-	err = client.Hello("checkmail.me")
-	if err != nil {
-		return err
-	}
-	err = client.Mail("wumuxian1988@gmail.com")
-	if err != nil {
-		return err
-	}
-	err = client.Rcpt(email)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // Send send emails
@@ -69,7 +83,7 @@ func SendSMTP(to, subject, content, authName, authPass, authAddr, senderName, se
 		return
 	}
 
-	err = ValidateReachability(to)
+	err = ValidateReachability(to, time.Second*3)
 	if err != nil {
 		return
 	}
