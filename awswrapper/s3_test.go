@@ -29,6 +29,20 @@ func TestMain(m *testing.M) {
 	}
 
 	m.Run()
+
+	fmt.Println("Delete the bucket.")
+	err = GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
+	if err != nil {
+		fmt.Println("Failed to delete the bucket.")
+		return
+	}
+
+	// Delete again.
+	err = GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
+	if err == nil {
+		fmt.Println("You Should Not Be Allowed to Delete Bucket That Does Not Exist.")
+		return
+	}
 }
 
 func TestS3Upload(t *testing.T) {
@@ -180,20 +194,6 @@ func TestS3RemoveAll(t *testing.T) {
 	Convey("List All Objects With Prefix", t, func() {
 		So(err, ShouldBeNil)
 		So(objects, ShouldBeEmpty)
-	})
-}
-
-func TestDeleteBucket(t *testing.T) {
-	fmt.Println("Delete the bucket.")
-	err := GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
-	Convey("Delete Bucket", t, func() {
-		So(err, ShouldBeNil)
-	})
-
-	// Delete again.
-	err = GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
-	Convey("Delete Bucket", t, func() {
-		So(err, ShouldNotBeNil)
 	})
 }
 
