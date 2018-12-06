@@ -5,7 +5,7 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/WUMUXIAN/go-common-utils/codec"
+	"github.com/TectusDreamlab/go-common-utils/codec"
 )
 
 // RandBytes returns n bytes of cryptographically strong random bytes.

@@ -1,6 +1,6 @@
 package trees
 
-import "github.com/WUMUXIAN/go-common-utils/datastructure/shared"
+import "github.com/TectusDreamlab/go-common-utils/datastructure/shared"
 
 // BinaryTreeNode defines a tree node of a binary search tree
 type BinaryTreeNode struct {

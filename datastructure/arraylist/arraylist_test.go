@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
+	"github.com/TectusDreamlab/go-common-utils/datastructure/shared"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

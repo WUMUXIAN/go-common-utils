@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/WUMUXIAN/go-common-utils/datastructure/trees"
+	"github.com/TectusDreamlab/go-common-utils/datastructure/trees"
 )
 
 // UnDirectedWeightGraph defines a undirected graph

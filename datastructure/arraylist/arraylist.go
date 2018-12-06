@@ -5,7 +5,7 @@ package arraylist
 import (
 	"errors"
 
-	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
+	"github.com/TectusDreamlab/go-common-utils/datastructure/shared"
 )
 
 type ArrayList struct {

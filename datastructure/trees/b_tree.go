@@ -3,7 +3,7 @@ package trees
 import (
 	"errors"
 
-	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
+	"github.com/TectusDreamlab/go-common-utils/datastructure/shared"
 )
 
 // BTree defines a B-Tree

@@ -67,8 +67,8 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/WUMUXIAN/go-common-utils/codec"
-	"github.com/WUMUXIAN/go-common-utils/cryptowrapper"
+	"github.com/TectusDreamlab/go-common-utils/codec"
+	"github.com/TectusDreamlab/go-common-utils/cryptowrapper"
 	"golang.org/x/text/unicode/norm"
 )
 

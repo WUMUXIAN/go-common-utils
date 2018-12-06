@@ -1,7 +1,7 @@
 package trees
 
 import (
-	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
+	"github.com/TectusDreamlab/go-common-utils/datastructure/shared"
 )
 
 // HeapType defines the heap type

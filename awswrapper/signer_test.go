@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/WUMUXIAN/go-common-utils/codec"
+	"github.com/TectusDreamlab/go-common-utils/codec"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

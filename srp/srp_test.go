@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/WUMUXIAN/go-common-utils/cryptowrapper"
+	"github.com/TectusDreamlab/go-common-utils/cryptowrapper"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

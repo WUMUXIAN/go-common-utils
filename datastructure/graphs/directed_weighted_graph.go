@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
-	"github.com/WUMUXIAN/go-common-utils/datastructure/trees"
+	"github.com/TectusDreamlab/go-common-utils/datastructure/shared"
+	"github.com/TectusDreamlab/go-common-utils/datastructure/trees"
 )
 
 // DirectedWeightedGraph defines a directed wegithed graph
