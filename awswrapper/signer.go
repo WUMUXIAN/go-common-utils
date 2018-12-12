@@ -45,5 +45,5 @@ func (o *Signer) SignURL(domain, objectPath string, validityTime time.Duration, 
 		encodedHeaders := "response-content-disposition=attachment%3B" + url_.QueryEscape(disposition)
 		url += "?" + encodedHeaders
 	}
-	return o.urlSigner.Sign(url, time.Now().UTC().Add(validityTime*time.Second))
+	return o.urlSigner.Sign(url, time.Now().UTC().Add(validityTime))
 }
