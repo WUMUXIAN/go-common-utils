@@ -8,13 +8,18 @@ import (
 	"crypto/sha512"
 	"encoding/base32"
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/hex"
 	"hash"
+	"math"
 	"math/big"
 )
 
 // HashType defines the supported hash type, currently support md5, sha1, sha256 and sha512
 type HashType int
+
+// ByteOrder defines the byte order.
+type ByteOrder int
 
 // Enum the HashType
 const (
@@ -22,6 +27,12 @@ const (
 	SHA1
 	SHA256
 	SHA512
+)
+
+// Enum the ByteOrder
+const (
+	LittleEndian ByteOrder = iota
+	BigEndian
 )
 
 // ByteArray defines a byte arry
@@ -56,6 +67,34 @@ func (o ByteArray) Hex() string {
 func (o ByteArray) BigInt() *big.Int {
 	i := big.NewInt(0)
 	return i.SetBytes(o.Bytes())
+}
+
+// Float32Array returns the float32 array the byte array represents
+func (o ByteArray) Float32Array(order ByteOrder) []float32 {
+	result := []float32{}
+	i := 0
+	j := 4
+	bytes := o.Bytes()
+	for i < len(bytes) {
+		var float float32
+		if order == LittleEndian {
+			float = math.Float32frombits(binary.LittleEndian.Uint32(bytes[i:j]))
+		} else {
+			float = math.Float32frombits(binary.BigEndian.Uint32(bytes[i:j]))
+		}
+		result = append(result, float)
+		i = j
+		j += 4
+	}
+	return result
+}
+
+// Float32 returns the float32 number the byte array represents
+func (o ByteArray) Float32(order ByteOrder) float32 {
+	if order == LittleEndian {
+		return math.Float32frombits(binary.LittleEndian.Uint32(o.Bytes()[0:4]))
+	}
+	return math.Float32frombits(binary.BigEndian.Uint32(o.Bytes()[0:4]))
 }
 
 // ToByteArray return the combined byte array for the input byte arrays.
