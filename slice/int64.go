@@ -155,3 +155,18 @@ func MergeInt64s(x []int64, y []int64, excludes ...int64) []int64 {
 	}
 	return result
 }
+
+// IntersectInt64s returns the intersection of two int64 slices
+func IntersectInt64s(x []int64, y []int64) []int64 {
+	traceMap := make(map[int64]bool)
+	result := make([]int64, 0)
+	for _, v := range x {
+		traceMap[v] = true
+	}
+	for _, v := range y {
+		if traceMap[v] {
+			result = append(result, v)
+		}
+	}
+	return result
+}

@@ -156,3 +156,18 @@ func MergeStrings(x []string, y []string, excludes ...string) []string {
 	}
 	return result
 }
+
+// IntersectStrings returns the intersection of two string slices
+func IntersectStrings(x []string, y []string) []string {
+	traceMap := make(map[string]bool)
+	result := make([]string, 0)
+	for _, v := range x {
+		traceMap[v] = true
+	}
+	for _, v := range y {
+		if traceMap[v] {
+			result = append(result, v)
+		}
+	}
+	return result
+}

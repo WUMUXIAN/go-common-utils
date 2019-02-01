@@ -151,5 +151,14 @@ func TestString(t *testing.T) {
 			merged = MergeStrings(x1, x2, "1", "2", "5")
 			So(merged, ShouldResemble, []string{"3", "4"})
 		})
+
+		Convey("IntersectStrings", func() {
+			x1 := []string{"1", "2", "3"}
+			x2 := []string{"2", "3", "4", "5"}
+			intersection := IntersectStrings(x1, x2)
+			So(intersection, ShouldResemble, []string{"2", "3"})
+			intersection = IntersectStrings(x1, []string{})
+			So(intersection, ShouldResemble, []string{})
+		})
 	})
 }

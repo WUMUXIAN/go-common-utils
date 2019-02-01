@@ -151,5 +151,14 @@ func TestInt64(t *testing.T) {
 			merged = MergeInt64s(x1, x2, 1, 2, 5)
 			So(merged, ShouldResemble, []int64{3, 4})
 		})
+
+		Convey("IntersectInt64s", func() {
+			x1 := []int64{1, 2, 3}
+			x2 := []int64{2, 3, 4, 5}
+			intersection := IntersectInt64s(x1, x2)
+			So(intersection, ShouldResemble, []int64{2, 3})
+			intersection = IntersectInt64s(x1, []int64{})
+			So(intersection, ShouldResemble, []int64{})
+		})
 	})
 }

@@ -151,5 +151,14 @@ func TestInt(t *testing.T) {
 			merged = MergeInts(x1, x2, 1, 2, 5)
 			So(merged, ShouldResemble, []int{3, 4})
 		})
+
+		Convey("IntersectInts", func() {
+			x1 := []int{1, 2, 3}
+			x2 := []int{2, 3, 4, 5}
+			intersection := IntersectInts(x1, x2)
+			So(intersection, ShouldResemble, []int{2, 3})
+			intersection = IntersectInts(x1, []int{})
+			So(intersection, ShouldResemble, []int{})
+		})
 	})
 }

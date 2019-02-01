@@ -155,3 +155,18 @@ func MergeInts(x []int, y []int, excludes ...int) []int {
 	}
 	return result
 }
+
+// IntersectInts returns the intersection of two int slices
+func IntersectInts(x []int, y []int) []int {
+	traceMap := make(map[int]bool)
+	result := make([]int, 0)
+	for _, v := range x {
+		traceMap[v] = true
+	}
+	for _, v := range y {
+		if traceMap[v] {
+			result = append(result, v)
+		}
+	}
+	return result
+}
