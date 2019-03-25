@@ -27,4 +27,11 @@ func TestUUID(t *testing.T) {
 		bigInt := RandBigInt(10)
 		So(len(bigInt.Bytes()), ShouldBeGreaterThan, 0)
 	})
+
+	Convey("Gen UUID Should Be Valid UUID", t, func() {
+		uuid := GenUUID()
+		validatedUUID, err := ValidateUUID(uuid)
+		So(err, ShouldNotBeNil)
+		So(uuid, ShouldEqual, validatedUUID)
+	})
 }

@@ -2,6 +2,7 @@ package cryptowrapper
 
 import (
 	"crypto/rand"
+	"github.com/satori/go.uuid"
 	"io"
 	"math/big"
 
@@ -44,4 +45,10 @@ func BytesToUUIDFormat(bytes []byte) string {
 // MD5UUIDFormat gets the MD5 hash of the input content and convert to UUID Format
 func MD5UUIDFormat(input ...[]byte) string {
 	return BytesToUUIDFormat(codec.GetHash(codec.MD5, input...).Bytes())
+}
+
+// Validates UUID
+func ValidateUUID(UUID string) (string, error) {
+	u, err := uuid.FromString(UUID)
+	return u.String(), err
 }
