@@ -38,5 +38,5 @@
   unused-packages = true
 
 [[constraint]]
-  name = "github.com/satori/go.uuid"
-  version = "1.2.0"
+  name = "github.com/google/uuid"
+  version = "1.1.1"

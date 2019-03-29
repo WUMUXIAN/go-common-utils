@@ -2,7 +2,7 @@ package cryptowrapper
 
 import (
 	"crypto/rand"
-	"github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"io"
 	"math/big"
 
@@ -28,9 +28,14 @@ func RandBigInt(bits int) *big.Int {
 }
 
 // GenUUID generates UUID
-func GenUUID() string {
+func GenUUIDAlt() string {
 	randBytes := RandBytes(16)
 	return BytesToUUIDFormat(randBytes)
+}
+
+// GenUUID generates UUID
+func GenUUID() string {
+	return uuid.Must(uuid.NewRandom()).String()
 }
 
 // BytesToUUIDFormat converts a 16 bytes to UUID format
@@ -49,6 +54,6 @@ func MD5UUIDFormat(input ...[]byte) string {
 
 // Validates UUID
 func ValidateUUID(UUID string) (string, error) {
-	u, err := uuid.FromString(UUID)
+	u, err := uuid.Parse(UUID)
 	return u.String(), err
 }

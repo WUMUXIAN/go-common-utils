@@ -67,6 +67,14 @@
   version = "v1.37.0"
 
 [[projects]]
+  digest = "1:582b704bebaa06b48c29b0cec224a6058a09c86883aaddabde889cd1a5f73e1b"
+  name = "github.com/google/uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
+  version = "v1.1.1"
+
+[[projects]]
   branch = "master"
   digest = "1:f14d1b50e0075fb00177f12a96dd7addf93d1e2883c25befd17285b779549795"
   name = "github.com/gopherjs/gopherjs"
@@ -88,14 +96,6 @@
   pruneopts = "UT"
   revision = "77f18212c9c7edc9bd6a33d383a7b545ce62f064"
   version = "v4.2.1"
-
-[[projects]]
-  digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
 
 [[projects]]
   digest = "1:cc1c574c9cb5e99b123888c12b828e2d19224ab6c2244bda34647f230bf33243"
@@ -123,7 +123,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bc16c570d385737d2ab5f8614170076033dcb206b97b23dcef3aa91dd5d1151a"
+  digest = "1:296f47e0c6627f4035d2ee40366acaa09d6d26e9bffcefbac3aaf916326f4bf6"
   name = "golang.org/x/crypto"
   packages = [
     "curve25519",
@@ -131,7 +131,7 @@
     "pbkdf2",
   ]
   pruneopts = "UT"
-  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
+  revision = "a5d413f7728c81fb97d96a2b722368945f651e78"
 
 [[projects]]
   digest = "1:8029e9743749d4be5bc9f7d42ea1659471767860f0cdc34d37c3111bd308a295"
@@ -161,7 +161,7 @@
     "github.com/aws/aws-sdk-go/service/s3/s3manager",
     "github.com/aws/aws-sdk-go/service/ses",
     "github.com/garyburd/redigo/redis",
-    "github.com/satori/go.uuid",
+    "github.com/google/uuid",
     "github.com/smartystreets/goconvey/convey",
     "golang.org/x/crypto/curve25519",
     "golang.org/x/crypto/hkdf",
