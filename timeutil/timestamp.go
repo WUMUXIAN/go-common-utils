@@ -30,7 +30,7 @@ func GetTimeStamp(year, month, day int) int64 {
 
 // GetCurrentTimeStampMilli gets current timestamp in millis second in int64
 func GetCurrentTimeStampMilli() int64 {
-	return time.Now().UnixNano() / int64(time.Millisecond)
+	return GetTimeStampFromTime(time.Now())
 }
 
 // UniqueIDAcrossProcessNow returns a unique ID across all processes.
@@ -48,6 +48,12 @@ func ParseDataTimeISO8601(dataTimeStr string) (t time.Time, err error) {
 
 	// parse rfc-3339 datetime
 	return time.Parse(time.RFC3339, rfc3339t)
+}
+
+func ParseToTimeStamp(mySQLDateTimeStr string) (timeStamp int64, err error) {
+	t, err := ParseDataTimeISO8601(mySQLDateTimeStr)
+	timeStamp = GetTimeStampFromTime(t)
+	return
 }
 
 // GetStartOfNatureWeek get the start time of the nature week the given time stamp belongs to
@@ -83,4 +89,9 @@ func GetEndOfNatureMonth(timeStamp int64) (t time.Time) {
 	end := time.Date(date.Year(), date.Month()+1, 1, 0, 0, 0, 0, time.UTC)
 	end = end.Add(-time.Nanosecond)
 	return end
+}
+
+// Get timestamp from time.Time in millis second in int64
+func GetTimeStampFromTime(t time.Time) int64 {
+	return t.UnixNano() / int64(time.Millisecond)
 }
