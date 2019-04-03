@@ -156,3 +156,16 @@ func MergeStrings(x []string, y []string, excludes ...string) []string {
 	}
 	return result
 }
+
+// UniqueStrings removes the duplicates from the string slice
+func UniqueStrings(x []string) []string {
+	traceMap := make(map[string]bool)
+	result := make([]string, 0)
+	for _, v := range x {
+		if _, value := traceMap[v]; !value {
+			traceMap[v] = true
+			result = append(result, v)
+		}
+	}
+	return result
+}

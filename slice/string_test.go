@@ -151,5 +151,11 @@ func TestString(t *testing.T) {
 			merged = MergeStrings(x1, x2, "1", "2", "5")
 			So(merged, ShouldResemble, []string{"3", "4"})
 		})
+
+		Convey("UniqueStrings", func() {
+			x1 := []string{"1", "2", "2", "3", "4", "5", "5"}
+			uniqueStrings := UniqueStrings(x1)
+			So(uniqueStrings, ShouldResemble, []string{"1", "2", "3", "4", "5"})
+		})
 	})
 }
