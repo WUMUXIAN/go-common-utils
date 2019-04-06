@@ -1,8 +1,9 @@
 # Trees
-This readme introduces some common trees including
+This package implements some common tree data structures and its extensions.
 
 - Binary Search Tree
 - Max(Min) Heap
+- Indexed Priority Queue (using Heap)
 
 
 ## Binary Search Tree
@@ -42,7 +43,10 @@ The time complexity is O(logN), but the same as the above, worse case is O(N). T
 
 Heap has the following properties:
 
-- A heap is a Complete Binary Tree
+- A heap is a `Complete Binary Tree`
+- A `Complete Binary Tree` is a tree that:
+  - Every level is completely filled, except that the last level can be partially filled.
+  - If a node is partially filled, its child must be the left child.
 - For a given node in a heap, the values of the nodes for its children are always smaller&bigger than this node's value, for Max and Min heap respectively.
 - The sub-trees of a node are also heaps.
 
