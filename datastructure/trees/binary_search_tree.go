@@ -92,7 +92,8 @@ func (b *BinarySearchTree) delete(node *BinaryTreeNode, parent *BinaryTreeNode, 
 				parent.Right = node.Right
 			}
 		} else {
-			// If this node has both children, we find the right most node in the left sub stree and replace it with node.
+			// If this node has both children, we find the right most node in the left sub tree and replace it with node.
+			// The right most node also means its the biggest in the left tree.
 			maxNode, maxNodeParent := b.findMaxNodeWithParent(node.Left, node)
 			node.Key = maxNode.Key
 			node.Value = maxNode.Value
@@ -143,9 +144,11 @@ func (b *BinarySearchTree) Clear() {
 
 // Delete deletes a data node from binary search tree.
 func (b *BinarySearchTree) Delete(data interface{}) error {
-	err := b.delete(b.Root, &BinaryTreeNode{Right: b.Root}, data)
+	fakeParent := &BinaryTreeNode{Right: b.Root}
+	err := b.delete(b.Root, fakeParent, data)
 	if err == nil {
 		b.size--
+		b.Root = fakeParent.Right
 	}
 	return err
 }

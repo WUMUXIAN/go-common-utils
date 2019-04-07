@@ -127,6 +127,36 @@ func TestBinarySearchTree(t *testing.T) {
 		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 4, 5, 6, 7, 9})
 	})
 
+	Convey("Delete Root Node Should Work", t, func() {
+		tree := &BinarySearchTree{
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
+		}
+		unsortedKeys := []interface{}{5, 3, 2, 4, 8, 6, 9}
+		for _, data := range unsortedKeys {
+			tree.Put(data, nil)
+		}
+		tree.Delete(5)
+		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{2, 3, 4, 6, 8, 9})
+		So(tree.Root.Key, ShouldEqual, 4)
+
+		tree = &BinarySearchTree{
+			BinaryTree: BinaryTree{
+				Root:       nil,
+				Comparator: shared.IntComparator,
+			},
+		}
+		unsortedKeys = []interface{}{1, 5, 9}
+		for _, data := range unsortedKeys {
+			tree.Put(data, nil)
+		}
+		tree.Delete(1)
+		So(tree.ToSortedSlice(), ShouldResemble, []interface{}{5, 9})
+		So(tree.Root.Key, ShouldEqual, 5)
+	})
+
 	Convey("Inserting and Removing In A Row Should Work", t, func() {
 		tree := &BinarySearchTree{
 			BinaryTree: BinaryTree{
