@@ -91,6 +91,30 @@ func (s *SegmentTree) query(node, start, end int, i, j int) int {
 	return res
 }
 
+func (s *SegmentTree) update(node, start, end int, i, update int) {
+	// we find the element.
+	if start == end {
+		s.nodes[node] = update
+	} else {
+		mid := (start + end) / 2
+		if start <= i && i <= mid {
+			// If idx is in the left child, recurse on the left child
+			s.update(2*node, start, mid, i, update)
+		} else {
+			// if idx is in the right child, recurse on the right child
+			s.update(2*node+1, mid+1, end, i, update)
+		}
+		switch s.treeType {
+		case SegmentTreeMin:
+			s.nodes[node] = int(math.Min(float64(s.nodes[node*2]), float64(s.nodes[node*2+1])))
+		case SegmentTreeMax:
+			s.nodes[node] = int(math.Max(float64(s.nodes[node*2]), float64(s.nodes[node*2+1])))
+		case SegmentTreeSum:
+			s.nodes[node] = s.nodes[node*2] + s.nodes[node*2+1]
+		}
+	}
+}
+
 // Query queries the result from range i to j.
 // The result depends on what type of segment tree it is.
 // If it's minimum, then the result is the minimum value from i to j.
@@ -99,4 +123,11 @@ func (s *SegmentTree) query(node, start, end int, i, j int) int {
 func (s *SegmentTree) Query(i, j int) int {
 	// query starts from the root.
 	return s.query(1, 0, len(s.nodes)/2-1, i, j)
+}
+
+// Update updates the value of a given index i.
+// We do it recursively, if we already find it, we update the value.
+// After we find it, we will update it's parents value from bottom to up.
+func (s *SegmentTree) Update(i, update int) {
+	s.update(1, 0, len(s.nodes)/2-1, i, update)
 }
