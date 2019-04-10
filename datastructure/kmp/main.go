@@ -30,6 +30,7 @@ func SearchOccurrence(str, pattern string) (indices []int) {
 			}
 			j++
 		}
+		// if j == 0, means for i+1, the next is 0, since 0 is the default value, we don't have to do anything.
 	}
 	// Now we have the next slice constructed, we can start the search process.
 	j = 0
@@ -41,15 +42,15 @@ func SearchOccurrence(str, pattern string) (indices []int) {
 			if j > 0 {
 				j = next[j]
 			} else {
-				// if j is zero, means we start all over again, move i onwards.
+				// if j is zero, means we have exausted all possibilities, move i forward now.
 				i++
 			}
 		} else {
-			// when we have a match, move i and j forward.
+			// when we have a match, move i and j forward together.
 			i++
 			j++
 
-			// if j is at the end, then I've found an occurrence. record it and reset j to 0 to start looking again.
+			// if j is at the end, then we've found an occurrence. record the starting index (i-j) and reset j to 0 to start looking again.
 			if j == len(pattern) {
 				indices = append(indices, i-j)
 				j = 0
