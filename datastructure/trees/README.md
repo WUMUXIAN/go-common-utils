@@ -166,4 +166,27 @@ update(node, start, end, i, val) {
 ```
 
 ### Query the segment tree
-The query operation search the min, max or get sum from i to j. From the segment tree 
+The query operation search the min, max or get sum from i to j. We search from the root node and then goes down the tree by the following rules:
+
+- If the range the current node represents is totally within the query range i to j, we take the value of this node.
+- If the range the current node represents is totally outside of the query range i to j, we ignore the node.
+- If the range the current node represents is partially outside of the query range i to j, we will search downwards to its children.
+```
+query(node, start, end, i, j) {
+  // within range.
+  if i <= start && j >= end {
+    return tree[node]
+  }
+  // outside range.
+  if i < end || j > start {
+    return max/min/0 // depending on the operation.
+  }
+  // partially in.
+  mid = (start + end) / 2
+  left = query(node, start, mid, i, j)
+  right = query(node, mid+1, end, i, j)
+
+  // operation could be min, max or sum.
+  return operation (left, right)
+}
+```
