@@ -33,7 +33,12 @@ func NewSegmentTree(input []int, segmentTreeType SegmentTreeType) *SegmentTree {
 	return segmentTree
 }
 
+// node is the index of the tree node, range from 1 to 2N, start and end is the range this node represented.
 func (s *SegmentTree) build(node, start, end int, input []int) {
+	// if input is empty, nothing to do.
+	if len(input) == 0 {
+		return
+	}
 	if start == end {
 		s.nodes[node] = input[start]
 	} else {
@@ -55,6 +60,7 @@ func (s *SegmentTree) build(node, start, end int, input []int) {
 	}
 }
 
+// node is the index of the tree node, range from 1 to 2N, start and end is the range this node represented.
 func (s *SegmentTree) query(node, start, end int, i, j int) int {
 	// if the range that this node represents is completely out of the range of the query range from i to j, this node should not be considered.
 	if i > end || j < start {
@@ -91,6 +97,7 @@ func (s *SegmentTree) query(node, start, end int, i, j int) int {
 	return res
 }
 
+// node is the index of the tree node, range from 1 to 2N, start and end is the range this node represented.
 func (s *SegmentTree) update(node, start, end int, i, update int) {
 	// we find the element.
 	if start == end {
@@ -121,6 +128,10 @@ func (s *SegmentTree) update(node, start, end int, i, update int) {
 // If it's maximum, then the result is the maximum value from i to j.
 // If it's sum, then the result is the sum value from i to j.
 func (s *SegmentTree) Query(i, j int) int {
+	// invalid query.
+	if i > j || i < 0 || j > len(s.nodes)/2-1 {
+		return -1
+	}
 	// query starts from the root.
 	return s.query(1, 0, len(s.nodes)/2-1, i, j)
 }
@@ -129,5 +140,10 @@ func (s *SegmentTree) Query(i, j int) int {
 // We do it recursively, if we already find it, we update the value.
 // After we find it, we will update it's parents value from bottom to up.
 func (s *SegmentTree) Update(i, update int) {
+	// invalid update
+	if i < 0 || i > len(s.nodes)/2-1 {
+		return
+	}
+
 	s.update(1, 0, len(s.nodes)/2-1, i, update)
 }
