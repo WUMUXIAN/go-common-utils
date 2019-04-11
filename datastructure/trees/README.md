@@ -190,3 +190,94 @@ query(node, start, end, i, j) {
   return operation (left, right)
 }
 ```
+
+## Binary Indexed Tree
+Imaging a scenario, you are given an array of N, and your task is to query the sum of from 0 to i and update the value of i, where i < N. How would you do it? The most naive way would be store the array of N as it is, then
+- To get the sum from 0 to i, the time complexity will be O(N).
+- To update a value at i, the time complexity will be O(1).
+If you are going to update the array very frequently and rarely calculate the sum, this approach might be ok. However, if you wanna speed up the get sum operation, you could store the prefix-accumulated sum in another array B, so that B[i] = A[0] + ... + A[i], then
+- To get the sum from 0 to 9, the time complexity will be O(1).
+- To update a value at i, you have to update all elements in B[i] to B[N-1], thus the time complexity is O(N).
+
+Is there a way to make the get sum and the update operation both faster? Yes, that's where Binary Indexed Tree comes in to play. Instead of storing the prefix-accumulated sum, the idea of Binary Indexed Tree is to store the postfix-accumulated sum in an array C, where:
+```
+C[i] = A[i] + A[i-1] + ... + A[i-lowbit(i)+1]
+```
+
+> Note that here i is 1-indexed, not 0-indexed.
+
+So the key the `lowbit` function, what it does is, for a given integer x, turn it into binrary format, then turn all bits into 0, except for the first 1 encountered, from low bit to high bit. e.g. 6 => 0110 => lowbit(0110) => 0010.
+
+If we visualize the Indexed Binrary Tree, we will see the following:
+
+```                               
+                                  C[8]
+                                /   |
+                              /     |
+                            /       |
+                          /         |
+                        /           |
+                      /             |
+                    /               |
+                  /                ...
+              C[4]              /   |
+             /  |             /     |
+           /    |           /       |
+         /      |         /         |
+     C[2]      ...      C[6]       ...
+     /|       / |      /  |      /  |
+C[1] ...  C[3] ...  C[5] ...  C[7] ...
+ |    |    |    |    |    |    |    |
+A[1] A[2] A[3] A[4] A[5] A[6] A[7] A[8]
+```
+And we can see:
+```
+C[1] = A[1]                                     (1 => 001 => lowbit(001) => 001, C[1] = A[1] + ... + A[1-1+1])
+C[2] = A[2]+A[1]                                (2 => 010 => lowbit(010) => 010, C[2] = A[2] + ... + A[2-2+1])
+C[3] = A[3]                                     (3 => 011 => lowbit(001) => 001, C[2] = A[3] + ... + A[3-1+1])
+C[4] = A[4]+A[3]+A[2]+A[1]                      (4 => 100 => lowbit(100) => 100, C[4] = A[4] + ... + A[4-4+1])
+C[5] = A[5]                                     (5 => 101 => lowbit(001) => 001, C[1] = A[5] + ... + A[5-1+1])
+C[6] = A[6]+A[5]                                (6 => 110 => lowbit(010) => 010, C[6] = A[6] + ... + A[6-2+1])
+C[7] = A[7]                                     (7 => 111 => lowbit(001) => 001, C[7] = A[7] + ... + A[7-1+1])
+C[8] = A[8]+A[7]+A[6]+A[5]+A[4]+A[3]+A[2]+A[1]  (8 => 1000 => lowbit(1000) => 1000, C[8] = A[8] + ... + A[8-8+1])
+```
+### Build the Binary Indexed Tree
+Building the tree essentially is to construct the array C from the given input A.
+```
+build(C, A, N) {
+  for i = 1; i <= N; i++ {
+    // from tree bottom, update to up.
+    val = A[i]
+    for i <= N {
+      C[i] += val
+      i += lowbit(i)
+    }
+  }
+}
+// A and C is 1-indexed.
+```
+The time complexity is O(NlogN)
+
+### Get Sum using the Binary Indexed Tree
+```
+getSum(C, j) int {
+  res = 0
+  for j > 0 {
+    res += C[j]
+    j -= lowbit(j)
+  }
+}
+// C is 1-indexed
+```
+The time complexity is O(logN)
+
+### Update a idx by delta using the Binary Indexed Tree
+```
+update(C, i, delta) {
+  for i <= N {
+    C[i] += delta
+    i += lowbit(1)
+  }
+}
+```
+The time complexity is O(logN)
