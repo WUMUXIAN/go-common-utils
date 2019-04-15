@@ -281,3 +281,53 @@ update(C, i, delta) {
 }
 ```
 The time complexity is O(logN)
+
+## Trie Tree
+Trie Tree is also called **Radix Tree**, or **Prefix Tree**. It's a search tree that can be used store a collection of strings and provides the following functionality:
+- Insert a string into the trie tree.
+- Search exactly a string from the trie tree.
+- Count the occurrence of strings.
+- Sort strings.
+- Auto-completion, as in, for a given prefix, find out all strings that share the same prefix.
+
+We can define the Trie Tree as follows:
+- The root node does not contain any character, it represents "".
+- Each other node has only one character, assembling all the characters from the root node down to this node forms a prefix string.
+- Each non-leaf node contains 0 - 26 children, representing a-z.
+- All the strings that are represented by the children a node, share the the same prefix mentioned above.
+- Do a pre-order traversing of the trie tree can prints all strings that are stored in it.
+
+The following gives an example:
+```
+                                    root
+                                    /  \
+                                  'a'  'b'
+                                  /      \
+                                 'b'     'e'
+                                /        / \
+                               'u'      'e' 'd'
+                              /
+                            's'
+                            /
+                           'e'
+```
+The above trie tree represents the collection of strings ["abuse", "bee", "bed", "be"].
+> Please note that, to be able to have "be" marked as a string, we need a flag in the tree node.
+
+### Inserting into a trie tree.
+Inserting into a trie is a process of a travering down the tree based on the string to be inserted.
+- for each character in the string, 0 <= i < N, where N is the length of the string.
+- At a given node, if it has a child that matches the current character, move the node to this child.
+- At a given ndoe, if it does not have a child that matches the current character, create the child with the value of this character and move the node to this child.
+- repeat until all character of the strings are inserted, when reaching the last character, mark the node using a flag to indicate it represents a string, optionally, we can have a count field in a node to count occurrence of the string.
+
+> Storing all children nodes for a node using [26]\*TreeNode is a trick, because we only have a-z in alphabet.
+
+### Search from a trie tree.
+For a given prefix, we can find out all the strings that started with it. If prefix == "", it means all the strings.
+- Starting from the root, we will firstly search down the tree to find out whether prefix exists by matching character by character.
+- If prefix does not exist, return empty.
+- If find the prefix, at a node, we will print all the strings represented by this node's subtrees.
+- In order to achieve it, we can use a pre-order DFS traverse.
+
+With the above operations, we can achieve what we want using trie tree.
