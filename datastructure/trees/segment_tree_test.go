@@ -51,5 +51,10 @@ func TestSegmentTree(t *testing.T) {
 		segmentTree.Update(-1, 2)
 		segmentTree.Update(10, 2)
 		So(segmentTree.nodes, ShouldResemble, []int{0, 35, 18, 17, 6, 12, 5, 12, 1, 5, 3, 9, 3, 2, 5, 7})
+
+		segmentTree = NewSegmentTree([]int{-28, -39, 53, 65, 11, -56, -65, -39, -43, 97}, SegmentTreeSum)
+		So(segmentTree.nodes, ShouldResemble, []int{0, -44, -117, 73, -50, -67, 118, -45, -104, 54, -28, -39, 53, 65, 11, -56, -65, -39, -43, 97})
+		So(segmentTree.Query(1, 2), ShouldEqual, 14)
+		So(segmentTree.Query(0, 4), ShouldEqual, 62)
 	})
 }

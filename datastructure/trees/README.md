@@ -119,75 +119,72 @@ The segment tree can be defined as follows:
 - The leaf nodes are elements of array from A[0] to A[N-1].
 - The root of will represent the whole array A[0~N).
 - The internal nodes represent the union of elementary intervals/segment for A[i~j].
-- For a node that represent the range A[i~j), the range is broken into A[i~(i+j)/2), A[(i+j)/2, j], represented by the left and right child respectively.
-
-For example, the root node represents the interval of A[0-N), its left child represents the interval of A[0-N/2) and the right child represents the interval of A[N/2, N), so on and so forth.
 
 > Tips: since segment tree is a complete binary tree, the best way to store it is to use an array and start the node at index 1, then for each node i, the left node is at i*2, and right node is at i*2+1.
 
 For a segment tree, there are basically two things we can do about it once we built it, update and query.
 
 ### Build the segment tree
-The algorithm to build the segment tree can be done using recursive approach, from bottom to up. There are three types of range query basically, for each type, we just need to adjust a little bit. For A[i] and A[i+1], the parent is sum(A[i]+A[i+1]), min(A[i], A[i+1]) or max(A[i], A[i+1]).
+The best way to build the segment tree is to build it from bottom up because we know from tree[n] to tree[2n-1], these leaf nodes represents A[i] to A[i-1], which are the values of the array. And also for a complete binary tree, a node's left child is node*2, right child is node * 2 + 1. The following code assumes we are calculating sum:
 ```
-build(node, start, end, array) {
-    if start == end {
-        tree[node] = array[start]
-    } else {
-        mid = (start + end) / 2
-        // build the left and right sub-tree recursively.
-        build(node*2, start, mid, array)
-        build(node*2+1, mid+1, end, array)
-
-        // operation is min, max or sum.
-        tree[node] = operation(tree[node*2], tree[node*2+1])
-    }
+build(array) {
+  for i = 0; i < len(array); i++ {
+    tree[i+n] = array[i]
+  }
+  node := n - 1
+  for node > 0 {
+    tree[node] = tree[node*2] + tree[node*2+1]
+  }
 }
 ```
 
 ### Update the segment tree
-Updating a segment tree means update a val at a given index, the algorithm works similar as build, we firstly find it and from bottom to up update the parents recursively.
+Update a value is very straightforward as we will just update it and propagate the updates from bottom to up. The following code assumes we are calculating sum.
 ```
-update(node, start, end, i, val) {
-    if start == end {
-        tree[node] = val
-    } else {
-        mid = (start + end) / 2
-        if i >= start && i <= mid {
-            update(node*2, start, mid, i, val)
-        } else {
-            update(node*2+1, mid+1, end, i, val)
-        }
-        // after updating the subtree, we update the node.
-        // operation is min, max or sum.
-        tree[node] = operation(tree[node*2], tree[node*2+1])
+update(i val) {
+    // take the update.
+    tree[i+n] = val
+    node = i + n
+    // if node is not the root.
+    for node > 1 {
+      left, right = node, node
+      if node % 2 == 0 {
+        // if node is the left child.
+        right += 1
+      } else {
+        left -= 1
+      }
+      // update parent
+      tree[node/2] = sum(tree[left] + tree[right])
+      node /= 2
     }
 }
 ```
 
 ### Query the segment tree
-The query operation search the min, max or get sum from i to j. We search from the root node and then goes down the tree by the following rules:
-
-- If the range the current node represents is totally within the query range i to j, we take the value of this node.
-- If the range the current node represents is totally outside of the query range i to j, we ignore the node.
-- If the range the current node represents is partially outside of the query range i to j, we will search downwards to its children.
+The query operations query from i to j, which corresponds to the n+i and n+j leaf nodes. We call it left and right.
+As long as left <= right, we can keep looking back to their parents. But there are two cases we need to take care of:
+- If left is the right child, then we can't take its parent's value as the left child is out of the scope.
+- If right is the left child, then we can't take its parent's value as the right child is out of the scope.
+The following code assumes we are getting sum.
 ```
-query(node, start, end, i, j) {
-  // within range.
-  if i <= start && j >= end {
-    return tree[node]
+query(i, j) {
+  left = n+i
+  right = n+j
+  for left <= right {
+    if left % 2 == 1 {
+      sum += tree[left]
+      left++
+    }
+    if right % 2 == 0 {
+      sum += tree[right]
+      right--
+    }
+    // go to their parents
+    left /= 2
+    right /= 2
   }
-  // outside range.
-  if i < end || j > start {
-    return max/min/0 // depending on the operation.
-  }
-  // partially in.
-  mid = (start + end) / 2
-  left = query(node, start, mid, i, j)
-  right = query(node, mid+1, end, i, j)
-
-  // operation could be min, max or sum.
-  return operation (left, right)
+  return sum
 }
 ```
 
