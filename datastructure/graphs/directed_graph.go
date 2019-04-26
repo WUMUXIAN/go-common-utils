@@ -124,6 +124,7 @@ func (d *DirectedGraph) GetOrder() (pre, post, reversePost []int) {
 func (d *DirectedGraph) dfsForOrder(vertex int) {
 	d.visited[vertex] = true
 
+	// in the case of a pre-order traverse, we add the vertex to result first then goes to it's adjacents.
 	d.preorder = append(d.preorder, vertex)
 	adjs, _ := d.GetAdjacentVertices(vertex)
 	for _, adj := range adjs {
@@ -132,8 +133,10 @@ func (d *DirectedGraph) dfsForOrder(vertex int) {
 		}
 	}
 
-	d.reversePost = append([]int{vertex}, d.reversePost...)
+	// in the case of a postorder traverse, we add the vertex to result after we are done with it's adjacents
 	d.postorder = append(d.postorder, vertex)
+	// in the case of a reverse-post order traverse, we basically reverse the post order traverse's result.
+	d.reversePost = append([]int{vertex}, d.reversePost...)
 }
 
 func (d *DirectedGraph) dfsForCyclicPath(vertex int, inStack *[]bool, path *[]int) {
@@ -147,15 +150,19 @@ func (d *DirectedGraph) dfsForCyclicPath(vertex int, inStack *[]bool, path *[]in
 		if len(*path) != 0 {
 			return
 		}
+		// if we have not visited the adj, recursively search it, record the path to it too.
 		if !d.visited[adj] {
 			d.pathTo[adj] = vertex
 			d.dfsForCyclicPath(adj, inStack, path)
 		} else if (*inStack)[adj] {
-			// We've got a loop.
+			// if we have already visited the adj, and this adj is already in the stack.
+			// it means we have a loop.
+
+			// to find the cyclic path, we start from the vertex and travel backwards until we meet the adj.
 			for v := vertex; v != adj; v = d.pathTo[v] {
-				// fmt.Println("endless loop happending", v, d.pathTo[v])
 				(*path) = append([]int{v}, (*path)...)
 			}
+			// add the adj to the start and end of the path for complete the circle.
 			(*path) = append([]int{adj}, (*path)...)
 			(*path) = append((*path), adj)
 		}

@@ -7,15 +7,18 @@ import "fmt"
 // If pattern never occur in str, return empty string.
 // The time complexity for KMP is O(N), where N is the length of str.
 func SearchOccurrence(str, pattern string) (indices []int) {
-	// if str is empty, no occurrence if possible.
-	// if pattern is empty, no occurrence if existed.
+	// if str is empty, no occurrence is possible.
+	// if pattern is empty, no occurrence is existed.
 	if len(str) == 0 || len(pattern) == 0 {
 		return nil
 	}
 
-	// We using KMP algorithm, the first thing we do is to construct the next array for pattern.
+	// When using KMP algorithm, the first thing we do is to construct the next array for pattern.
 	// note taht next[0] = 0 and will never be used.
 	next := make([]int, len(pattern))
+	
+	// To calculate the next array, we try to match the pattern string against itself, starting from the second character.
+
 	j := 0
 	for i := 1; i < len(pattern); i++ {
 		// if j is not 0 and we find a mismatch, move j to next[j] until we find a match or j goes back to 0

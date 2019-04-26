@@ -228,6 +228,7 @@ func (u *UnDirectedGraph) GetConnectedComponents() (connectedCompoent [][]int) {
 	return u.connectedComponent
 }
 
+// selfLoop checks for a given vertex, whether there is a loop exist (connects to itself.)
 func (u *UnDirectedGraph) selfLoop(vertex int) bool {
 	adjs, _ := u.GetAdjacentVertices(vertex)
 	for _, adj := range adjs {
@@ -238,6 +239,7 @@ func (u *UnDirectedGraph) selfLoop(vertex int) bool {
 	return false
 }
 
+// parallel checks whether two vertices are connected to each other in parallel. (connected more than once.)
 func (u *UnDirectedGraph) parallel(vertex1, vertex2 int) bool {
 	adjs, _ := u.GetAdjacentVertices(vertex1)
 	count := 0
@@ -288,11 +290,15 @@ func (u *UnDirectedGraph) dfsForCyclicPath(vertex int, pathToVertex int, path *[
 		if len(*path) != 0 {
 			return
 		}
+		// if the adj is not visited, we add it to path and mark as visited.
+		// and also dfs further down.
 		if !u.visited[adj] {
 			u.pathTo[adj] = vertex
 			u.dfsForCyclicPath(adj, vertex, path)
 		} else if pathToVertex != adj {
-			// found it
+			// if the adj is already visited, and it's not equal to the pathToVertex, it means we have a cycle.
+			// that's because this means there is an edge between this adj vertex and some previous visited vertex.
+			// and that vertex is not the one we are coming from.
 			for v := vertex; v != adj; v = u.pathTo[v] {
 				(*path) = append([]int{v}, (*path)...)
 			}
@@ -321,10 +327,13 @@ func (u *UnDirectedGraph) GetBipartiteParts() (parts [][]int) {
 
 				adjs, _ := u.GetAdjacentVertices(vertex)
 				for _, adj := range adjs {
+					// if this adjacent vertex is not visited yet, we set it to the different color.
 					if !u.visited[adj] {
 						color[adj] = !color[vertex]
 						stack = append(stack, adj)
 					} else if color[adj] == color[vertex] {
+						// if this adjacent vertex is already visted and it has the same color as vertex.
+						// it is not a bipartie graph.
 						return nil
 					}
 				}

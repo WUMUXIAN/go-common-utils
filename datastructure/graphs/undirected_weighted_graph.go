@@ -70,11 +70,13 @@ func (u *UnDirectedWeightGraph) Print() string {
 
 // LazyPrimMinimumSpanningTree gets the mimimum spanning tree of the give directed weighted graph.
 func (u *UnDirectedWeightGraph) LazyPrimMinimumSpanningTree() ([]WeightedEdge, float64) {
+	// to have a spanning tree, all vertices must be connected.
 	connectedC := u.GetConnectedComponents()
 	if len(connectedC) != 1 {
 		return nil, 0
 	}
 
+	// we use a heap to represents a priority queue.
 	priorityQueue := &trees.Heap{
 		HeapType:   trees.HeapTypeMin,
 		Comparator: CompareEdges,
@@ -84,6 +86,7 @@ func (u *UnDirectedWeightGraph) LazyPrimMinimumSpanningTree() ([]WeightedEdge, f
 	res := make([]WeightedEdge, 0)
 
 	for i := 0; i < u.vertexCount; i++ {
+		// for each unvisited vertex, we use prim algorithm to search for the edges step by step.
 		if !u.visited[i] {
 			u.prim(i, priorityQueue, &res)
 		}
@@ -91,6 +94,7 @@ func (u *UnDirectedWeightGraph) LazyPrimMinimumSpanningTree() ([]WeightedEdge, f
 	return res, u.mimimumWeight
 }
 
+// scanAdjsAndEnqueue scans all the edges of this vertex, and put them into the priority queue. (priority based on the wegith.)
 func (u *UnDirectedWeightGraph) scanAdjsAndEnqueue(vertex int, priorityQueue *trees.Heap) {
 	u.visited[vertex] = true
 	edges := u.adjacentEdges[vertex]
@@ -106,6 +110,7 @@ func (u *UnDirectedWeightGraph) scanAdjsAndEnqueue(vertex int, priorityQueue *tr
 
 func (u *UnDirectedWeightGraph) prim(vertex int, priorityQueue *trees.Heap, res *[]WeightedEdge) {
 	u.scanAdjsAndEnqueue(vertex, priorityQueue)
+	// until the priorityQueue is empty.
 	for priorityQueue.Peek() != nil {
 		// get the top edge.
 		edge := priorityQueue.Pop().(WeightedEdge)
@@ -116,11 +121,11 @@ func (u *UnDirectedWeightGraph) prim(vertex int, priorityQueue *trees.Heap, res 
 			continue
 		}
 
-		// add this edge to the result
+		// add this edge to the result and udpate the weight.
 		(*res) = append((*res), edge)
 		u.mimimumWeight += edge.GetWeight()
 
-		// for the other vertex, if it's not visited yet, add its adjs into the queue.
+		// for the other vertex, if it's not visited yet, add its adjs into the priority queue.
 		if !u.visited[w] {
 			u.scanAdjsAndEnqueue(w, priorityQueue)
 		}
