@@ -14,12 +14,13 @@ type UnDirectedGraph struct {
 	pathTo             []int
 	distanceTo         []int
 	connectedComponent [][]int
+	edges              [][]int
 }
 
 // NewUnDirectedGraph initalises a new undirected graph with vertexCount vertices.
 func NewUnDirectedGraph(vertexCount int) *UnDirectedGraph {
 	return &UnDirectedGraph{
-		vertexCount, 0, make([][]int, vertexCount), nil, nil, nil, nil,
+		vertexCount, 0, make([][]int, vertexCount), nil, nil, nil, nil, make([][]int, 0),
 	}
 }
 
@@ -40,6 +41,7 @@ func (u *UnDirectedGraph) GetEdgeCount() int {
 // AddEdge adds an edge to the graph
 func (u *UnDirectedGraph) AddEdge(vertex1, vertex2 int) error {
 	if u.isVertexValid(vertex1) && u.isVertexValid(vertex2) {
+		u.edges = append(u.edges, []int{vertex1, vertex2})
 		u.adjacentVertices[vertex1] = append(u.adjacentVertices[vertex1], vertex2)
 		u.adjacentVertices[vertex2] = append(u.adjacentVertices[vertex2], vertex1)
 		u.edgeCount++
@@ -306,6 +308,45 @@ func (u *UnDirectedGraph) dfsForCyclicPath(vertex int, pathToVertex int, path *[
 			(*path) = append((*path), adj)
 		}
 	}
+}
+
+// HasCycle using union-find method to find whether there is cycle.
+func (u *UnDirectedGraph) HasCycle() bool {
+	// let's init x sets, x = vertexCount. which means, each vertex is a set.
+	parent := make([]int, u.vertexCount)
+	// init them to -1
+	for i := 0; i < u.vertexCount; i++ {
+		parent[i] = -1
+	}
+
+	// we go through the edges one by one.
+	for _, edge := range u.edges {
+		setParent1 := findInSet(parent, edge[0])
+		setParent2 := findInSet(parent, edge[1])
+
+		// if these two edges are in the same union.
+		if setParent1 == setParent2 {
+			return true
+		}
+		parent = mergeSet(parent, setParent1, setParent2)
+	}
+	return false
+}
+
+func findInSet(parent []int, vertex int) int {
+	// this vertex is the parent of the set it belongs to.
+	if parent[vertex] == -1 {
+		return vertex
+	}
+	// if not, recursively find its parent in the set.
+	return findInSet(parent, parent[vertex])
+}
+
+func mergeSet(parent []int, vertex1, vertex2 int) []int {
+	setParent1 := findInSet(parent, vertex1)
+	setParent2 := findInSet(parent, vertex2)
+	parent[setParent1] = setParent2
+	return parent
 }
 
 // GetBipartiteParts gets the two parties if the graph is a bi-partite graph

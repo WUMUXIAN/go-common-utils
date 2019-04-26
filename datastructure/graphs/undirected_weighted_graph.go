@@ -18,7 +18,7 @@ type UnDirectedWeightGraph struct {
 // NewUnDirectedWeightedGraph initalises a new undirected weighted graph with vertexCount vertices.
 func NewUnDirectedWeightedGraph(vertexCount int) *UnDirectedWeightGraph {
 	return &UnDirectedWeightGraph{
-		UnDirectedGraph{vertexCount, 0, make([][]int, vertexCount), nil, nil, nil, nil},
+		UnDirectedGraph{vertexCount, 0, make([][]int, vertexCount), nil, nil, nil, nil, make([][]int, 0)},
 		make([][]WeightedEdge, vertexCount), 0,
 	}
 }
