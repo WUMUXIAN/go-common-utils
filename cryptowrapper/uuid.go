@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"io"
 	"math/big"
+	"strings"
 
 	"github.com/TectusDreamlab/go-common-utils/codec"
 )
@@ -53,7 +54,16 @@ func MD5UUIDFormat(input ...[]byte) string {
 }
 
 // Validates UUID
-func ValidateUUID(UUID string) (string, error) {
+func ValidateUUID(UUID string, sanitize ...bool) (string, error) {
 	u, err := uuid.Parse(UUID)
-	return u.String(), err
+	if err != nil {
+		return "", err
+	}
+
+	uStr := u.String()
+	if len(sanitize) > 0 && sanitize[0] {
+		uStr = strings.ToLower(uStr)
+	}
+
+	return uStr, err
 }
