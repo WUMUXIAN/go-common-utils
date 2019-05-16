@@ -1,6 +1,7 @@
 package graphs
 
 import (
+	"container/list"
 	"errors"
 	"fmt"
 )
@@ -107,12 +108,13 @@ func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
 	}
 	u.visited = make([]bool, u.vertexCount)
 	u.pathTo = make([]int, u.vertexCount)
-	stack := []int{startingVertex}
+	stack := list.New()
+	stack.PushBack(startingVertex)
 
-	for len(stack) != 0 {
+	for stack.Len() > 0 {
 		// pop stack
-		vertex := stack[len(stack)-1]
-		stack = stack[:len(stack)-1]
+		v := stack.Remove(stack.Back())
+		vertex := v.(int)
 
 		// only if this vertex has not been visited, we mark it as visited and add into result.
 		if !u.visited[vertex] {
@@ -125,7 +127,7 @@ func (u *UnDirectedGraph) DFS(startingVertex int) (vertices []int, err error) {
 		for i := len(adjs) - 1; i >= 0; i-- {
 			// only add to stack if it's not visited yet.
 			if !u.visited[adjs[i]] {
-				stack = append(stack, adjs[i])
+				stack.PushBack(adjs[i])
 				u.pathTo[adjs[i]] = vertex
 			}
 		}
@@ -142,20 +144,21 @@ func (u *UnDirectedGraph) BFS(startingVertex int) (vertices []int, err error) {
 	u.visited = make([]bool, u.vertexCount)
 	u.pathTo = make([]int, u.vertexCount)
 	u.distanceTo = make([]int, u.vertexCount)
-	queue := []int{startingVertex}
+	queue := list.New()
+	queue.PushBack(startingVertex)
 	u.visited[startingVertex] = true
 
-	for len(queue) != 0 {
+	for queue.Len() > 0 {
 		// dequeue
-		vertex := queue[0]
-		queue = queue[1:]
+		v := queue.Remove(queue.Front())
+		vertex := v.(int)
 		vertices = append(vertices, vertex)
 
 		// get all its adjacent vertices.
 		adjs, _ := u.GetAdjacentVertices(vertex)
 		for i := 0; i < len(adjs); i++ {
 			if !u.visited[adjs[i]] {
-				queue = append(queue, adjs[i])
+				queue.PushBack(adjs[i])
 				u.visited[adjs[i]] = true
 				u.pathTo[adjs[i]] = vertex
 				u.distanceTo[adjs[i]] = u.distanceTo[vertex] + 1
@@ -355,12 +358,14 @@ func (u *UnDirectedGraph) GetBipartiteParts() (parts [][]int) {
 	color := make([]bool, u.vertexCount)
 	for i := 0; i < u.vertexCount; i++ {
 		if !u.visited[i] {
-			stack := []int{i}
+			stack := list.New()
+			stack.PushBack(i)
 
 			// run a dfs.
-			for len(stack) != 0 {
-				vertex := stack[len(stack)-1]
-				stack = stack[:len(stack)-1]
+			for stack.Len() > 0 {
+				// pop
+				v := stack.Remove(stack.Back())
+				vertex := v.(int)
 
 				if !u.visited[vertex] {
 					u.visited[vertex] = true
@@ -371,7 +376,7 @@ func (u *UnDirectedGraph) GetBipartiteParts() (parts [][]int) {
 					// if this adjacent vertex is not visited yet, we set it to the different color.
 					if !u.visited[adj] {
 						color[adj] = !color[vertex]
-						stack = append(stack, adj)
+						stack.PushBack(adj)
 					} else if color[adj] == color[vertex] {
 						// if this adjacent vertex is already visted and it has the same color as vertex.
 						// it is not a bipartie graph.
