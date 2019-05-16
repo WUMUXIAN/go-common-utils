@@ -1,6 +1,10 @@
 package trees
 
-import "github.com/WUMUXIAN/go-common-utils/datastructure/shared"
+import (
+	"container/list"
+
+	"github.com/WUMUXIAN/go-common-utils/datastructure/shared"
+)
 
 // BinaryTreeNode defines a tree node of a binary search tree
 type BinaryTreeNode struct {
@@ -49,19 +53,19 @@ func (b *BinaryTree) DepthFirstTraverse() []interface{} {
 	if b.Root == nil {
 		return []interface{}{}
 	}
-	stack := []*BinaryTreeNode{b.Root}
+	stack := list.New()
+	stack.PushBack(b.Root)
 	result := make([]interface{}, 0)
-	for len(stack) != 0 {
+	for stack.Len() != 0 {
 		// pop stack
-		node := stack[len(stack)-1]
-		stack = stack[:len(stack)-1]
+		node := stack.Remove(stack.Back()).(*BinaryTreeNode)
 
 		// push the children of this node to stack, right first, left later.
 		if node.Right != nil {
-			stack = append(stack, node.Right)
+			stack.PushBack(node.Right)
 		}
 		if node.Left != nil {
-			stack = append(stack, node.Left)
+			stack.PushBack(node.Left)
 		}
 
 		// get value of the node
