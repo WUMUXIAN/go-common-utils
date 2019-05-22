@@ -6,8 +6,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestTimeUtil(t *testing.T) {
-	Convey("Test Time Utilities", t, func() {
+func TestTimeUtilTimestamp(t *testing.T) {
+	Convey("Test Time Utilities For Timestamp", t, func() {
 		Convey("CurrentTimeStampStr Should Work", func() {
 			So(CurrentTimeStampStr(), ShouldHaveLength, 10)
 		})
@@ -39,17 +39,12 @@ func TestTimeUtil(t *testing.T) {
 			So(id2, ShouldNotEqual, id3)
 		})
 
-		Convey("ParseDataTimeISO8601 Should Work", func() {
-			t, err := ParseDataTimeISO8601("2017-07-04 03:32:31")
+		Convey("Parse ISO8601 DateTime String To Timestamp", func() {
+			timestamp, err := ParseToTimeStamp("2017-07-04 03:32:31")
 			So(err, ShouldBeNil)
-			So(t.Year(), ShouldEqual, 2017)
-			So(t.Month(), ShouldEqual, 7)
-			So(t.Day(), ShouldEqual, 4)
-			So(t.Hour(), ShouldEqual, 3)
-			So(t.Minute(), ShouldEqual, 32)
-			So(t.Second(), ShouldEqual, 31)
+			So(timestamp, ShouldEqual, 1499139151000)
 
-			_, err = ParseDataTimeISO8601("12345")
+			_, err = ParseToTimeStamp("12345")
 			So(err, ShouldNotBeNil)
 		})
 

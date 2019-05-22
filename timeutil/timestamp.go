@@ -4,10 +4,11 @@ package timeutil
 import (
 	"math"
 	"strconv"
-	"strings"
 	"sync/atomic"
 	"time"
 )
+
+const formatMySQLDateTime = "2006-01-02 15:04:05.999999"
 
 var (
 	uniqueOrderedUint64Counter = int32(0)
@@ -41,17 +42,8 @@ func UniqueIDAcrossProcessNow() int64 {
 	return timeStampSecond + int64(processID)<<16 + int64(extra)
 }
 
-// ParseDataTimeISO8601 parses a ISO8601 formated data time string into time.
-func ParseDataTimeISO8601(dataTimeStr string) (t time.Time, err error) {
-	// convert iso-8601 into rfc-3339 format
-	rfc3339t := strings.Replace(dataTimeStr, " ", "T", 1) + "Z"
-
-	// parse rfc-3339 datetime
-	return time.Parse(time.RFC3339, rfc3339t)
-}
-
-func ParseToTimeStamp(mySQLDateTimeStr string) (timeStamp int64, err error) {
-	t, err := ParseDataTimeISO8601(mySQLDateTimeStr)
+func ParseToTimeStamp(dataTimeStr string) (timeStamp int64, err error) {
+	t, err := ParseDataTimeISO8601(dataTimeStr)
 	timeStamp = GetTimeStampFromTime(t)
 	return
 }
