@@ -130,21 +130,6 @@
   pruneopts = "UT"
   revision = "22d7a77e9e5f409e934ed268692e56707cd169e5"
 
-[[projects]]
-  digest = "1:1093f2eb4b344996604f7d8b29a16c5b22ab9e1b25652140d3fede39f640d5cd"
-  name = "golang.org/x/text"
-  packages = [
-    "internal/gen",
-    "internal/triegen",
-    "internal/ucd",
-    "transform",
-    "unicode/cldr",
-    "unicode/norm",
-  ]
-  pruneopts = "UT"
-  revision = "342b2e1fbaa52c93f31447ad2c6abc048c63e475"
-  version = "v0.3.2"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -163,7 +148,6 @@
     "golang.org/x/crypto/curve25519",
     "golang.org/x/crypto/hkdf",
     "golang.org/x/crypto/pbkdf2",
-    "golang.org/x/text/unicode/norm",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
