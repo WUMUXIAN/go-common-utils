@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-const formatMySQLDateTime = "2006-01-02 15:04:05.999999"
-
 var (
 	uniqueOrderedUint64Counter = int32(0)
 )

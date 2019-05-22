@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const formatMySQLDateTime = "2006-01-02 15:04:05.999999"
+
 // ParseDataTimeISO8601 parses a ISO8601 formated data time string into time.
 func ParseDataTimeISO8601(dataTimeStr string) (t time.Time, err error) {
 	// convert iso-8601 into rfc-3339 format
