@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const formatMySQLDateTime = "2006-01-02 15:04:05.999999"
+const FormatMySQLDateTime = "2006-01-02 15:04:05.999999"
 
 // ParseDataTimeISO8601 parses a ISO8601 formated data time string into time.
 func ParseDataTimeISO8601(dataTimeStr string) (t time.Time, err error) {
@@ -18,7 +18,7 @@ func ParseDataTimeISO8601(dataTimeStr string) (t time.Time, err error) {
 
 // ParseDataTimeMySQL parses a MySQL formated data time string into time.
 func ParseDataTimeMySQL(mySQLDateTimeStr string) (t time.Time, err error) {
-	return time.Parse(formatMySQLDateTime, mySQLDateTimeStr)
+	return time.Parse(FormatMySQLDateTime, mySQLDateTimeStr)
 }
 
 // ParseTimeStamp parses a timestamp given in seconds, milliseconds or nanoseconds into time.
