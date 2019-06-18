@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:c9f3af88f0711291f2be5216dd596293f505abd89676a25174e7ea3acd011d53"
+  digest = "1:0ad2476120e1f70cbf07a97d69ace2c05a3a02effedc1a5dd8c62655779fb540"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -41,6 +41,7 @@
     "private/protocol/xml/xmlutil",
     "service/cloudfront/sign",
     "service/ecr",
+    "service/ecs",
     "service/s3",
     "service/s3/s3iface",
     "service/s3/s3manager",
@@ -48,8 +49,8 @@
     "service/sts",
   ]
   pruneopts = "UT"
-  revision = "98779fb4032754e8d2c6c8ec50c28b215666986d"
-  version = "v1.19.35"
+  revision = "f3c4e7e3131f7d980c1267c5a32e804847624eae"
+  version = "v1.20.2"
 
 [[projects]]
   digest = "1:0594af97b2f4cec6554086eeace6597e20a4b69466eb4ada25adf9f4300dddd2"
@@ -128,7 +129,7 @@
     "pbkdf2",
   ]
   pruneopts = "UT"
-  revision = "22d7a77e9e5f409e934ed268692e56707cd169e5"
+  revision = "57b3e21c3d5606066a87e63cfe07ec6b9f0db000"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -139,6 +140,7 @@
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/cloudfront/sign",
     "github.com/aws/aws-sdk-go/service/ecr",
+    "github.com/aws/aws-sdk-go/service/ecs",
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/aws/aws-sdk-go/service/s3/s3manager",
     "github.com/aws/aws-sdk-go/service/ses",
