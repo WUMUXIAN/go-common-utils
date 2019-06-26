@@ -43,8 +43,8 @@ func (o *ECSService) RunTask(cluster, container, taskDefinitionName string, envV
 		}
 		if len(envVariables) != 0 {
 			keyValues := make([]*ecs.KeyValuePair, 0)
-			for key, value := range envVariables {
-				keyValues = append(keyValues, &ecs.KeyValuePair{Name: aws.String(key), Value: aws.String(value)})
+			for name, value := range envVariables {
+				keyValues = append(keyValues, &ecs.KeyValuePair{Name: aws.String(name), Value: aws.String(value)})
 			}
 			containerOverride.Environment = keyValues
 		}
