@@ -121,6 +121,11 @@ func (h *Heap) GetValues() []interface{} {
 	return []interface{}{}
 }
 
+// Size gets the current size
+func (h *Heap) Size() int {
+	return h.size
+}
+
 // InitHeap initializes a heap using a list of values.
 func (h *Heap) InitHeap(values []interface{}) {
 	// Assign the values first.
