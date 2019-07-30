@@ -11,6 +11,7 @@ Some common utility functions and data structures that are useful and can be reu
   - SES operations
   - CloudFront operations.
   - ECS operations
+  - Lambda operations
   
 - Cache Wrapper
   - Redis operations

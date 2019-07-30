@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:0ad2476120e1f70cbf07a97d69ace2c05a3a02effedc1a5dd8c62655779fb540"
+  digest = "1:9d201ae593c0e39ff833240517fb8496a8c86a9742e7391102ca21d778683513"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -37,11 +37,13 @@
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
+    "private/protocol/restjson",
     "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
     "service/cloudfront/sign",
     "service/ecr",
     "service/ecs",
+    "service/lambda",
     "service/s3",
     "service/s3/s3iface",
     "service/s3/s3manager",
@@ -141,6 +143,7 @@
     "github.com/aws/aws-sdk-go/service/cloudfront/sign",
     "github.com/aws/aws-sdk-go/service/ecr",
     "github.com/aws/aws-sdk-go/service/ecs",
+    "github.com/aws/aws-sdk-go/service/lambda",
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/aws/aws-sdk-go/service/s3/s3manager",
     "github.com/aws/aws-sdk-go/service/ses",
