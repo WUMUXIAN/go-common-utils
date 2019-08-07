@@ -155,3 +155,12 @@ func MergeUInt64s(x []uint64, y []uint64, excludes ...uint64) []uint64 {
 	}
 	return result
 }
+
+// SumOfUInt64s find the sum of all items in uint64 slice
+func SumOfUInt64s(x []uint64) uint64 {
+	var sum = uint64(0)
+	for _, v := range x {
+		sum += v
+	}
+	return sum
+}

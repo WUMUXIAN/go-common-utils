@@ -55,7 +55,7 @@ func CutInts(x []int, i, j int) ([]int, error) {
 func RemoveInt(x []int, y int) []int {
 	index := IndexOfInt(x, y)
 	if index != -1 {
-		return append(x[:index], x[(index+1):]...)
+		return append(x[:index], x[(index + 1):]...)
 	}
 	return x
 }
@@ -65,7 +65,7 @@ func RemoveIntAt(x []int, index int) ([]int, error) {
 	if index < 0 || index > len(x) {
 		return x, fmt.Errorf("out of bound")
 	}
-	return append(x[:index], x[(index+1):]...), nil
+	return append(x[:index], x[(index + 1):]...), nil
 }
 
 // InsertIntAt inserts an int value into a given int slice at given index
@@ -154,4 +154,13 @@ func MergeInts(x []int, y []int, excludes ...int) []int {
 		}
 	}
 	return result
+}
+
+// SumOfInts find the sum of all items in int slice
+func SumOfInts(x []int) int {
+	var sum = 0
+	for _, v := range x {
+		sum += v
+	}
+	return sum
 }

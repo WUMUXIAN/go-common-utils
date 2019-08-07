@@ -151,5 +151,17 @@ func TestInt(t *testing.T) {
 			merged = MergeInts(x1, x2, 1, 2, 5)
 			So(merged, ShouldResemble, []int{3, 4})
 		})
+
+		Convey("SumOfInts", func() {
+			x := []int{1, 2, 3}
+			sum := SumOfInts(x)
+			So(sum, ShouldResemble, 6)
+			x = []int{}
+			sum = SumOfInts(x)
+			So(sum, ShouldResemble, 0)
+			x = []int{0, 0, 0}
+			sum = SumOfInts(x)
+			So(sum, ShouldResemble, 0)
+		})
 	})
 }

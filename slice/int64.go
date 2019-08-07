@@ -55,7 +55,7 @@ func CutInt64s(x []int64, i, j int) ([]int64, error) {
 func RemoveInt64(x []int64, y int64) []int64 {
 	index := IndexOfInt64(x, y)
 	if index != -1 {
-		return append(x[:index], x[(index+1):]...)
+		return append(x[:index], x[(index + 1):]...)
 	}
 	return x
 }
@@ -65,7 +65,7 @@ func RemoveInt64At(x []int64, index int) ([]int64, error) {
 	if index < 0 || index > len(x) {
 		return x, fmt.Errorf("out of bound")
 	}
-	return append(x[:index], x[(index+1):]...), nil
+	return append(x[:index], x[(index + 1):]...), nil
 }
 
 // InsertInt64At inserts an int64 value into a given int64 slice at given index
@@ -154,4 +154,13 @@ func MergeInt64s(x []int64, y []int64, excludes ...int64) []int64 {
 		}
 	}
 	return result
+}
+
+// SumOfInt64s find the sum of all items in int64 slice
+func SumOfInt64s(x []int64) int64 {
+	var sum = int64(0)
+	for _, v := range x {
+		sum += v
+	}
+	return sum
 }

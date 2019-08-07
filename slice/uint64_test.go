@@ -151,5 +151,17 @@ func TestUInt64(t *testing.T) {
 			merged = MergeUInt64s(x1, x2, 1, 2, 5)
 			So(merged, ShouldResemble, []uint64{3, 4})
 		})
+
+		Convey("SumOfUInt64s", func() {
+			x := []uint64{1, 2, 3}
+			sum := SumOfUInt64s(x)
+			So(sum, ShouldResemble, uint64(6))
+			x = []uint64{}
+			sum = SumOfUInt64s(x)
+			So(sum, ShouldResemble, uint64(0))
+			x = []uint64{0, 0, 0}
+			sum = SumOfUInt64s(x)
+			So(sum, ShouldResemble, uint64(0))
+		})
 	})
 }
