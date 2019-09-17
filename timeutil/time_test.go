@@ -2,6 +2,7 @@ package timeutil
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -119,6 +120,38 @@ func TestTimeUtilTime(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			_, err = ParseDataTimeMySQL("12345")
 			So(err, ShouldNotBeNil)
+		})
+
+		Convey("Get Current Time In UTC", func() {
+			t := NowUTC()
+			compareT := time.Now().UTC()
+			So(t.Year(), ShouldEqual, compareT.Year())
+			So(t.Month(), ShouldEqual, compareT.Month())
+			So(t.Day(), ShouldEqual, compareT.Day())
+			So(t.Hour(), ShouldEqual, compareT.Hour())
+			So(t.Minute(), ShouldEqual, compareT.Minute())
+			So(t.Second(), ShouldEqual, compareT.Second())
+			name, offset := t.Zone()
+			So(name, ShouldEqual, "UTC")
+			So(offset, ShouldEqual, 0)
+			So(t.Unix(), ShouldEqual, compareT.Unix())
+			So(t.UnixNano(), ShouldEqual, compareT.UnixNano())
+		})
+
+		Convey("Get Current Time In UTC - Add Duration", func() {
+			t := NowUTC(time.Second * time.Duration(1))
+			compareT := time.Now().UTC()
+			So(t.Year(), ShouldEqual, compareT.Year())
+			So(t.Month(), ShouldEqual, compareT.Month())
+			So(t.Day(), ShouldEqual, compareT.Day())
+			So(t.Hour(), ShouldEqual, compareT.Hour())
+			So(t.Minute(), ShouldEqual, compareT.Minute())
+			So(t.Second(), ShouldEqual, compareT.Second()+1)
+			name, offset := t.Zone()
+			So(name, ShouldEqual, "UTC")
+			So(offset, ShouldEqual, 0)
+			So(t.Unix(), ShouldEqual, compareT.Unix()+1)
+			So(t.UnixNano(), ShouldEqual, compareT.UnixNano()+1*1000000000)
 		})
 	})
 }

@@ -34,3 +34,14 @@ func ParseTimeStamp(timeStamp int64) (t time.Time) {
 	}
 	return
 }
+
+// NowUTC returns current UTC time with optional duration addition
+func NowUTC(addDuration ...time.Duration) time.Time {
+	now := time.Now()
+
+	if len(addDuration) == 1 {
+		now = now.Add(addDuration[0])
+	}
+
+	return now.UTC()
+}
