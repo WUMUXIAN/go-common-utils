@@ -153,5 +153,17 @@ func TestTimeUtilTime(t *testing.T) {
 			So(t.Unix(), ShouldEqual, compareT.Unix()+1)
 			So(t.UnixNano(), ShouldEqual, compareT.UnixNano()+1*1000000000)
 		})
+
+		Convey("Check The MySQL Date Time Formatting", func() {
+			t := time.Unix(0, 1574309440240*int64(time.Millisecond))
+			So(t.UTC().Format(FormatMySQLDateTime), ShouldEqual, "2019-11-21 04:10:40.24")
+			So(t.UTC().Format(FormatMySQLDateTimeMilliseconds), ShouldEqual, "2019-11-21 04:10:40.240")
+			So(t.UTC().Format(FormatMySQLDateTimeMicroseconds), ShouldEqual, "2019-11-21 04:10:40.240000")
+
+			t = time.Unix(1574309440, 0)
+			So(t.UTC().Format(FormatMySQLDateTime), ShouldEqual, "2019-11-21 04:10:40")
+			So(t.UTC().Format(FormatMySQLDateTimeMilliseconds), ShouldEqual, "2019-11-21 04:10:40.000")
+			So(t.UTC().Format(FormatMySQLDateTimeMicroseconds), ShouldEqual, "2019-11-21 04:10:40.000000")
+		})
 	})
 }

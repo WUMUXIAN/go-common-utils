@@ -6,8 +6,10 @@ import (
 )
 
 const FormatMySQLDateTime = "2006-01-02 15:04:05.999999"
+const FormatMySQLDateTimeMilliseconds = "2006-01-02 15:04:05.000"
+const FormatMySQLDateTimeMicroseconds = "2006-01-02 15:04:05.000000"
 
-// ParseDataTimeISO8601 parses a ISO8601 formated data time string into time.
+// ParseDataTimeISO8601 parses a ISO8601 formatted data time string into time.
 func ParseDataTimeISO8601(dataTimeStr string) (t time.Time, err error) {
 	// convert iso-8601 into rfc-3339 format
 	rfc3339t := strings.Replace(dataTimeStr, " ", "T", 1) + "Z"
