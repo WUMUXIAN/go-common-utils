@@ -157,5 +157,53 @@ func TestString(t *testing.T) {
 			uniqueStrings := UniqueStrings(x1)
 			So(uniqueStrings, ShouldResemble, []string{"1", "2", "3", "4", "5"})
 		})
+
+		Convey("TransformStrings", func() {
+			target := []string{"1", "2", "3"}
+			current := []string{}
+			add, remove := TransformStrings(target, current)
+			So(add, ShouldHaveLength, 3)
+			So(add, ShouldContain, "1")
+			So(add, ShouldContain, "2")
+			So(add, ShouldContain, "3")
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []string{})
+
+			target = []string{}
+			current = []string{"1", "2", "3"}
+			add, remove = TransformStrings(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []string{})
+			So(remove, ShouldHaveLength, 3)
+			So(remove, ShouldContain, "1")
+			So(remove, ShouldContain, "2")
+			So(remove, ShouldContain, "3")
+
+			target = []string{"3", "4", "5"}
+			current = []string{"1", "2", "3"}
+			add, remove = TransformStrings(target, current)
+			So(add, ShouldHaveLength, 2)
+			So(add, ShouldContain, "4")
+			So(add, ShouldContain, "5")
+			So(remove, ShouldHaveLength, 2)
+			So(remove, ShouldContain, "1")
+			So(remove, ShouldContain, "2")
+
+			target = []string{}
+			current = []string{}
+			add, remove = TransformStrings(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []string{})
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []string{})
+
+			target = []string{"1", "2", "3"}
+			current = []string{"1", "2", "3"}
+			add, remove = TransformStrings(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []string{})
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []string{})
+		})
 	})
 }

@@ -3,6 +3,7 @@ package slice
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 )
 
@@ -168,4 +169,41 @@ func UniqueStrings(x []string) []string {
 		}
 	}
 	return result
+}
+
+// TransformStrings helps figure out how to transform current to target slice by returning the ones to add and remove
+func TransformStrings(target, current []string) (add, remove []string) {
+	add = make([]string, 0)
+	remove = make([]string, 0)
+
+	// Process
+	if target != nil {
+		statusMap := make(map[string]int) // the int is the status, -1: to be removed, 0: stay there, 1: to be added.
+		length := int(math.Max(float64(len(target)), float64(len(current))))
+		for i := 0; i < length; i++ {
+			if i <= len(target)-1 {
+				if _, ok := statusMap[target[i]]; ok {
+					statusMap[target[i]]++
+				} else {
+					statusMap[target[i]] = 1
+				}
+			}
+			if i <= len(current)-1 {
+				if _, ok := statusMap[current[i]]; ok {
+					statusMap[current[i]]--
+				} else {
+					statusMap[current[i]] = -1
+				}
+			}
+		}
+		for v, status := range statusMap {
+			if status < 0 {
+				remove = append(remove, v)
+			} else if status > 0 {
+				add = append(add, v)
+			}
+		}
+	}
+
+	return
 }

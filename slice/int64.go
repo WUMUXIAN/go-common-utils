@@ -2,6 +2,7 @@ package slice
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 )
 
@@ -55,7 +56,7 @@ func CutInt64s(x []int64, i, j int) ([]int64, error) {
 func RemoveInt64(x []int64, y int64) []int64 {
 	index := IndexOfInt64(x, y)
 	if index != -1 {
-		return append(x[:index], x[(index + 1):]...)
+		return append(x[:index], x[(index+1):]...)
 	}
 	return x
 }
@@ -65,7 +66,7 @@ func RemoveInt64At(x []int64, index int) ([]int64, error) {
 	if index < 0 || index > len(x) {
 		return x, fmt.Errorf("out of bound")
 	}
-	return append(x[:index], x[(index + 1):]...), nil
+	return append(x[:index], x[(index+1):]...), nil
 }
 
 // InsertInt64At inserts an int64 value into a given int64 slice at given index
@@ -163,4 +164,41 @@ func SumOfInt64s(x []int64) int64 {
 		sum += v
 	}
 	return sum
+}
+
+// TransformInt64s helps figure out how to transform current to target slice by returning the ones to add and remove
+func TransformInt64s(target, current []int64) (add, remove []int64) {
+	add = make([]int64, 0)
+	remove = make([]int64, 0)
+
+	// Process
+	if target != nil {
+		statusMap := make(map[int64]int) // the int is the status, -1: to be removed, 0: stay there, 1: to be added.
+		length := int(math.Max(float64(len(target)), float64(len(current))))
+		for i := 0; i < length; i++ {
+			if i <= len(target)-1 {
+				if _, ok := statusMap[target[i]]; ok {
+					statusMap[target[i]]++
+				} else {
+					statusMap[target[i]] = 1
+				}
+			}
+			if i <= len(current)-1 {
+				if _, ok := statusMap[current[i]]; ok {
+					statusMap[current[i]]--
+				} else {
+					statusMap[current[i]] = -1
+				}
+			}
+		}
+		for v, status := range statusMap {
+			if status < 0 {
+				remove = append(remove, v)
+			} else if status > 0 {
+				add = append(add, v)
+			}
+		}
+	}
+
+	return
 }

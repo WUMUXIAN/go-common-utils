@@ -163,5 +163,53 @@ func TestInt(t *testing.T) {
 			sum = SumOfInts(x)
 			So(sum, ShouldResemble, 0)
 		})
+
+		Convey("TransformInts", func() {
+			target := []int{1, 2, 3}
+			current := []int{}
+			add, remove := TransformInts(target, current)
+			So(add, ShouldHaveLength, 3)
+			So(add, ShouldContain, int(1))
+			So(add, ShouldContain, int(2))
+			So(add, ShouldContain, int(3))
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []int{})
+
+			target = []int{}
+			current = []int{1, 2, 3}
+			add, remove = TransformInts(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []int{})
+			So(remove, ShouldHaveLength, 3)
+			So(remove, ShouldContain, int(1))
+			So(remove, ShouldContain, int(2))
+			So(remove, ShouldContain, int(3))
+
+			target = []int{3, 4, 5}
+			current = []int{1, 2, 3}
+			add, remove = TransformInts(target, current)
+			So(add, ShouldHaveLength, 2)
+			So(add, ShouldContain, int(4))
+			So(add, ShouldContain, int(5))
+			So(remove, ShouldHaveLength, 2)
+			So(remove, ShouldContain, int(1))
+			So(remove, ShouldContain, int(2))
+
+			target = []int{}
+			current = []int{}
+			add, remove = TransformInts(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []int{})
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []int{})
+
+			target = []int{1, 2, 3}
+			current = []int{1, 2, 3}
+			add, remove = TransformInts(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []int{})
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []int{})
+		})
 	})
 }

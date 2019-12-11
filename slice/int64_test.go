@@ -163,5 +163,53 @@ func TestInt64(t *testing.T) {
 			sum = SumOfInt64s(x)
 			So(sum, ShouldResemble, int64(0))
 		})
+
+		Convey("TransformInt64s", func() {
+			target := []int64{1, 2, 3}
+			current := []int64{}
+			add, remove := TransformInt64s(target, current)
+			So(add, ShouldHaveLength, 3)
+			So(add, ShouldContain, int64(1))
+			So(add, ShouldContain, int64(2))
+			So(add, ShouldContain, int64(3))
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []int64{})
+
+			target = []int64{}
+			current = []int64{1, 2, 3}
+			add, remove = TransformInt64s(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []int64{})
+			So(remove, ShouldHaveLength, 3)
+			So(remove, ShouldContain, int64(1))
+			So(remove, ShouldContain, int64(2))
+			So(remove, ShouldContain, int64(3))
+
+			target = []int64{3, 4, 5}
+			current = []int64{1, 2, 3}
+			add, remove = TransformInt64s(target, current)
+			So(add, ShouldHaveLength, 2)
+			So(add, ShouldContain, int64(4))
+			So(add, ShouldContain, int64(5))
+			So(remove, ShouldHaveLength, 2)
+			So(remove, ShouldContain, int64(1))
+			So(remove, ShouldContain, int64(2))
+
+			target = []int64{}
+			current = []int64{}
+			add, remove = TransformInt64s(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []int64{})
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []int64{})
+
+			target = []int64{1, 2, 3}
+			current = []int64{1, 2, 3}
+			add, remove = TransformInt64s(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []int64{})
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []int64{})
+		})
 	})
 }
