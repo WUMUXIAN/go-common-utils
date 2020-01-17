@@ -10,14 +10,17 @@ func TestTimeUtilTimestamp(t *testing.T) {
 	Convey("Test Time Utilities For Timestamp", t, func() {
 		Convey("CurrentTimeStampStr Should Work", func() {
 			So(CurrentTimeStampStr(), ShouldHaveLength, 10)
+			So(CurrentTimeStampStr(true), ShouldHaveLength, 19)
 		})
 
 		Convey("CurrentTimeStamp Should Work", func() {
 			So(CurrentTimeStamp(), ShouldBeGreaterThan, 946684800)
+			So(CurrentTimeStamp(true), ShouldBeGreaterThan, 946684800000000000)
 		})
 
 		Convey("GetTimeStamp Should Work", func() {
 			So(GetTimeStamp(2010, 1, 1), ShouldEqual, 1262304000)
+			So(GetTimeStamp(2010, 1, 1, true), ShouldEqual, 1262304000000000000)
 		})
 
 		Convey("GetCurrentTimeStampMilli Should Work", func() {

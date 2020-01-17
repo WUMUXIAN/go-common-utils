@@ -13,18 +13,28 @@ var (
 )
 
 // CurrentTimeStampStr gets current timestamp in string
-func CurrentTimeStampStr() string {
-	return strconv.FormatInt(time.Now().Unix(), 10)
+func CurrentTimeStampStr(nano ...bool) string {
+	return strconv.FormatInt(CurrentTimeStamp(nano...), 10)
 }
 
 // CurrentTimeStamp gets current timestamp in int64
-func CurrentTimeStamp() int64 {
-	return time.Now().Unix()
+func CurrentTimeStamp(nano ...bool) int64 {
+	t := time.Now()
+	timeStamp := t.Unix()
+	if len(nano) > 0 && nano[0] {
+		timeStamp = t.UnixNano()
+	}
+	return timeStamp
 }
 
 // GetTimeStamp get timestamp in int64 by year, month and day.
-func GetTimeStamp(year, month, day int) int64 {
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).Unix()
+func GetTimeStamp(year, month, day int, nano ...bool) int64 {
+	t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	timeStamp := t.Unix()
+	if len(nano) > 0 && nano[0] {
+		timeStamp = t.UnixNano()
+	}
+	return timeStamp
 }
 
 // GetCurrentTimeStampMilli gets current timestamp in millis second in int64
