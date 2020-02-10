@@ -1,7 +1,6 @@
 package awswrapper
 
 import (
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/lambda"
 )
@@ -32,12 +31,11 @@ func GetLambdaService(region string) *LambdaService {
 	return lambdaService
 }
 
-func (o *LambdaService) Invoke(functionName string, payload []byte, isEvent bool) (err error) {
+func (o *LambdaService) Invoke(functionName string, payload []byte, isEvent bool) (*lambda.InvokeOutput, error) {
 	invocationType := "RequestResponse"
 	if isEvent {
 		invocationType = "Event"
 	}
-	out, err := o.service.Invoke(&lambda.InvokeInput{FunctionName: aws.String(functionName), InvocationType: aws.String(invocationType), Payload: payload})
-	fmt.Println(out)
-	return err
+
+	return o.service.Invoke(&lambda.InvokeInput{FunctionName: aws.String(functionName), InvocationType: aws.String(invocationType), Payload: payload})
 }
