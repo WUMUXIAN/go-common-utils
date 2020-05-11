@@ -210,6 +210,22 @@ func TestInt(t *testing.T) {
 			So(add, ShouldResemble, []int{})
 			So(remove, ShouldHaveLength, 0)
 			So(remove, ShouldResemble, []int{})
+
+			target = nil
+			current = []int{1146851694}
+			add, remove = TransformInts(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []int{})
+			So(remove, ShouldHaveLength, 1)
+			So(remove, ShouldContain, int(1146851694))
+
+			target = []int{1146851694}
+			current = nil
+			add, remove = TransformInts(target, current)
+			So(add, ShouldHaveLength, 1)
+			So(add, ShouldContain, int(1146851694))
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []int{})
 		})
 	})
 }

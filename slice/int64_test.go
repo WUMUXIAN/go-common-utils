@@ -210,6 +210,22 @@ func TestInt64(t *testing.T) {
 			So(add, ShouldResemble, []int64{})
 			So(remove, ShouldHaveLength, 0)
 			So(remove, ShouldResemble, []int64{})
+
+			target = nil
+			current = []int64{1146851694}
+			add, remove = TransformInt64s(target, current)
+			So(add, ShouldHaveLength, 0)
+			So(add, ShouldResemble, []int64{})
+			So(remove, ShouldHaveLength, 1)
+			So(remove, ShouldContain, int64(1146851694))
+
+			target = []int64{1146851694}
+			current = nil
+			add, remove = TransformInt64s(target, current)
+			So(add, ShouldHaveLength, 1)
+			So(add, ShouldContain, int64(1146851694))
+			So(remove, ShouldHaveLength, 0)
+			So(remove, ShouldResemble, []int64{})
 		})
 	})
 }
