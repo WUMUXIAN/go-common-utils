@@ -38,13 +38,13 @@ func GetLambdaService(region string) *LambdaService {
 	}
 
 	httpClient, err := NewHTTPClientWithSettings(HTTPClientSettings{
-		Connect:          2 * time.Minute,
+		Connect:          10 * time.Minute,
 		ExpectContinue:   1 * time.Second,
 		IdleConn:         90 * time.Second,
-		ConnKeepAlive:    2 * time.Minute,
+		ConnKeepAlive:    10 * time.Minute,
 		MaxAllIdleConns:  100,
 		MaxHostIdleConns: 10,
-		ResponseHeader:   2 * time.Minute,
+		ResponseHeader:   10 * time.Minute,
 		TLSHandshake:     10 * time.Second,
 	})
 	if err != nil {
