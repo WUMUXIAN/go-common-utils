@@ -44,7 +44,7 @@ func GetLambdaService(region string) *LambdaService {
 		ConnKeepAlive:    2 * time.Minute,
 		MaxAllIdleConns:  100,
 		MaxHostIdleConns: 10,
-		ResponseHeader:   10 * time.Second,
+		ResponseHeader:   2 * time.Minute,
 		TLSHandshake:     10 * time.Second,
 	})
 	if err != nil {
