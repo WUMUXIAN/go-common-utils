@@ -41,7 +41,7 @@ func GetLambdaService(region string) *LambdaService {
 		Connect:          2 * time.Minute,
 		ExpectContinue:   1 * time.Second,
 		IdleConn:         90 * time.Second,
-		ConnKeepAlive:    30 * time.Second,
+		ConnKeepAlive:    2 * time.Minute,
 		MaxAllIdleConns:  100,
 		MaxHostIdleConns: 10,
 		ResponseHeader:   10 * time.Second,
