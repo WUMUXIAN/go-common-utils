@@ -68,7 +68,7 @@ var (
 )
 
 // MessageHandler defines an interface for message handler function
-type MessageHandler func(*sqs.Message) error
+type MessageHandler func(string) error
 
 // Consumer defines the attributes of a consumer
 type Consumer struct {
@@ -171,7 +171,7 @@ func (c *Consumer) consume() {
 	fmt.Printf("Received %d messages.\n", len(result.Messages))
 	for i, msg := range result.Messages {
 		for j := int8(1); j < c.RetryCount+1; j++ {
-			err = c.Handler(msg)
+			err = c.Handler(msg.String())
 			if err == nil {
 				c.deleteMessage(resultURL.QueueUrl, result.Messages[i])
 			} else if j == c.RetryCount {

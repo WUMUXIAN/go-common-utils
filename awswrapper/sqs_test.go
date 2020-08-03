@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/service/sqs"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -23,7 +22,7 @@ func TestSQSService(t *testing.T) {
 
 	myConsumer.Start()
 	Convey("Should be able to start consumer", t, func() {
-		time.Sleep(1000) // wait for goroutine to start
+		time.Sleep(10000) // wait for goroutine to start
 		So(myConsumer.Consuming, ShouldBeTrue)
 	})
 
@@ -45,7 +44,7 @@ func TestSQSService(t *testing.T) {
 	})
 }
 
-func handleMessage(msg *sqs.Message) error {
-	fmt.Println(*msg)
+func handleMessage(msg string) error {
+	fmt.Println(msg)
 	return nil
 }
