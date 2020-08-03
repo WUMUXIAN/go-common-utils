@@ -3,7 +3,6 @@ package awswrapper
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -45,6 +44,7 @@ func (o *SQSService) SendMessage(queueName, payload string) (messageID *string, 
 		QueueName: &queueName,
 	})
 	if err != nil {
+		fmt.Println("unable to get queue URL, ", err)
 		return
 	}
 	qURL := queueURL.QueueUrl
@@ -55,6 +55,7 @@ func (o *SQSService) SendMessage(queueName, payload string) (messageID *string, 
 		QueueUrl:     qURL,
 	})
 	if err != nil {
+		fmt.Println("unable to send message, ", err)
 		return
 	}
 	messageID = result.MessageId
@@ -134,6 +135,7 @@ func (c *Consumer) Stop() {
 	log.Println("Stopping...")
 	close(c.StopChan) // tell it to stop
 	<-c.StoppedChan   // wait for it to have stopped
+	c.Consuming = false
 	log.Println("Stopped...")
 }
 
@@ -147,9 +149,10 @@ func (c *Consumer) consume() {
 	})
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == sqs.ErrCodeQueueDoesNotExist {
-			exitErrorf("Unable to find queue %q.", c.QName)
+			fmt.Println("Unable to find queue ", c.QName, " : ", aerr)
 		}
-		exitErrorf("Unable to queue %q, %v.", c.QName, err)
+		fmt.Println("Unable to get URL for queue ", c.QName, " : ", err)
+		return
 	}
 
 	// Receive a message from the SQS queue with long polling enabled.
@@ -161,7 +164,8 @@ func (c *Consumer) consume() {
 		VisibilityTimeout:   aws.Int64(c.VisibilityTimeOut),
 	})
 	if err != nil {
-		exitErrorf("Unable to receive message from queue %q, %v.", c.QName, err)
+		fmt.Println("Unable to receive message from queue ", c.QName, " : ", err)
+		return
 	}
 
 	fmt.Printf("Received %d messages.\n", len(result.Messages))
@@ -196,9 +200,4 @@ func (c *Consumer) deleteMessage(qURL *string, msg *sqs.Message) {
 		return
 	}
 	fmt.Println("Message Deleted")
-}
-
-func exitErrorf(msg string, args ...interface{}) {
-	_, _ = fmt.Fprintf(os.Stderr, msg+"\n", args...)
-	os.Exit(1)
 }
