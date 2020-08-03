@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:9d201ae593c0e39ff833240517fb8496a8c86a9742e7391102ca21d778683513"
+  digest = "1:ff87512dccdea4b369154858c611cbdc95fa71e4a129a79f86cdb96544bd9613"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -48,6 +48,7 @@
     "service/s3/s3iface",
     "service/s3/s3manager",
     "service/ses",
+    "service/sqs",
     "service/sts",
   ]
   pruneopts = "UT"
@@ -176,6 +177,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/aws/aws-sdk-go/aws",
+    "github.com/aws/aws-sdk-go/aws/awserr",
     "github.com/aws/aws-sdk-go/aws/endpoints",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/cloudfront/sign",
@@ -185,6 +187,7 @@
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/aws/aws-sdk-go/service/s3/s3manager",
     "github.com/aws/aws-sdk-go/service/ses",
+    "github.com/aws/aws-sdk-go/service/sqs",
     "github.com/garyburd/redigo/redis",
     "github.com/google/uuid",
     "github.com/smartystreets/goconvey/convey",
