@@ -165,5 +165,28 @@ func TestTimeUtilTime(t *testing.T) {
 			So(t.UTC().Format(FormatMySQLDateTimeMilliseconds), ShouldEqual, "2019-11-21 04:10:40.000")
 			So(t.UTC().Format(FormatMySQLDateTimeMicroseconds), ShouldEqual, "2019-11-21 04:10:40.000000")
 		})
+
+		Convey("Parse MySQl Date String To Time", func() {
+			// mysql date string
+			t, err := ParseDataMySQL("2017-07-04")
+			So(err, ShouldBeNil)
+			So(t.Year(), ShouldEqual, 2017)
+			So(t.Month(), ShouldEqual, 7)
+			So(t.Day(), ShouldEqual, 4)
+			So(t.Hour(), ShouldEqual, 0)
+			So(t.Minute(), ShouldEqual, 0)
+			So(t.Second(), ShouldEqual, 0)
+			name, offset := t.Zone()
+			So(name, ShouldEqual, "UTC")
+			So(offset, ShouldEqual, 0)
+			So(t.UTC().Unix(), ShouldEqual, 1499126400)
+			So(t.UTC().UnixNano(), ShouldEqual, 1499126400000000000)
+
+			// invalid formats
+			_, err = ParseDataMySQL("2017-07-04 03:32:31.987112")
+			So(err, ShouldNotBeNil)
+			_, err = ParseDataMySQL("12345")
+			So(err, ShouldNotBeNil)
+		})
 	})
 }
