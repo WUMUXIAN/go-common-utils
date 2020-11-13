@@ -50,8 +50,8 @@ func UniqueIDAcrossProcessNow() int64 {
 	return timeStampSecond + int64(processID)<<16 + int64(extra)
 }
 
-func ParseToTimeStamp(dataTimeStr string) (timeStamp int64, err error) {
-	t, err := ParseDataTimeISO8601(dataTimeStr)
+func ParseToTimeStamp(dateTimeStr string) (timeStamp int64, err error) {
+	t, err := ParseDateTimeISO8601(dateTimeStr)
 	timeStamp = GetTimeStampFromTime(t)
 	return
 }

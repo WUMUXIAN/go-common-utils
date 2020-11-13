@@ -9,8 +9,8 @@ import (
 
 func TestTimeUtilTime(t *testing.T) {
 	Convey("Test Time Utilities For Time", t, func() {
-		Convey("ParseDataTimeISO8601 Should Work", func() {
-			t, err := ParseDataTimeISO8601("2017-07-04 03:32:31")
+		Convey("ParseDateTimeISO8601 Should Work", func() {
+			t, err := ParseDateTimeISO8601("2017-07-04 03:32:31")
 			So(err, ShouldBeNil)
 			So(t.Year(), ShouldEqual, 2017)
 			So(t.Month(), ShouldEqual, 7)
@@ -19,7 +19,7 @@ func TestTimeUtilTime(t *testing.T) {
 			So(t.Minute(), ShouldEqual, 32)
 			So(t.Second(), ShouldEqual, 31)
 
-			_, err = ParseDataTimeISO8601("12345")
+			_, err = ParseDateTimeISO8601("12345")
 			So(err, ShouldNotBeNil)
 		})
 
@@ -71,7 +71,7 @@ func TestTimeUtilTime(t *testing.T) {
 
 		Convey("Parse MySQl DateTime String To Time", func() {
 			// mysql datetime string without fractional seconds
-			t, err := ParseDataTimeMySQL("2017-07-04 03:32:31")
+			t, err := ParseDateTimeMySQL("2017-07-04 03:32:31")
 			So(err, ShouldBeNil)
 			So(t.Year(), ShouldEqual, 2017)
 			So(t.Month(), ShouldEqual, 7)
@@ -86,7 +86,7 @@ func TestTimeUtilTime(t *testing.T) {
 			So(t.UTC().UnixNano(), ShouldEqual, 1499139151000000000)
 
 			// mysql datetime string with fractional seconds
-			t, err = ParseDataTimeMySQL("2017-07-04 03:32:31.987")
+			t, err = ParseDateTimeMySQL("2017-07-04 03:32:31.987")
 			So(err, ShouldBeNil)
 			So(t.Year(), ShouldEqual, 2017)
 			So(t.Month(), ShouldEqual, 7)
@@ -101,7 +101,7 @@ func TestTimeUtilTime(t *testing.T) {
 			So(t.UTC().UnixNano(), ShouldEqual, 1499139151987000000)
 
 			// mysql datetime string with fractional seconds
-			t, err = ParseDataTimeMySQL("2017-07-04 03:32:31.987112")
+			t, err = ParseDateTimeMySQL("2017-07-04 03:32:31.987112")
 			So(err, ShouldBeNil)
 			So(t.Year(), ShouldEqual, 2017)
 			So(t.Month(), ShouldEqual, 7)
@@ -116,9 +116,9 @@ func TestTimeUtilTime(t *testing.T) {
 			So(t.UTC().UnixNano(), ShouldEqual, 1499139151987112000)
 
 			// invalid formats
-			_, err = ParseDataTimeMySQL("2017-07-04")
+			_, err = ParseDateTimeMySQL("2017-07-04")
 			So(err, ShouldNotBeNil)
-			_, err = ParseDataTimeMySQL("12345")
+			_, err = ParseDateTimeMySQL("12345")
 			So(err, ShouldNotBeNil)
 		})
 
@@ -168,7 +168,7 @@ func TestTimeUtilTime(t *testing.T) {
 
 		Convey("Parse MySQl Date String To Time", func() {
 			// mysql date string
-			t, err := ParseDataMySQL("2017-07-04")
+			t, err := ParseDateMySQL("2017-07-04")
 			So(err, ShouldBeNil)
 			So(t.Year(), ShouldEqual, 2017)
 			So(t.Month(), ShouldEqual, 7)
@@ -183,9 +183,9 @@ func TestTimeUtilTime(t *testing.T) {
 			So(t.UTC().UnixNano(), ShouldEqual, 1499126400000000000)
 
 			// invalid formats
-			_, err = ParseDataMySQL("2017-07-04 03:32:31.987112")
+			_, err = ParseDateMySQL("2017-07-04 03:32:31.987112")
 			So(err, ShouldNotBeNil)
-			_, err = ParseDataMySQL("12345")
+			_, err = ParseDateMySQL("12345")
 			So(err, ShouldNotBeNil)
 		})
 	})

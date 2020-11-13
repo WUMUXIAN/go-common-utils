@@ -10,22 +10,22 @@ const FormatMySQLDateTime = "2006-01-02 15:04:05.999999"
 const FormatMySQLDateTimeMilliseconds = "2006-01-02 15:04:05.000"
 const FormatMySQLDateTimeMicroseconds = "2006-01-02 15:04:05.000000"
 
-// ParseDataTimeISO8601 parses a ISO8601 formatted data time string into time.
-func ParseDataTimeISO8601(dataTimeStr string) (t time.Time, err error) {
+// ParseDateTimeISO8601 parses a ISO8601 formatted datetime string into time.
+func ParseDateTimeISO8601(dateTimeStr string) (t time.Time, err error) {
 	// convert iso-8601 into rfc-3339 format
-	rfc3339t := strings.Replace(dataTimeStr, " ", "T", 1) + "Z"
+	rfc3339t := strings.Replace(dateTimeStr, " ", "T", 1) + "Z"
 
 	// parse rfc-3339 datetime
 	return time.Parse(time.RFC3339, rfc3339t)
 }
 
-// ParseDataTimeMySQL parses a MySQL formatted data datetime string into time.
-func ParseDataTimeMySQL(mySQLDateTimeStr string) (t time.Time, err error) {
+// ParseDateTimeMySQL parses a MySQL formatted datetime string into time.
+func ParseDateTimeMySQL(mySQLDateTimeStr string) (t time.Time, err error) {
 	return time.Parse(FormatMySQLDateTime, mySQLDateTimeStr)
 }
 
-// ParseDataMySQL parses a MySQL formatted data date string into time.
-func ParseDataMySQL(mySQLDateStr string) (t time.Time, err error) {
+// ParseDateMySQL parses a MySQL formatted date string into time.
+func ParseDateMySQL(mySQLDateStr string) (t time.Time, err error) {
 	return time.Parse(FormatMySQLDate, mySQLDateStr)
 }
 
