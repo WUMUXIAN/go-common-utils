@@ -39,10 +39,11 @@ func GetSESService(region string) *SESService {
 // fromAddr: email address it's from
 // fromName: whom it's from
 // toAddr: email address to send to
+// ccAddr: email address to send cc
 // data: the body of the email
 // dataType: the type of the body, text or html
 // tags: tags on the email, comes in as key value pair, e.g. "serviceName", "proceq", "env", "dev"
-func (o *SESService) SendSESEmail(subject, fromName, fromAddr, toAddr, data, dataType string, tags ...string) error {
+func (o *SESService) SendSESEmail(subject, fromName, fromAddr, toAddr string, ccAddr *string, data, dataType string, tags ...string) error {
 	from := mail.Address{
 		Name:    fromName,
 		Address: fromAddr,
@@ -66,12 +67,18 @@ func (o *SESService) SendSESEmail(subject, fromName, fromAddr, toAddr, data, dat
 		}
 
 	}
-	params := &ses.SendEmailInput{
-		Destination: &ses.Destination{ // Required
-			ToAddresses: []*string{
-				aws.String(toAddr), // Required
-			},
+
+	destination := &ses.Destination{ // Required
+		ToAddresses: []*string{
+			aws.String(toAddr), // Required
 		},
+	}
+	if ccAddr != nil {
+		destination.CcAddresses = []*string{ccAddr}
+	}
+
+	params := &ses.SendEmailInput{
+		Destination: destination,
 		Message: &ses.Message{ // Required
 			Body: body,
 			Subject: &ses.Content{ // Required
