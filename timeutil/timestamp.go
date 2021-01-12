@@ -95,3 +95,38 @@ func GetEndOfNatureMonth(timeStamp int64) (t time.Time) {
 func GetTimeStampFromTime(t time.Time) int64 {
 	return t.UnixNano() / int64(time.Millisecond)
 }
+
+// AddMonths returns the time corresponding to adding the given number of months to t.
+// For example, AddMonths(t, 1) applied to January 1, 2011 returns February 1, 2010.
+//
+// AddMonths does not normalizes its result as per AddDate. So, for example, adding one month to October 31 yields November 30.
+// (AddDate returns Normalized form of November 31 which is December 1)
+func AddMonths(t time.Time, d int) time.Time {
+	newDate := t.AddDate(0, d, 0)
+	if newDate.Day() == t.Day() { // No normalization happened
+		return newDate
+	}
+
+	// When normalization happens one month is added always. We remove it first.
+	newDate = newDate.AddDate(0, -1, 0)
+
+	newYear := newDate.Year()
+	newMonth := newDate.Month()
+	newDay := newDate.Day()
+
+	switch newMonth { // normalization happens when days overflow to next month. so we check last day of months
+	case time.February:
+		if t.Day() > 29 && newYear%4 == 0 {
+			newDay = 29
+		} else if t.Day() > 28 {
+			newDay = 28
+		}
+		break
+	case time.April, time.June, time.September, time.November:
+		if t.Day() > 30 {
+			newDay = 30
+		}
+	}
+
+	return time.Date(newYear, newMonth, newDay, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
+}
