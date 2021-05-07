@@ -157,6 +157,19 @@ func MergeInts(x []int, y []int, excludes ...int) []int {
 	return result
 }
 
+// UniqueInts removes the duplicates from the int slice
+func UniqueInts(x []int) []int {
+	traceMap := make(map[int]bool)
+	result := make([]int, 0)
+	for _, v := range x {
+		if _, value := traceMap[v]; !value {
+			traceMap[v] = true
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
 // SumOfInts find the sum of all items in int slice
 func SumOfInts(x []int) int {
 	var sum = 0

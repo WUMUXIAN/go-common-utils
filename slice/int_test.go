@@ -152,6 +152,12 @@ func TestInt(t *testing.T) {
 			So(merged, ShouldResemble, []int{3, 4})
 		})
 
+		Convey("UniqueInts", func() {
+			x1 := []int{1, 2, 2, 3, 4, 5, 5}
+			uniqueInts := UniqueInts(x1)
+			So(uniqueInts, ShouldResemble, []int{1, 2, 3, 4, 5})
+		})
+
 		Convey("SumOfInts", func() {
 			x := []int{1, 2, 3}
 			sum := SumOfInts(x)

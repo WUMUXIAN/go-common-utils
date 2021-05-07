@@ -152,6 +152,12 @@ func TestInt64(t *testing.T) {
 			So(merged, ShouldResemble, []int64{3, 4})
 		})
 
+		Convey("UniqueInt64s", func() {
+			x1 := []int64{1, 2, 2, 3, 4, 5, 5}
+			uniqueInt64s := UniqueInt64s(x1)
+			So(uniqueInt64s, ShouldResemble, []int64{1, 2, 3, 4, 5})
+		})
+
 		Convey("SumOfInt64s", func() {
 			x := []int64{1, 2, 3}
 			sum := SumOfInt64s(x)

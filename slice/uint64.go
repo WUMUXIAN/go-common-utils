@@ -157,6 +157,19 @@ func MergeUInt64s(x []uint64, y []uint64, excludes ...uint64) []uint64 {
 	return result
 }
 
+// UniqueUInt64s removes the duplicates from the uint64 slice
+func UniqueUInt64s(x []uint64) []uint64 {
+	traceMap := make(map[uint64]bool)
+	result := make([]uint64, 0)
+	for _, v := range x {
+		if _, value := traceMap[v]; !value {
+			traceMap[v] = true
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
 // SumOfUInt64s find the sum of all items in uint64 slice
 func SumOfUInt64s(x []uint64) uint64 {
 	var sum = uint64(0)
