@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
+	"errors"
 	"sort"
 	"testing"
 
@@ -248,6 +249,23 @@ func TestRedis(t *testing.T) {
 	Convey("Get Size After Set A Key Should Return 1\n", t, func() {
 		So(err, ShouldBeNil)
 		So(value, ShouldEqual, int64(1))
+	})
+
+	err = Redis.HSet("hash1", "key1", 1)
+	Convey("Set Hash Set Should Be OK\n", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	value, err = redis.Int64(Redis.HDel("hash1", "key1"))
+	Convey("Delete Hash Key Should Be OK\n", t, func() {
+		So(err, ShouldBeNil)
+		So(value, ShouldEqual, int64(1))
+	})
+
+	value, err = redis.Int64(Redis.HGet("hash1", "key1"))
+	Convey("Get Hash Key Should Return Nil\n", t, func() {
+		So(err, ShouldBeError, errors.New("redigo: nil returned"))
+		So(value, ShouldEqual, int64(0))
 	})
 
 	err = Redis.FlushAll()

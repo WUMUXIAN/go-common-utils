@@ -205,6 +205,13 @@ func (o *RedisCacher) HGet(hash, key string) (interface{}, error) {
 	return redisConnection.Do("HGET", hash, key)
 }
 
+// HDel deletes a value from hash set
+func (o *RedisCacher) HDel(hash, key string) (interface{}, error) {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+	return redisConnection.Do("HDEL", hash, key)
+}
+
 // HINCRBY increments a value for hash set by key.
 func (o *RedisCacher) HINCRBY(hash, key string, value interface{}) error {
 	redisConnection := o.GetConn()
