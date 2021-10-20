@@ -38,12 +38,12 @@ func GetSESService(region string) *SESService {
 // subject: subject of the email
 // fromAddr: email address it's from
 // fromName: whom it's from
-// toAddr: email address to send to
-// ccAddr: email address to send cc
+// toAddrs: email addresses to send to
+// ccAddrs: email addresses to send cc
 // data: the body of the email
 // dataType: the type of the body, text or html
 // tags: tags on the email, comes in as key value pair, e.g. "serviceName", "proceq", "env", "dev"
-func (o *SESService) SendSESEmail(subject, fromName, fromAddr, toAddr string, ccAddr *string, data, dataType string, tags ...string) error {
+func (o *SESService) SendSESEmail(subject, fromName, fromAddr string, toAddrs, ccAddrs []string, data, dataType string, tags ...string) error {
 	from := mail.Address{
 		Name:    fromName,
 		Address: fromAddr,
@@ -65,16 +65,19 @@ func (o *SESService) SendSESEmail(subject, fromName, fromAddr, toAddr string, cc
 				Charset: aws.String("utf-8"),
 			},
 		}
-
 	}
 
 	destination := &ses.Destination{ // Required
-		ToAddresses: []*string{
-			aws.String(toAddr), // Required
-		},
+		ToAddresses: make([]*string, len(toAddrs)), // Required
+		CcAddresses: make([]*string, len(ccAddrs)),
 	}
-	if ccAddr != nil {
-		destination.CcAddresses = []*string{ccAddr}
+
+	for i, toAddr := range toAddrs { // Required
+		destination.ToAddresses[i] = aws.String(toAddr)
+	}
+
+	for i, ccAddr := range ccAddrs {
+		destination.CcAddresses[i] = aws.String(ccAddr)
 	}
 
 	params := &ses.SendEmailInput{
