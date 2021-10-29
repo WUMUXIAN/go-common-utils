@@ -229,6 +229,14 @@ func (o *S3Service) Exists(bucketName string, path string) (exists bool, err err
 	return
 }
 
+// ReadHeadObject return metadata of an object
+func (o *S3Service) ReadHeadObject(bucketName string, path string) (*s3.HeadObjectOutput, error) {
+	return o.service.HeadObject(&s3.HeadObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(path),
+	})
+}
+
 // RemoveFromS3 removes a object using its bucketname and path
 func (o *S3Service) RemoveFromS3(bucketName string, path string) (err error) {
 	_, err = o.service.DeleteObject(&s3.DeleteObjectInput{

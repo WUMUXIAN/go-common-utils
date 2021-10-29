@@ -95,6 +95,14 @@ func TestS3Read(t *testing.T) {
 		So(err, ShouldNotBeNil)
 	})
 
+	headObject, err := GetS3Service("ap-southeast-1").ReadHeadObject(bucketName, "/test")
+	Convey("Get Metadata For Existing Object", t, func() {
+		So(err, ShouldBeNil)
+		So(headObject, ShouldNotBeNil)
+		So(headObject.ContentLength, ShouldNotBeNil)
+		So(*headObject.ContentLength, ShouldEqual, 1*1024*1024)
+	})
+
 	existed, err := GetS3Service("ap-southeast-1").Exists(bucketName, "/test")
 	Convey("Check Object Existence For Existing Object", t, func() {
 		So(err, ShouldBeNil)
