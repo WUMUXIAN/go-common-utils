@@ -27,15 +27,29 @@ func TestSQSService(t *testing.T) {
 	})
 
 	messageID, err := mySQS.SendMessage("TestSQS", "Hello world 1...!")
-	Convey("Should be able to send messages to an existing queue", t, func() {
+	Convey("Should be able to send a single message to an existing queue", t, func() {
 		So(err, ShouldBeNil)
 		So(messageID, ShouldNotBeNil)
 	})
 
+	failedMessageIDs, successMessageIDs, err := mySQS.SendMessageBatch("TestSQS", []string{"Batch hello world 1...!", "Batch hello world 2...!"})
+	Convey("Should be able to send multiple messages to an existing queue", t, func() {
+		So(err, ShouldBeNil)
+		So(successMessageIDs, ShouldHaveLength, 2)
+		So(failedMessageIDs, ShouldHaveLength, 0)
+	})
+
 	messageID, err = mySQS.SendMessage("NonExistingQueue", "Hello world 2...!")
-	Convey("Should not exit when sending messages to non existing queue", t, func() {
+	Convey("Should not exit when sending single message to non existing queue", t, func() {
 		So(err, ShouldNotBeNil)
 		So(messageID, ShouldBeNil)
+	})
+
+	failedMessageIDs, successMessageIDs, err = mySQS.SendMessageBatch("NonExistingQueue", []string{"Batch hello world 1...!", "Batch hello world 2...!"})
+	Convey("Should not exit when sending multiple messages to non existing queue", t, func() {
+		So(err, ShouldNotBeNil)
+		So(successMessageIDs, ShouldBeNil)
+		So(failedMessageIDs, ShouldBeNil)
 	})
 
 	myConsumer.Stop()

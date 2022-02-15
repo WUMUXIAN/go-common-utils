@@ -31,7 +31,7 @@ func TestUUID(t *testing.T) {
 	Convey("Gen UUID Should Be Valid UUID", t, func() {
 		uuid := GenUUID()
 		validatedUUID, err := ValidateUUID(uuid)
-		So(err, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 		So(uuid, ShouldEqual, validatedUUID)
 	})
 }

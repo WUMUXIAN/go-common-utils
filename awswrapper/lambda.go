@@ -2,12 +2,13 @@ package awswrapper
 
 import (
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/lambda"
-	"golang.org/x/net/http2"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/lambda"
+	"golang.org/x/net/http2"
 )
 
 // S3Service represents a S3 service.
