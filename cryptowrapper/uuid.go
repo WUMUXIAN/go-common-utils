@@ -2,10 +2,11 @@ package cryptowrapper
 
 import (
 	"crypto/rand"
-	"github.com/google/uuid"
 	"io"
 	"math/big"
 	"strings"
+
+	"github.com/google/uuid"
 
 	"github.com/TectusDreamlab/go-common-utils/codec"
 )

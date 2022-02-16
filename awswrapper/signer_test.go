@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TectusDreamlab/go-common-utils/codec"
 	. "github.com/smartystreets/goconvey/convey"
+
+	"github.com/TectusDreamlab/go-common-utils/codec"
 )
 
 func TestUrlSigner(t *testing.T) {

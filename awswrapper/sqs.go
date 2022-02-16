@@ -47,18 +47,61 @@ func (o *SQSService) SendMessage(queueName, payload string) (messageID *string, 
 		fmt.Println("unable to get queue URL, ", err)
 		return
 	}
-	qURL := queueURL.QueueUrl
+
 	var result *sqs.SendMessageOutput
 	result, err = o.service.SendMessage(&sqs.SendMessageInput{
 		DelaySeconds: aws.Int64(0),
 		MessageBody:  aws.String(payload),
-		QueueUrl:     qURL,
+		QueueUrl:     queueURL.QueueUrl,
 	})
 	if err != nil {
 		fmt.Println("unable to send message, ", err)
 		return
 	}
+
 	messageID = result.MessageId
+
+	return
+}
+
+// SendMessageBatch sends the message payloads as a batch to a named queue
+func (o *SQSService) SendMessageBatch(queueName string, payloads []string) (failedMessageIDs, successMessageIDs []*string, err error) {
+	var queueURL *sqs.GetQueueUrlOutput
+	queueURL, err = o.service.GetQueueUrl(&sqs.GetQueueUrlInput{
+		QueueName: &queueName,
+	})
+	if err != nil {
+		fmt.Println("unable to get queue URL, ", err)
+		return
+	}
+
+	requestEntries := make([]*sqs.SendMessageBatchRequestEntry, len(payloads))
+	for i, payload := range payloads {
+		requestEntries[i] = &sqs.SendMessageBatchRequestEntry{
+			DelaySeconds: aws.Int64(0),
+			MessageBody:  aws.String(payload),
+		}
+	}
+
+	var result *sqs.SendMessageBatchOutput
+	result, err = o.service.SendMessageBatch(&sqs.SendMessageBatchInput{
+		Entries:  requestEntries,
+		QueueUrl: queueURL.QueueUrl,
+	})
+	if err != nil {
+		fmt.Println("unable to send message, ", err)
+		return
+	}
+
+	successMessageIDs = make([]*string, len(result.Successful))
+	for i, entry := range result.Successful {
+		successMessageIDs[i] = entry.Id
+	}
+
+	failedMessageIDs = make([]*string, len(result.Failed))
+	for i, entry := range result.Failed {
+		failedMessageIDs[i] = entry.Id
+	}
 
 	return
 }

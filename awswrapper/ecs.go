@@ -2,9 +2,10 @@ package awswrapper
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ecs"
-	"time"
 )
 
 // S3Service represents a S3 service.
