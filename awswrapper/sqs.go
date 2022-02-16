@@ -8,6 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/sqs"
+
+	"github.com/TectusDreamlab/go-common-utils/cryptowrapper"
 )
 
 // SQSService defines the attributes of a SQS service
@@ -78,6 +80,7 @@ func (o *SQSService) SendMessageBatch(queueName string, payloads []string) (fail
 	requestEntries := make([]*sqs.SendMessageBatchRequestEntry, len(payloads))
 	for i, payload := range payloads {
 		requestEntries[i] = &sqs.SendMessageBatchRequestEntry{
+			Id:           aws.String(cryptowrapper.GenUUID()),
 			DelaySeconds: aws.Int64(0),
 			MessageBody:  aws.String(payload),
 		}
