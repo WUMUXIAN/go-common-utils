@@ -67,7 +67,7 @@ func (o *SQSService) SendMessage(queueName, payload string) (messageID *string, 
 }
 
 // SendMessageBatch sends the message payloads as a batch to a named queue
-func (o *SQSService) SendMessageBatch(queueName string, payloads []string) (failedMessageIDs, successMessageIDs []*string, err error) {
+func (o *SQSService) SendMessageBatch(queueName string, payloads []string, delaySeconds *int64) (failedMessageIDs, successMessageIDs []*string, err error) {
 	var queueURL *sqs.GetQueueUrlOutput
 	queueURL, err = o.service.GetQueueUrl(&sqs.GetQueueUrlInput{
 		QueueName: &queueName,
@@ -81,7 +81,7 @@ func (o *SQSService) SendMessageBatch(queueName string, payloads []string) (fail
 	for i, payload := range payloads {
 		requestEntries[i] = &sqs.SendMessageBatchRequestEntry{
 			Id:           aws.String(cryptowrapper.GenUUID()),
-			DelaySeconds: aws.Int64(0),
+			DelaySeconds: delaySeconds, // if not provided, the default value for the queue is applied
 			MessageBody:  aws.String(payload),
 		}
 	}

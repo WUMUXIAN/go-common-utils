@@ -32,7 +32,7 @@ func TestSQSService(t *testing.T) {
 		So(messageID, ShouldNotBeNil)
 	})
 
-	failedMessageIDs, successMessageIDs, err := mySQS.SendMessageBatch("TestSQS", []string{"Batch hello world 1...!", "Batch hello world 2...!"})
+	failedMessageIDs, successMessageIDs, err := mySQS.SendMessageBatch("TestSQS", []string{"Batch hello world 1...!", "Batch hello world 2...!"}, nil)
 	Convey("Should be able to send multiple messages to an existing queue", t, func() {
 		So(err, ShouldBeNil)
 		So(successMessageIDs, ShouldHaveLength, 2)
@@ -45,7 +45,7 @@ func TestSQSService(t *testing.T) {
 		So(messageID, ShouldBeNil)
 	})
 
-	failedMessageIDs, successMessageIDs, err = mySQS.SendMessageBatch("NonExistingQueue", []string{"Batch hello world 1...!", "Batch hello world 2...!"})
+	failedMessageIDs, successMessageIDs, err = mySQS.SendMessageBatch("NonExistingQueue", []string{"Batch hello world 1...!", "Batch hello world 2...!"}, nil)
 	Convey("Should not exit when sending multiple messages to non existing queue", t, func() {
 		So(err, ShouldNotBeNil)
 		So(successMessageIDs, ShouldBeNil)
