@@ -278,6 +278,14 @@ func TestInt(t *testing.T) {
 			target = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
 			chunks = ChunkInts(target, 0)
 			So(chunks, ShouldHaveLength, 0)
+
+			target = []int{}
+			chunks = ChunkInts(target, 1)
+			So(chunks, ShouldHaveLength, 0)
+
+			target = nil
+			chunks = ChunkInts(target, 1)
+			So(chunks, ShouldHaveLength, 0)
 		})
 	})
 }

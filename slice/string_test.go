@@ -266,6 +266,14 @@ func TestString(t *testing.T) {
 			target = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
 			chunks = ChunkStrings(target, 0)
 			So(chunks, ShouldHaveLength, 0)
+
+			target = []string{}
+			chunks = ChunkStrings(target, 1)
+			So(chunks, ShouldHaveLength, 0)
+
+			target = nil
+			chunks = ChunkStrings(target, 1)
+			So(chunks, ShouldHaveLength, 0)
 		})
 	})
 }

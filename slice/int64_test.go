@@ -278,6 +278,14 @@ func TestInt64(t *testing.T) {
 			target = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
 			chunks = ChunkInt64s(target, 0)
 			So(chunks, ShouldHaveLength, 0)
+
+			target = []int64{}
+			chunks = ChunkInt64s(target, 1)
+			So(chunks, ShouldHaveLength, 0)
+
+			target = nil
+			chunks = ChunkInt64s(target, 1)
+			So(chunks, ShouldHaveLength, 0)
 		})
 	})
 }
