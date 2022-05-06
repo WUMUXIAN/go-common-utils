@@ -233,5 +233,51 @@ func TestInt(t *testing.T) {
 			So(remove, ShouldHaveLength, 0)
 			So(remove, ShouldResemble, []int{})
 		})
+
+		Convey("ChunkInts", func() {
+			target := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks := ChunkInts(target, 3)
+			So(chunks, ShouldHaveLength, 4)
+			So(chunks[0], ShouldResemble, []int{1, 2, 3})
+			So(chunks[1], ShouldResemble, []int{4, 5, 6})
+			So(chunks[2], ShouldResemble, []int{7, 8, 9})
+			So(chunks[3], ShouldResemble, []int{0})
+
+			target = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInts(target, 4)
+			So(chunks, ShouldHaveLength, 3)
+			So(chunks[0], ShouldResemble, []int{1, 2, 3, 4})
+			So(chunks[1], ShouldResemble, []int{5, 6, 7, 8})
+			So(chunks[2], ShouldResemble, []int{9, 0})
+
+			target = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInts(target, 1)
+			So(chunks, ShouldHaveLength, 10)
+			So(chunks[0], ShouldResemble, []int{1})
+			So(chunks[1], ShouldResemble, []int{2})
+			So(chunks[2], ShouldResemble, []int{3})
+			So(chunks[3], ShouldResemble, []int{4})
+			So(chunks[4], ShouldResemble, []int{5})
+			So(chunks[5], ShouldResemble, []int{6})
+			So(chunks[6], ShouldResemble, []int{7})
+			So(chunks[7], ShouldResemble, []int{8})
+			So(chunks[8], ShouldResemble, []int{9})
+			So(chunks[9], ShouldResemble, []int{0})
+
+			target = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInts(target, 10)
+			So(chunks, ShouldHaveLength, 1)
+			So(chunks[0], ShouldResemble, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0})
+
+			target = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInts(target, 9)
+			So(chunks, ShouldHaveLength, 2)
+			So(chunks[0], ShouldResemble, []int{1, 2, 3, 4, 5, 6, 7, 8, 9})
+			So(chunks[1], ShouldResemble, []int{0})
+
+			target = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInts(target, 0)
+			So(chunks, ShouldHaveLength, 0)
+		})
 	})
 }

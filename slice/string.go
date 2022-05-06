@@ -205,3 +205,23 @@ func TransformStrings(target, current []string) (add, remove []string) {
 
 	return
 }
+
+// ChunkStrings chunks the slice by given chunk size
+func ChunkStrings(x []string, chunkSize int) (chunks [][]string) {
+	if chunkSize < 1 {
+		return
+	}
+
+	for i := 0; i < len(x); i += chunkSize {
+		end := i + chunkSize
+
+		// necessary check to avoid slicing beyond give slice capacity
+		if end > len(x) {
+			end = len(x)
+		}
+
+		chunks = append(chunks, x[i:end])
+	}
+
+	return chunks
+}

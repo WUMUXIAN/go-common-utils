@@ -213,3 +213,23 @@ func TransformInt64s(target, current []int64) (add, remove []int64) {
 
 	return
 }
+
+// ChunkInt64s chunks the slice by given chunk size
+func ChunkInt64s(x []int64, chunkSize int) (chunks [][]int64) {
+	if chunkSize < 1 {
+		return
+	}
+
+	for i := 0; i < len(x); i += chunkSize {
+		end := i + chunkSize
+
+		// necessary check to avoid slicing beyond give slice capacity
+		if end > len(x) {
+			end = len(x)
+		}
+
+		chunks = append(chunks, x[i:end])
+	}
+
+	return chunks
+}

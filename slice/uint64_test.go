@@ -233,5 +233,51 @@ func TestUInt64(t *testing.T) {
 			So(remove, ShouldHaveLength, 0)
 			So(remove, ShouldResemble, []uint64{})
 		})
+
+		Convey("ChunkUInt64s", func() {
+			target := []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks := ChunkUInt64s(target, 3)
+			So(chunks, ShouldHaveLength, 4)
+			So(chunks[0], ShouldResemble, []uint64{1, 2, 3})
+			So(chunks[1], ShouldResemble, []uint64{4, 5, 6})
+			So(chunks[2], ShouldResemble, []uint64{7, 8, 9})
+			So(chunks[3], ShouldResemble, []uint64{0})
+
+			target = []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkUInt64s(target, 4)
+			So(chunks, ShouldHaveLength, 3)
+			So(chunks[0], ShouldResemble, []uint64{1, 2, 3, 4})
+			So(chunks[1], ShouldResemble, []uint64{5, 6, 7, 8})
+			So(chunks[2], ShouldResemble, []uint64{9, 0})
+
+			target = []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkUInt64s(target, 1)
+			So(chunks, ShouldHaveLength, 10)
+			So(chunks[0], ShouldResemble, []uint64{1})
+			So(chunks[1], ShouldResemble, []uint64{2})
+			So(chunks[2], ShouldResemble, []uint64{3})
+			So(chunks[3], ShouldResemble, []uint64{4})
+			So(chunks[4], ShouldResemble, []uint64{5})
+			So(chunks[5], ShouldResemble, []uint64{6})
+			So(chunks[6], ShouldResemble, []uint64{7})
+			So(chunks[7], ShouldResemble, []uint64{8})
+			So(chunks[8], ShouldResemble, []uint64{9})
+			So(chunks[9], ShouldResemble, []uint64{0})
+
+			target = []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkUInt64s(target, 10)
+			So(chunks, ShouldHaveLength, 1)
+			So(chunks[0], ShouldResemble, []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0})
+
+			target = []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkUInt64s(target, 9)
+			So(chunks, ShouldHaveLength, 2)
+			So(chunks[0], ShouldResemble, []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9})
+			So(chunks[1], ShouldResemble, []uint64{0})
+
+			target = []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkUInt64s(target, 0)
+			So(chunks, ShouldHaveLength, 0)
+		})
 	})
 }

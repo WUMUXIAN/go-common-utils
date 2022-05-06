@@ -221,5 +221,51 @@ func TestString(t *testing.T) {
 			So(remove, ShouldHaveLength, 0)
 			So(remove, ShouldResemble, []string{})
 		})
+
+		Convey("ChunkStrings", func() {
+			target := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+			chunks := ChunkStrings(target, 3)
+			So(chunks, ShouldHaveLength, 4)
+			So(chunks[0], ShouldResemble, []string{"1", "2", "3"})
+			So(chunks[1], ShouldResemble, []string{"4", "5", "6"})
+			So(chunks[2], ShouldResemble, []string{"7", "8", "9"})
+			So(chunks[3], ShouldResemble, []string{"0"})
+
+			target = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+			chunks = ChunkStrings(target, 4)
+			So(chunks, ShouldHaveLength, 3)
+			So(chunks[0], ShouldResemble, []string{"1", "2", "3", "4"})
+			So(chunks[1], ShouldResemble, []string{"5", "6", "7", "8"})
+			So(chunks[2], ShouldResemble, []string{"9", "0"})
+
+			target = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+			chunks = ChunkStrings(target, 1)
+			So(chunks, ShouldHaveLength, 10)
+			So(chunks[0], ShouldResemble, []string{"1"})
+			So(chunks[1], ShouldResemble, []string{"2"})
+			So(chunks[2], ShouldResemble, []string{"3"})
+			So(chunks[3], ShouldResemble, []string{"4"})
+			So(chunks[4], ShouldResemble, []string{"5"})
+			So(chunks[5], ShouldResemble, []string{"6"})
+			So(chunks[6], ShouldResemble, []string{"7"})
+			So(chunks[7], ShouldResemble, []string{"8"})
+			So(chunks[8], ShouldResemble, []string{"9"})
+			So(chunks[9], ShouldResemble, []string{"0"})
+
+			target = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+			chunks = ChunkStrings(target, 10)
+			So(chunks, ShouldHaveLength, 1)
+			So(chunks[0], ShouldResemble, []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"})
+
+			target = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+			chunks = ChunkStrings(target, 9)
+			So(chunks, ShouldHaveLength, 2)
+			So(chunks[0], ShouldResemble, []string{"1", "2", "3", "4", "5", "6", "7", "8", "9"})
+			So(chunks[1], ShouldResemble, []string{"0"})
+
+			target = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+			chunks = ChunkStrings(target, 0)
+			So(chunks, ShouldHaveLength, 0)
+		})
 	})
 }
