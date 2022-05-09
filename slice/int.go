@@ -213,3 +213,23 @@ func TransformInts(target, current []int) (add, remove []int) {
 
 	return
 }
+
+// ChunkInts chunks the slice by given chunk size
+func ChunkInts(x []int, chunkSize int) (chunks [][]int) {
+	if chunkSize < 1 {
+		return
+	}
+
+	for i := 0; i < len(x); i += chunkSize {
+		end := i + chunkSize
+
+		// necessary check to avoid slicing beyond give slice capacity
+		if end > len(x) {
+			end = len(x)
+		}
+
+		chunks = append(chunks, x[i:end])
+	}
+
+	return chunks
+}

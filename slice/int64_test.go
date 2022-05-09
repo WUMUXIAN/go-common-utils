@@ -233,5 +233,59 @@ func TestInt64(t *testing.T) {
 			So(remove, ShouldHaveLength, 0)
 			So(remove, ShouldResemble, []int64{})
 		})
+
+		Convey("ChunkInt64s", func() {
+			target := []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks := ChunkInt64s(target, 3)
+			So(chunks, ShouldHaveLength, 4)
+			So(chunks[0], ShouldResemble, []int64{1, 2, 3})
+			So(chunks[1], ShouldResemble, []int64{4, 5, 6})
+			So(chunks[2], ShouldResemble, []int64{7, 8, 9})
+			So(chunks[3], ShouldResemble, []int64{0})
+
+			target = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInt64s(target, 4)
+			So(chunks, ShouldHaveLength, 3)
+			So(chunks[0], ShouldResemble, []int64{1, 2, 3, 4})
+			So(chunks[1], ShouldResemble, []int64{5, 6, 7, 8})
+			So(chunks[2], ShouldResemble, []int64{9, 0})
+
+			target = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInt64s(target, 1)
+			So(chunks, ShouldHaveLength, 10)
+			So(chunks[0], ShouldResemble, []int64{1})
+			So(chunks[1], ShouldResemble, []int64{2})
+			So(chunks[2], ShouldResemble, []int64{3})
+			So(chunks[3], ShouldResemble, []int64{4})
+			So(chunks[4], ShouldResemble, []int64{5})
+			So(chunks[5], ShouldResemble, []int64{6})
+			So(chunks[6], ShouldResemble, []int64{7})
+			So(chunks[7], ShouldResemble, []int64{8})
+			So(chunks[8], ShouldResemble, []int64{9})
+			So(chunks[9], ShouldResemble, []int64{0})
+
+			target = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInt64s(target, 10)
+			So(chunks, ShouldHaveLength, 1)
+			So(chunks[0], ShouldResemble, []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0})
+
+			target = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInt64s(target, 9)
+			So(chunks, ShouldHaveLength, 2)
+			So(chunks[0], ShouldResemble, []int64{1, 2, 3, 4, 5, 6, 7, 8, 9})
+			So(chunks[1], ShouldResemble, []int64{0})
+
+			target = []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+			chunks = ChunkInt64s(target, 0)
+			So(chunks, ShouldHaveLength, 0)
+
+			target = []int64{}
+			chunks = ChunkInt64s(target, 1)
+			So(chunks, ShouldHaveLength, 0)
+
+			target = nil
+			chunks = ChunkInt64s(target, 1)
+			So(chunks, ShouldHaveLength, 0)
+		})
 	})
 }
