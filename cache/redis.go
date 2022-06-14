@@ -205,6 +205,21 @@ func (o *RedisCacher) HGet(hash, key string) (interface{}, error) {
 	return redisConnection.Do("HGET", hash, key)
 }
 
+// HMGet gets a value from hash set
+func (o *RedisCacher) HMGet(hash string, keys ...interface{}) (values []interface{}, err error) {
+	redisConnection := o.GetConn()
+	defer redisConnection.Close()
+
+	args := make([]interface{}, len(keys)+1)
+	args[0] = hash
+	for i := range keys {
+		args[i+1] = keys[i]
+	}
+	values, err = redis.Values(redisConnection.Do("HMGET", args...))
+
+	return
+}
+
 // HDel deletes a value from hash set
 func (o *RedisCacher) HDel(hash, key string) (interface{}, error) {
 	redisConnection := o.GetConn()
