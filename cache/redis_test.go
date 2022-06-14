@@ -229,6 +229,27 @@ func TestRedis(t *testing.T) {
 		So(value, ShouldEqual, int64(3))
 	})
 
+	_ = Redis.HSet("hash-m", "key-m-1", 1)
+	_ = Redis.HSet("hash-m", "key-m-2", 2)
+	_ = Redis.HSet("hash-m", "key-m-3", 3)
+	multiValues, err := redis.Int64s(Redis.HMGet("hash-m", "key-m-1", "key-m-2", "key-m-3"))
+	Convey("Get Multiple Values For Hash Keys Set Should Be OK\n", t, func() {
+		So(err, ShouldBeNil)
+		So(multiValues, ShouldHaveLength, 3)
+		So(multiValues[0], ShouldEqual, int64(1))
+		So(multiValues[1], ShouldEqual, int64(2))
+		So(multiValues[2], ShouldEqual, int64(3))
+	})
+
+	multiValues, err = redis.Int64s(Redis.HMGet("hash-m", "key-m-2", "key-m-3", "key-m-1"))
+	Convey("Get Multiple Values Order For Hash Keys Set Should Be OK\n", t, func() {
+		So(err, ShouldBeNil)
+		So(multiValues, ShouldHaveLength, 3)
+		So(multiValues[0], ShouldEqual, int64(2))
+		So(multiValues[1], ShouldEqual, int64(3))
+		So(multiValues[2], ShouldEqual, int64(1))
+	})
+
 	err = Redis.Flush()
 	Convey("Flush All Keys In Current DB Should Be OK\n", t, func() {
 		So(err, ShouldBeNil)

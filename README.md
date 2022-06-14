@@ -38,3 +38,10 @@ Some common utility functions and data structures that are useful and can be reu
 - Data structure
   - Trees
 
+
+### Run tests
+
+```shell
+go test github.com/TectusDreamlab/go-common-utils/cache
+```
+
