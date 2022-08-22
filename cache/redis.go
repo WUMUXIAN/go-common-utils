@@ -73,7 +73,7 @@ func (o *RedisCacher) ClosePool() {
 }
 
 // Set a key value pair, the value can be string, int64 and etc.
-func (o *RedisCacher) Set(key string, value interface{}, expiration ...int) error {
+func (o *RedisCacher) Set(key string, value interface{}, expiration ...int64) error {
 	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	_, err := redisConnection.Do("SET", key, value)
@@ -100,7 +100,7 @@ func (o *RedisCacher) TTL(key string) (int, error) {
 }
 
 // SetGob sets a key value pair, value will be gob encoded
-func (o *RedisCacher) SetGob(key string, value interface{}, expiration ...int) error {
+func (o *RedisCacher) SetGob(key string, value interface{}, expiration ...int64) error {
 	var buffer bytes.Buffer
 	enc := gob.NewEncoder(&buffer)
 	err := enc.Encode(map[interface{}]interface{}{"value": value})
@@ -125,7 +125,7 @@ func (o *RedisCacher) GetGob(key string) (interface{}, error) {
 }
 
 // SetJSON sets a key value pair, the value is a json
-func (o *RedisCacher) SetJSON(key string, value interface{}, expiration ...int) error {
+func (o *RedisCacher) SetJSON(key string, value interface{}, expiration ...int64) error {
 	str, err := json.Marshal(value)
 	if err == nil {
 		err = o.Set(key, str, expiration...)
@@ -187,7 +187,7 @@ func (o *RedisCacher) Scan(cursor int, count int, pattern string) (nextCursor in
 }
 
 // HSet sets a key:value in hash set.
-func (o *RedisCacher) HSet(hash, key string, value interface{}, expiration ...int) error {
+func (o *RedisCacher) HSet(hash, key string, value interface{}, expiration ...int64) error {
 	redisConnection := o.GetConn()
 	defer redisConnection.Close()
 	_, err := redisConnection.Do("HSET", hash, key, value)
