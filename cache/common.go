@@ -5,17 +5,17 @@ import "encoding/gob"
 
 // Cacher defines the interface for all typs of cacher. e.g. redis, memcached and etc.
 type Cacher interface {
-	Set(key string, value interface{}, expiration ...interface{}) error
+	Set(key string, value interface{}, expiration ...int) error
 	Get(key string) (interface{}, error)
 	Del(key string)
 	Scan(cursor int, count int, pattern string) (nextCursor int, keys []string, err error)
 	Expire(key string, expiration int) error
 	TTL(key string) (int, error)
-	SetGob(key string, value interface{}, expiration ...interface{})
+	SetGob(key string, value interface{}, expiration ...int)
 	GetGob(key string) (interface{}, error)
-	SetJSON(key string, value interface{}, expiration ...interface{})
+	SetJSON(key string, value interface{}, expiration ...int)
 	GetJSON(key string) (jsonBytes []byte, err error)
-	HSet(hash, key string, value interface{}, expiration ...interface{}) error
+	HSet(hash, key string, value interface{}, expiration ...int) error
 	HGet(hash, key string) (interface{}, error)
 	HINCRBY(hash, key string, value interface{}) error
 }
