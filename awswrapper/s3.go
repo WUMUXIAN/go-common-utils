@@ -3,6 +3,7 @@ package awswrapper
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,6 +21,16 @@ import (
 type S3Service struct {
 	region  string
 	service *s3.S3
+}
+
+type ServiceSession struct {
+	Sess *session.Session
+}
+
+type S3Options struct {
+	PartSize          int64
+	Concurrency       int
+	LeavePartsOnError bool
 }
 
 var (
@@ -43,6 +54,14 @@ func GetS3Service(region string) *S3Service {
 	}
 	s3Services[region] = s3Service
 	return s3Service
+}
+
+func (o *S3Service) GetSession() *ServiceSession {
+	return &ServiceSession{
+		Sess: session.Must(session.NewSession(&aws.Config{
+			Region: aws.String(o.region),
+		})),
+	}
 }
 
 // CreateBucket creates a bucket with given name and in given region
@@ -334,6 +353,49 @@ func (o *S3Service) UploadToS3Concurrently(content []byte, bucketName string, pa
 	return err
 }
 
+func (o *S3Service) UploadToS3WithSession(session *ServiceSession, reader io.Reader, bucket, path string, contentType *string, options *S3Options, args ...interface{}) (err error) {
+	var uploader *s3manager.Uploader
+	if options == nil {
+		uploader = s3manager.NewUploader(session.Sess)
+	} else {
+		uploader = s3manager.NewUploader(session.Sess, func(u *s3manager.Uploader) {
+			u.PartSize = options.PartSize
+			u.Concurrency = options.Concurrency
+			u.LeavePartsOnError = options.LeavePartsOnError
+		})
+	}
+
+	acl := s3.ObjectCannedACLPrivate
+	if len(args) > 0 {
+		for i, arg := range args {
+			switch i {
+			case 0:
+				if arg.(bool) {
+					acl = s3.ObjectCannedACLPublicRead
+				}
+			}
+		}
+	}
+
+	uploadInput := &s3manager.UploadInput{
+		Bucket:      &bucket,
+		Key:         &path,
+		Body:        reader,
+		ContentType: contentType,
+		ACL:         &acl,
+	}
+
+	uploadOutput, err := uploader.Upload(uploadInput)
+	if err != nil {
+		log.Fatalf("Error while uploading: %s", err)
+		return
+	}
+
+	log.Printf("Uploaded to: %s", uploadOutput.Location)
+
+	return
+}
+
 // ReadFromS3Concurrently reads content from S3 concurrently
 func (o *S3Service) ReadFromS3Concurrently(bucketName string, path string) (content []byte, err error) {
 
@@ -356,6 +418,28 @@ func (o *S3Service) ReadFromS3Concurrently(bucketName string, path string) (cont
 		fmt.Printf("bad response: %s\n", err)
 	} else {
 		content = buffer.Bytes()
+	}
+	return
+}
+
+func (o *S3Service) DownloadFromS3WithSession(session *ServiceSession, bucket, path string, output io.WriterAt, options *S3Options) (err error) {
+	var downloader *s3manager.Downloader
+	if options == nil {
+		downloader = s3manager.NewDownloader(session.Sess)
+	} else {
+		downloader = s3manager.NewDownloader(session.Sess, func(d *s3manager.Downloader) {
+			d.PartSize = options.PartSize
+			d.Concurrency = options.Concurrency
+		})
+	}
+
+	_, err = downloader.Download(output, &s3.GetObjectInput{
+		Bucket: &bucket,
+		Key:    &path,
+	})
+	if err != nil {
+		log.Fatalf("Error while downloading from S3: %s", err)
+		return
 	}
 	return
 }
