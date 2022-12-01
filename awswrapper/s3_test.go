@@ -1,7 +1,9 @@
 package awswrapper
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
 	"testing"
 	"time"
 
@@ -15,34 +17,34 @@ var (
 func TestMain(m *testing.M) {
 	fmt.Println("Create the bucket first.")
 	bucketName = "wumuxian-test"
-	err := GetS3Service("ap-southeast-1").CreateBucket("wumuxian-test", "ap-southeast-1")
-	if err != nil {
-		fmt.Println("Failed to create the bucket.")
-		return
-	}
-
-	// Try to create again, this time it will fail.
-	err = GetS3Service("ap-southeast-1").CreateBucket("wumuxian-test", "ap-southeast-1")
-	if err == nil {
-		fmt.Println("You Should Not Be Allowed to Create Bucket With the Same Name.")
-		return
-	}
+	//err := GetS3Service("ap-southeast-1").CreateBucket("wumuxian-test", "ap-southeast-1")
+	//if err != nil {
+	//	fmt.Println("Failed to create the bucket.")
+	//	return
+	//}
+	//
+	//// Try to create again, this time it will fail.
+	//err = GetS3Service("ap-southeast-1").CreateBucket("wumuxian-test", "ap-southeast-1")
+	//if err == nil {
+	//	fmt.Println("You Should Not Be Allowed to Create Bucket With the Same Name.")
+	//	return
+	//}
 
 	m.Run()
 
-	fmt.Println("Delete the bucket.")
-	err = GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
-	if err != nil {
-		fmt.Println("Failed to delete the bucket.")
-		return
-	}
-
-	// Delete again.
-	err = GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
-	if err == nil {
-		fmt.Println("You Should Not Be Allowed to Delete Bucket That Does Not Exist.")
-		return
-	}
+	//fmt.Println("Delete the bucket.")
+	//err = GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
+	//if err != nil {
+	//	fmt.Println("Failed to delete the bucket.")
+	//	return
+	//}
+	//
+	//// Delete again.
+	//err = GetS3Service("ap-southeast-1").DeleteBucket(bucketName)
+	//if err == nil {
+	//	fmt.Println("You Should Not Be Allowed to Delete Bucket That Does Not Exist.")
+	//	return
+	//}
 }
 
 func TestS3Upload(t *testing.T) {
@@ -113,6 +115,41 @@ func TestS3Read(t *testing.T) {
 	Convey("Check Object Existence For Non-Existing Object", t, func() {
 		So(err, ShouldNotBeNil)
 		So(existed, ShouldBeFalse)
+	})
+}
+
+func TestS3UploadDownloadWithSession(t *testing.T) {
+	content := make([]byte, 0)
+	for i := 0; i < 1*1024*1024; i++ {
+		content = append(content, 'b')
+	}
+
+	reader := bytes.NewReader(content)
+	session := GetS3Service("ap-southeast-1").GetSession()
+	err := GetS3Service("ap-southeast-1").UploadToS3WithSession(session, reader, bucketName, "/test", nil, nil)
+	Convey("Upload To S3 With Session", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	b := make([]byte, 0)
+	output := aws.NewWriteAtBuffer(b)
+	err = GetS3Service("ap-southeast-1").DownloadFromS3WithSession(session, bucketName, "/test", output, nil)
+	Convey("Download From S3 With Session", t, func() {
+		So(err, ShouldBeNil)
+		So(len(output.Bytes()), ShouldEqual, 1*1024*1024)
+	})
+
+	err = GetS3Service("ap-southeast-1").UploadToS3WithSession(session, reader, bucketName, "/test", nil, &S3Options{PartSize: 50 * 1024 * 1024, Concurrency: 3})
+	Convey("Upload To S3 With Session Plus Options", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	b = make([]byte, 0)
+	output = aws.NewWriteAtBuffer(b)
+	err = GetS3Service("ap-southeast-1").DownloadFromS3WithSession(session, bucketName, "/test", output, &S3Options{PartSize: 50 * 1024 * 1024, Concurrency: 2})
+	Convey("Download From S3 With Session Plus Options", t, func() {
+		So(err, ShouldBeNil)
+		So(len(output.Bytes()), ShouldEqual, 1*1024*1024)
 	})
 }
 
